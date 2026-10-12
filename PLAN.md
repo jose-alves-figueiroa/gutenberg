@@ -2,7 +2,18 @@
 
 Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 Fonte: `design_handoff_gutenberg/README.md` + protótipo `design/Gutenberg.dc.html` (classe `Component`).
-Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases ficam no backlog.
+Concluídos: E0–E3. Em execução: **E4 (Biblioteca)**.
+
+## Stack e protocolo (decisão)
+O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP** — o protocolo já em uso (substitui o JSON do Holyrics). Isso substitui o obs-websocket sugerido no README do handoff.
+
+- **Servidor HTTP** no processo principal do Electron (PC do operador): **Hono** (`@hono/node-server`) + **zod** (`@hono/zod-validator`). Um servidor, duas classes de rota:
+  - **Públicas na LAN (OBS):** `GET /overlay` (página da Browser Source, servida pelo Gutenberg), `GET /api/v1/current` (tela atual, payload v1), `GET /api/v1/events` (o mesmo payload por Server-Sent Events), `GET /api/v1/health` (latência/estado)
+  - **Só locais** (`127.0.0.1`; recusadas vindas da LAN): biblioteca (leitura/edição), liturgias, comandos de apresentação
+- **Payload v1** (README → "Payload"): `{ v, seq, type, header, lines, meta }`, schema zod único em `src/shared`; sem HTML, até 2 linhas
+- **Renderer:** React + cliente tipado do Hono (`hono/client`) + **TanStack Query**; a UI usa a mesma API HTTP via `localhost` (sem IPC próprio)
+- **Banco:** SQLite via `node:sqlite` (Node 24 do Electron 44), repositório em `src/main/library/`
+- **Rede:** o OBS aponta a Browser Source para `http://<ip-do-operador>:<porta>/overlay`; IP e porta exibidos na aba Conexão (porta configurável); regra de firewall do Windows criada no instalador (E8)
 
 ## E0 — Planejamento
 - [x] Ler o handoff (README, protótipo, styles.css, payload do Holyrics)
@@ -58,7 +69,7 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 - [x] CFW: `CFW 1.1`
 - [x] Catecismo: `Breve Catecismo · P. 1 · pergunta` / `Breve Catecismo · P. 1` na resposta
 - [x] Credo: nome do credo
-- [x] Salmos/HNC: sem autobreak, 1 estrofe = 1 tela; cabeçalho `Salmo 133B`
+- [x] Salmos/HNC: sem autobreak; cada estrofe em telas de 2 versos (E3); cabeçalho `Salmo 133B`
 - [x] Testes de cabeçalho para cada coleção, incluindo Hb 12.15 com `(1/n)…(n/n)`
 
 ## Backlog (fases futuras)
@@ -73,14 +84,43 @@ Tasks detalhadas, schemas (em inglês) e fontes: **`docs/DATA.md` → Progresso*
 - [x] US3.5 Credos Apostólico, Niceno e de Atanásio (`translate:creeds`)
 
 ### E4 — Biblioteca (Fase 4)
-- [ ] Coleções em 3 grupos (Bíblia no topo) + breadcrumb
-- [ ] Bíblia: Livro (AT/NT) → Capítulo → Versículos, seleção de trecho, somente leitura
-- [ ] CFW: Capítulo → Seção → Editor
-- [ ] Catecismos: grid de perguntas → Editor
-- [ ] Salmos: grid 1–150 → Versões → Editor
-- [ ] HNC e Credos: lista → Editor
-- [ ] Estados cadastrado/não cadastrado; clicar em não cadastrado cria registro
-- [ ] Prévia "Como fica na transmissão" + barra sticky (Apresentar agora, Adicionar, Descartar/Salvar)
+Especificação: README → "Biblioteca" e protótipo (`Component.render`, ramo `libCol`). Os dados vêm do banco gerado na E3.
+
+**US4.1** Como operador, quero que o app abra a biblioteca do banco local, para usar os dados da E3.
+- [~] `src/main/db/open.ts`: banco em `userData`; na 1ª execução copia o banco empacotado (dev: `data/build/gutenberg.sqlite`); migra; `node:sqlite` (validado no Electron 44)
+- [~] `src/main/library/repository.ts`: consultas e gravações sobre `SqlDatabase` (coleções com contagem, Bíblia, confissões, catecismos, hinários, credos) — escrito; faltam os testes sobre o banco do seed
+
+**US4.2** Como desenvolvedor, quero a API HTTP local da biblioteca, para a UI e o OBS usarem o mesmo servidor.
+- [ ] Servidor Hono no main (`src/main/server/`): sobe junto com o app, porta configurável; middleware que restringe rotas locais a `127.0.0.1`
+- [ ] Rotas `/api/v1/library/*` (só locais) sobre o repositório, com validação zod de parâmetros e corpos
+- [ ] Remover a ponte IPC provisória (`src/main/library/ipc.ts`, `window.gutenberg.library`); manter `LibraryApi` só como tipo de domínio se ainda útil
+- [ ] Renderer: cliente `hono/client` + TanStack Query (`QueryClientProvider`); CSP com `connect-src` para o servidor local
+- [ ] Testes: rotas via `app.request()` do Hono sobre o banco do seed (sem abrir porta); recusa de rota local vinda da LAN
+
+**US4.3** Como operador, quero navegar pelas coleções, para achar qualquer texto.
+- [ ] Coluna esquerda: coleções nos 3 grupos (Bíblia no topo) com contagem; selecionada em tint de accent
+- [ ] Breadcrumb clicável, título h2 32px e dica 14px
+
+**US4.4** Bíblia (somente leitura)
+- [ ] Livros em grade (AT/NT) → capítulos (grade de números) → versículos (lista)
+- [ ] Seleção de trecho: 1º clique e último versículo; destaque `--color-accent-200`; dicas do protótipo
+
+**US4.5** Confissões
+- [ ] Capítulos (lista com título e "k de N seções") → seções (grade) → editor (texto corrido)
+
+**US4.6** Catecismos
+- [ ] Grade de perguntas (1–107 / 1–196) → editor (pergunta + resposta)
+
+**US4.7** Hinários e credos
+- [ ] Saltério: grade 1–150 → versões/partes → editor (nº, versão, versificação, letra por estrofes); "Nova versão"
+- [ ] HNC (e demais hinários) e credos: lista → editor; "Novo hino" / "Novo credo"
+
+**US4.8** Estados cadastrado / não cadastrado
+- [ ] Grades: cadastrado em `--color-surface`; não cadastrado transparente e `--color-neutral-600`; clicar cria o registro vazio e abre o editor
+
+**US4.9** Folha do item
+- [ ] Prévia "Como fica na transmissão · N telas" (cartões `minmax(210px,1fr)` com `slidesOf`)
+- [ ] Barra sticky: Apresentar agora / Adicionar à liturgia (habilitados nas E5/E6), Descartar / Salvar (desabilitados sem alterações), "Salvo — vale para todas as liturgias"
 
 ### E5 — Liturgia (Fase 5)
 - [ ] CRUD de cultos
@@ -93,13 +133,19 @@ Tasks detalhadas, schemas (em inglês) e fontes: **`docs/DATA.md` → Progresso*
 - [ ] Busca rápida: livros, tag de livro, capítulo.versículo, prefixos `bc cm cfw sg hnc credo`
 - [ ] Estado de apresentação persistido em disco
 
-### E7 — Conexão (Fase 7)
-- [ ] Cliente `obs-websocket-js` v5, `BroadcastCustomEvent` com payload v1
-- [ ] Ping 2 s, estados ok/instável/sem resposta, backoff 1/2/4/8 s, reenvio do último `seq`
-- [ ] `overlay.html` para o OBS (ignora `seq` menor)
-- [ ] Aba Conexão (IP só exibido, porta editável, Reconectar/Testar, registro de eventos)
-- [ ] Descoberta do IP (mDNS/UDP ou arquivo de config)
+### E7 — Conexão com o OBS por HTTP (Fase 7)
+**US7.1** Como operador, quero que o OBS mostre a tela atual, para a transmissão acompanhar a apresentação.
+- [ ] Schema zod do payload v1 (`src/shared/payload.ts`) gerado a partir de `slidesOf`; `type: CLEAR` para "Limpar tela"; `seq` crescente persistido com o estado de apresentação
+- [ ] `GET /api/v1/current` (JSON) e `GET /api/v1/events` (SSE: envia o estado atual ao conectar e a cada mudança; heartbeat)
+- [ ] `GET /overlay`: HTML estático da Browser Source — conecta ao SSE, cai para polling de `/current` se o SSE falhar, ignora `seq` menor que o último, **mantém o último texto se a rede cair**; estilo (fonte, cor, posição) no overlay/OBS
+- [ ] Ao reconectar, o overlay recebe o estado atual (último `seq`) — sem reenvio manual
+
+**US7.2** Como operador, quero ver o estado da conexão com o OBS, para agir se a rede falhar.
+- [ ] Rastrear clientes do overlay (SSE conectados, último acesso, latência via `GET /api/v1/health` chamado pelo overlay a cada 2 s)
+- [ ] Estados: conectado / instável (> 500 ms) / sem resposta (3 falhas seguidas); alimentam o indicador da nav
+- [ ] Aba Conexão: IP do operador e URL do overlay exibidos (copiar), porta editável (só números, até 5 dígitos), Reconectar/Testar, registro de eventos com hora
 
 ### E8 — Empacotamento (Fase 8)
-- [ ] `electron-builder` para Windows
-- [ ] Instalação do overlay no PC do OBS
+- [ ] `electron-builder` para Windows, com o banco (`data:build`) como recurso
+- [ ] Regra de firewall do Windows para a porta do servidor HTTP (instalador)
+- [ ] Guia de configuração do OBS: Browser Source com a URL do overlay exibida na aba Conexão
