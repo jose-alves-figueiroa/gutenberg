@@ -19,6 +19,9 @@ data/sources/
 .env
 .env.*
 !.env.example
+
+# Chave do git-crypt cifrada com GUTENBERG_DATA_PASSWORD (npm run data:key / data:unlock)
+.secrets/
 gutenberg.config.local.json
 
 # Logs

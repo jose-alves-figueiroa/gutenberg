@@ -65,7 +65,7 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 **Requisito funcional:** o app sai com a Bíblia ARA completa, as 246 músicas do Holyrics, os símbolos de fé de Westminster (CFW, Breve, Maior) e os 3 credos. Arquitetura, formato interno e fontes: `docs/DADOS.md`.
 
 **US3.0** Como mantenedor, quero os dados versionados e cifrados, para o repositório público não expor os textos.
-- [x] git-crypt: `init`, `.gitattributes` (`data/canonical/**`), chave exportada, cifrada com a senha do mantenedor (`gpg --symmetric`) e guardada fora do repo
+- [x] git-crypt: `init`, `.gitattributes` (`data/canonical/**`), chave exportada, cifrada com `GUTENBERG_DATA_PASSWORD` em `.secrets/` (ignorado); `npm run data:key` / `data:unlock` (também no `prebuild`)
 - [x] Verificação: teste `tests/gitcrypt.test.ts` falha se algum arquivo de `data/canonical/` estiver em claro no git (o aviso de repo trancado fica no `data:check`, US3.1)
 
 **US3.1** Como desenvolvedor, quero um formato interno próprio, para não depender do esquema de nenhuma fonte.

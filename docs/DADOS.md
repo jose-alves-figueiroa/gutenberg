@@ -128,28 +128,23 @@ Escopo: **somente** a tabela `music` de `files/database.db` (conteúdo cadastrad
 
 ## git-crypt
 
-**Configuração (uma vez, antes de qualquer arquivo em `data/canonical/`):**
-1. `brew install git-crypt` e `git-crypt init`.
-2. `.gitattributes`:
-   ```
-   data/canonical/** filter=git-crypt diff=git-crypt
-   ```
-3. Exportar a chave e protegê-la com a **senha do mantenedor** (a senha nunca é escrita no
-   repositório, em commits ou em arquivos de configuração):
-   ```
-   git-crypt export-key /tmp/gutenberg-data.key
-   gpg --symmetric --cipher-algo AES256 -o ~/gutenberg-data.key.gpg /tmp/gutenberg-data.key
-   rm /tmp/gutenberg-data.key
-   ```
-   Guardar `gutenberg-data.key.gpg` **fora** do repositório (cofre de senhas / pendrive da igreja).
-   Sem a chave e a senha, os dados são irrecuperáveis.
-4. Verificar com `git-crypt status` que tudo em `data/canonical/` aparece como `encrypted`.
+**Arquivos (todos ignorados pelo git, dentro do projeto):**
+- `.env` → `GUTENBERG_DATA_PASSWORD=…` (modelo em `.env.example`; a variável de ambiente, se definida, tem prioridade — útil no CI).
+- `.secrets/gutenberg-data.key.gpg` → chave do git-crypt cifrada (AES-256) com essa senha.
 
-**Em outra máquina:**
-```
-gpg -d ~/gutenberg-data.key.gpg > /tmp/gutenberg-data.key   # pede a senha
-git-crypt unlock /tmp/gutenberg-data.key && rm /tmp/gutenberg-data.key
-```
+**Comandos (`scripts/data-key.mjs`):**
+- `npm run data:unlock` — decifra o `.gpg` com a senha e roda `git-crypt unlock`; não faz nada se já estiver destrancado. Roda sozinho antes do `npm run build` (`prebuild`).
+- `npm run data:key` — recria o `.gpg` a partir do repositório destrancado e da senha atual (também serve para trocar a senha), e confere que ele decifra.
+- A chave em claro só existe num arquivo temporário `0600`, apagado ao final.
+
+**Em outra máquina / no build:**
+1. `brew install git-crypt` (e `gpg`).
+2. Clonar; copiar `.secrets/gutenberg-data.key.gpg` e criar o `.env` com a senha.
+3. `npm run data:unlock` (ou direto `npm run build`).
+
+**Configuração inicial (já feita):** `git-crypt init`, `.gitattributes` com `data/canonical/** filter=git-crypt diff=git-crypt`, `npm run data:key`.
+
+**Backup:** guardar uma cópia do `.secrets/gutenberg-data.key.gpg` e da senha fora deste computador. Sem os dois, os dados são irrecuperáveis.
 
 **Regras:**
 - Antes de cada commit que toque `data/`: `git-crypt status -e` precisa listar os arquivos de dados.
@@ -163,7 +158,8 @@ os textos dentro das licenças que possui. Os dados ficam cifrados no repositór
 são decifrados no build do instalador da igreja.
 
 ## Checklist
-- [ ] Instalar git-crypt, inicializar e guardar a chave (cifrada com a senha do mantenedor) fora do repositório
+- [x] git-crypt inicializado; chave em `.secrets/` cifrada com a senha do `.env`
+- [ ] Backup de `.secrets/gutenberg-data.key.gpg` e da senha fora deste computador
 - [ ] `ARA.sqlite` (OpenLP) disponível localmente
 - [ ] Cópia atualizada da pasta do Holyrics em `tmp/Holyrics`
 - [ ] Texto dos 3 credos revisado (tradução recitada no culto)

@@ -13,7 +13,10 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint .",
-    "golden": "node scripts/gen-golden.mjs"
+    "golden": "node scripts/gen-golden.mjs",
+    "data:key": "node scripts/data-key.mjs key",
+    "data:unlock": "node scripts/data-key.mjs unlock",
+    "prebuild": "npm run data:unlock"
   },
   "dependencies": {
     "@fontsource/source-serif-4": "^5.3.1",
