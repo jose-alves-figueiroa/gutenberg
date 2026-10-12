@@ -39,6 +39,7 @@ function libraryRoutes(db: SqlDatabase) {
   return new Hono()
     .use(localOnly)
     .get('/collections', (c) => c.json(repo.collections(db)))
+    .get('/settings', (c) => c.json(repo.settings(db)))
     .get('/bible/:version/books', zValidator('param', P.version), (c) => c.json(repo.bibleBooks(db, c.req.valid('param').version)))
     .get('/bible/:version/:book/:chapter', zValidator('param', P.chapter), (c) => {
       const { version, book, chapter } = c.req.valid('param')

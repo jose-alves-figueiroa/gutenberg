@@ -17,6 +17,8 @@ import type {
   VerseRecord
 } from '../../shared/library-schemas'
 import { REQUIRED } from '../../shared/requirements'
+import { DEFAULT_MAX, clampMax } from '../../shared/autobreak'
+import { SETTINGS } from '../db/build'
 import type { SqlDatabase } from '../db/schema'
 
 type Row = Record<string, string | number | null>
@@ -239,4 +241,10 @@ export function saveCreed(db: SqlDatabase, c: CreedRecord): void {
     `INSERT INTO creeds (id, title, text, source) VALUES (?, ?, ?, ?)
      ON CONFLICT (id) DO UPDATE SET title = excluded.title, text = excluded.text`
   ).run(c.id, c.title, c.text, EDITED)
+}
+
+/** Settings the library UI needs (the per-screen limit for previews). */
+export function settings(db: SqlDatabase): { screenCharLimit: number } {
+  const row = get<{ value: string }>(db, 'SELECT value FROM settings WHERE key = ?', SETTINGS.screenCharLimit)
+  return { screenCharLimit: row ? clampMax(Number(row.value)) : DEFAULT_MAX }
 }

@@ -6,6 +6,10 @@ import { t } from '@shared/i18n'
 import type { CollectionSummary } from '@shared/library-schemas'
 import { json, useApi } from '../../api'
 import { BibleBrowser } from './BibleBrowser'
+import { CatechismBrowser } from './CatechismBrowser'
+import { ConfessionBrowser } from './ConfessionBrowser'
+import { CreedsBrowser } from './CreedsBrowser'
+import { SongbookBrowser } from './SongbookBrowser'
 import { Loading } from './parts'
 
 interface Selected {
@@ -58,10 +62,25 @@ export function LibraryView() {
           )}
         </aside>
         <section className="lib-main">
-          {current?.kind === 'bible' && <BibleBrowser version={current.id} label={collectionLabel(current)} path={path} go={setPath} />}
-          {current && current.kind !== 'bible' && <p className="empty-note">{collectionLabel(current)}</p>}
+          {current && <Browser key={`${current.kind}:${current.id}`} c={current} path={path} go={setPath} />}
         </section>
       </div>
     </main>
   )
+}
+
+function Browser({ c, path, go }: { c: CollectionSummary; path: string[]; go: (p: string[]) => void }) {
+  const label = collectionLabel(c)
+  switch (c.kind) {
+    case 'bible':
+      return <BibleBrowser version={c.id} label={label} path={path} go={go} />
+    case 'confession':
+      return <ConfessionBrowser id={c.id} label={label} shortTitle={c.shortTitle} path={path} go={go} />
+    case 'catechism':
+      return <CatechismBrowser id={c.id} label={label} path={path} go={go} />
+    case 'songbook':
+      return <SongbookBrowser id={c.id} label={label} path={path} go={go} />
+    case 'creeds':
+      return <CreedsBrowser label={label} path={path} go={go} />
+  }
 }

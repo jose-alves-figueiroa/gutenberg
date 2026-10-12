@@ -2,7 +2,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { t } from '@shared/i18n'
+import { slidesOf } from '@shared/slides'
 import { json, useApi } from '../../api'
+import { Leaf, useScreenLimit } from './leaf'
 import { Grid, LevelHeader, Loading, type Crumb } from './parts'
 
 export interface Passage {
@@ -36,6 +38,7 @@ export function BibleBrowser({ version, label, path, go, onSelect }: Props) {
       json(api.api.v1.library.bible[':version'][':book'][':chapter'].$get({ param: { version, book, chapter: String(chapter) } }))
   })
   const [sel, setSel] = useState<{ a: number; b: number } | null>(null)
+  const max = useScreenLimit()
   // Report the passage after each change (functional updates keep rapid clicks consistent).
   useEffect(() => {
     onSelect?.(sel && book ? { book, chapter, from: sel.a, to: sel.b } : null)
@@ -110,6 +113,16 @@ export function BibleBrowser({ version, label, path, go, onSelect }: Props) {
             )
           })}
         </div>
+      )}
+      {sel && verses.data && (
+        <Leaf
+          slides={slidesOf(
+            { kind: 'bible', item: { book: info.book, chapter, verses: verses.data.filter((v) => v.number >= sel.a && v.number <= sel.b) } },
+            max
+          )}
+          max={max}
+          editable={false}
+        />
       )}
     </>
   )

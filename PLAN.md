@@ -2,7 +2,7 @@
 
 Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 Fonte: `design_handoff_gutenberg/README.md` + protótipo `design/Gutenberg.dc.html` (classe `Component`).
-Concluídos: E0–E3. Em execução: **E4 (Biblioteca)**.
+Concluídos: E0–E4. Próximo: **E5 (Liturgia)**.
 
 ## Stack e protocolo (decisão)
 O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP** — o protocolo já em uso (substitui o JSON do Holyrics). Isso substitui o obs-websocket sugerido no README do handoff.
@@ -83,7 +83,7 @@ Tasks detalhadas, schemas (em inglês) e fontes: **`docs/DATA.md` → Progresso*
 - [x] US3.4 Símbolos de Westminster: CFW (35 caps., edição da IP Aliança), Breve (107), Maior (196, com complemento da IP Bom Pastor)
 - [x] US3.5 Credos Apostólico, Niceno e de Atanásio (`translate:creeds`)
 
-### E4 — Biblioteca (Fase 4)
+### E4 — Biblioteca (Fase 4) ✓
 Especificação: README → "Biblioteca" e protótipo (`Component.render`, ramo `libCol`). Os dados vêm do banco gerado na E3.
 
 **US4.1** Como operador, quero que o app abra a biblioteca do banco local, para usar os dados da E3.
@@ -106,21 +106,21 @@ Especificação: README → "Biblioteca" e protótipo (`Component.render`, ramo 
 - [x] Seleção de trecho: 1º clique e último versículo; destaque `--color-accent-200`; dicas do protótipo; cliques rápidos consistentes (atualização funcional)
 
 **US4.5** Confissões
-- [ ] Capítulos (lista com título e "k de N seções") → seções (grade) → editor (texto corrido)
+- [x] Capítulos (lista com título e "k de N seções") → seções (grade, rótulos não numéricos como `R1` incluídos) → editor (texto corrido)
 
 **US4.6** Catecismos
-- [ ] Grade de perguntas (1–107 / 1–196) → editor (pergunta + resposta)
+- [x] Grade de perguntas (1–107 / 1–196) → editor (pergunta + resposta)
 
 **US4.7** Hinários e credos
-- [ ] Saltério: grade 1–150 → versões/partes → editor (nº, versão, versificação, letra por estrofes); "Nova versão"
-- [ ] HNC (e demais hinários) e credos: lista → editor; "Novo hino" / "Novo credo"
+- [x] Saltério: grade 1–150 → versões/partes → editor (nº, versão, versificação, letra por estrofes); "Nova versão" (próxima letra livre); cânticos sem número listados abaixo da grade
+- [x] HNC (e demais hinários) e credos: lista → editor; "Novo hino". Sem "Novo credo": os 3 credos são fixos (`apostles`, `nicene`, `athanasian`)
 
 **US4.8** Estados cadastrado / não cadastrado
-- [ ] Grades: cadastrado em `--color-surface`; não cadastrado transparente e `--color-neutral-600`; clicar cria o registro vazio e abre o editor
+- [x] Grades: cadastrado em `--color-surface`; não cadastrado transparente e `--color-neutral-600`; clicar abre o editor vazio e o registro é criado **ao Salvar** (desvio consciente do protótipo, que gravava um registro vazio no clique)
 
 **US4.9** Folha do item
-- [ ] Prévia "Como fica na transmissão · N telas" (cartões `minmax(210px,1fr)` com `slidesOf`)
-- [ ] Barra sticky: Apresentar agora / Adicionar à liturgia (habilitados nas E5/E6), Descartar / Salvar (desabilitados sem alterações), "Salvo — vale para todas as liturgias"
+- [x] Prévia "Como fica na transmissão · N telas" (cartões `minmax(210px,1fr)` com `slidesOf`, limite de `settings.screen_char_limit`), inclusive para o trecho bíblico selecionado
+- [x] Barra sticky: Apresentar agora / Adicionar à liturgia (desabilitados até as E5/E6), Descartar / Salvar (desabilitados sem alterações), "Alterações não salvas" / "Salvo — vale para todas as liturgias"
 
 ### E5 — Liturgia (Fase 5)
 - [ ] CRUD de cultos

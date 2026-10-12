@@ -58,3 +58,46 @@ export function Grid({ title, kind, items }: { title: string; kind: 'num' | 'nam
 export function Loading({ error }: { error?: unknown }) {
   return <p className="empty-note">{error ? String((error as Error).message ?? error) : '…'}</p>
 }
+
+export interface ListRow {
+  key: string
+  label: string
+  sub: string
+  meta?: string
+  /** Faded (nothing registered yet). */
+  faded?: boolean
+  go: () => void
+}
+
+/** Rows with a number/label, a title and a muted meta column (prototype `lv.list`). */
+export function List({ rows }: { rows: ListRow[] }) {
+  return (
+    <div className="lib-list">
+      {rows.map((r) => (
+        <button key={r.key} type="button" className={`lib-row${r.faded ? ' lib-row--faded' : ''}`} onClick={r.go}>
+          <span className="lib-row-label">{r.label}</span>
+          <span className="lib-row-sub">{r.sub}</span>
+          <span className="lib-row-meta text-muted">{r.meta}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
+export function TextField({ label, value, onChange, width }: { label: string; value: string; onChange: (v: string) => void; width?: string }) {
+  return (
+    <label className="field" style={width ? { maxWidth: width } : undefined}>
+      <span className="field-label">{label}</span>
+      <input className="input" value={value} onChange={(e) => onChange(e.target.value)} />
+    </label>
+  )
+}
+
+export function TextArea({ label, value, onChange, rows = 10 }: { label: string; value: string; onChange: (v: string) => void; rows?: number }) {
+  return (
+    <label className="field">
+      <span className="field-label">{label}</span>
+      <textarea className="input editor-text" rows={rows} value={value} onChange={(e) => onChange(e.target.value)} />
+    </label>
+  )
+}

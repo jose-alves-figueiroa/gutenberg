@@ -3,7 +3,7 @@
  * plus TanStack Query for caching, loading states and invalidation after saves.
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { hc, parseResponse } from 'hono/client'
+import { hc, parseResponse, type ClientResponse } from 'hono/client'
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import type { AppType } from '../../main/server/app'
 
@@ -40,3 +40,10 @@ export function useApi(): ApiClient {
 
 /** Unwraps a Hono client response: typed success body, or a thrown error (TanStack Query shows it). */
 export const json = parseResponse
+
+/** Like `json`, but a 404 (record not registered yet) becomes `null`. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- mirrors parseResponse's own constraint
+export async function jsonOrNull<T extends ClientResponse<any, any, any>>(res: Promise<T>) {
+  const r = await res
+  return r.status === 404 ? null : parseResponse(Promise.resolve(r))
+}
