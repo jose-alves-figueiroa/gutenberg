@@ -13,26 +13,26 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 
 ## E1 — Base do app (Fase 1)
 **US1.1** Como desenvolvedor, quero um projeto Electron + Vite + React + TS rodando, para ter onde construir o app.
-- [~] Scaffold com `electron-vite` (main / preload / renderer) em `app/` ou na raiz
-- [ ] Scripts `dev`, `build`, `test`, `typecheck`, `lint`
-- [ ] Vitest configurado (ambiente `node` para lógica, `jsdom` para componentes) + Testing Library
-- [ ] Janela com `minWidth` 1100 recomendado; `contextIsolation` ligado, sem `nodeIntegration`
+- [x] Scaffold com `electron-vite` (main / preload / renderer) na raiz
+- [x] Scripts `dev`, `build`, `test`, `typecheck`, `lint`
+- [x] Vitest configurado (ambiente `node` para lógica, `jsdom` para componentes) + Testing Library
+- [x] Janela 1280×820 (mín. 900 para permitir o empilhamento abaixo de 1100px); `contextIsolation` ligado, sem `nodeIntegration`
 
 **US1.2** Como operador, quero o visual Broadsheet funcionando offline, para o app ficar igual ao design sem internet.
-- [ ] Portar tokens de `design/_ds/.../styles.css` para `src/renderer/styles/tokens.css` (cores, espaçamento, raio, sombra, tipografia)
-- [ ] Portar classes de componente (`.btn` primário/secundário/ghost/ícone, `.input`, `.field`, `.tag`, `.seg`, `.nav`)
-- [ ] Remover o `@import` do Google Fonts; empacotar Source Serif 4 (400, 600, 400 itálico) via `@fontsource/source-serif-4`
-- [ ] Estados globais: hover `--color-accent-100`, foco `outline 2px accent / offset 2px`, desabilitado 45% opacidade
-- [ ] Teste: CSS não referencia URLs externas (fontes/ícones locais)
+- [x] Portar tokens de `design/_ds/.../styles.css` para `src/renderer/styles/tokens.css` (cores, espaçamento, raio, sombra, tipografia)
+- [x] Portar classes de componente (`.btn` primário/secundário/ghost/ícone, `.input`, `.field`, `.tag`, `.seg`, `.nav`)
+- [x] Remover o `@import` do Google Fonts; empacotar Source Serif 4 (400, 600, 400 itálico) via `@fontsource/source-serif-4`
+- [x] Estados globais: hover `--color-accent-100`, foco `outline 2px accent / offset 2px`, desabilitado 45% opacidade
+- [x] Teste: CSS não referencia URLs externas (fontes/ícones locais)
 
 **US1.3** Como operador, quero a nav sempre visível com as 4 abas, para navegar entre as rotinas.
-- [ ] Componente `Nav`: marca "Gutenberg" (22px/600, tracking −0.02em)
-- [ ] Abas Liturgia · Biblioteca · Apresentar · Conexão, ícone Phosphor duotone 18px + texto 15px, padding 8×12; ativa com `color-mix(accent 12%)` e texto `--color-accent-700`
-- [ ] Campo de busca rápida (placeholder, sem lógica): flex `1 1 280px`, máx. 440px, fundo surface, borda divider
-- [ ] Indicador de conexão (bolinha 9px + rótulo + "192.168.0.12 · 18 ms", estado estático); clique abre a aba Conexão
-- [ ] 4 views vazias (`LiturgiaView`, `BibliotecaView`, `ApresentarView`, `ConexaoView`) com kicker/título
-- [ ] Layout empilha colunas abaixo de 1100px
-- [ ] Testes (RTL): renderiza as 4 abas; clicar troca a view e marca a aba ativa (`aria-current`/`aria-selected`); clicar no status abre Conexão
+- [x] Componente `Nav`: marca "Gutenberg" (22px/600, tracking −0.02em)
+- [x] Abas Liturgia · Biblioteca · Apresentar · Conexão, ícone Phosphor duotone 18px + texto 15px, padding 8×12; ativa com `color-mix(accent 12%)` e texto `--color-accent-700`
+- [x] Campo de busca rápida (placeholder, sem lógica): flex `1 1 280px`, máx. 440px, fundo surface, borda divider
+- [x] Indicador de conexão (bolinha 9px + rótulo + "192.168.0.12 · 18 ms", estado estático); clique abre a aba Conexão
+- [x] 4 views vazias (`LiturgiaView`, `BibliotecaView`, `ApresentarView`, `ConexaoView`) com kicker/título
+- [x] Layout empilha colunas abaixo de 1100px
+- [x] Testes (RTL): renderiza as 4 abas; clicar troca a view e marca a aba ativa (`aria-current`/`aria-selected`); clicar no status abre Conexão
 
 ## E2 — Quebra de telas (Fase 3)
 **US3.1** Como operador, quero que textos longos sejam divididos em telas de 2 linhas legíveis, para a CFW e os catecismos não quebrarem mal no OBS.

@@ -1,0 +1,67 @@
+/* Estilos do app Gutenberg sobre o Broadsheet (README → Screens / Interações). */
+html, body { margin: 0; background: var(--color-bg); }
+body { color: var(--color-text); font-family: var(--font-body); }
+a:hover { color: var(--color-accent-600); }
+button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* — nav — */
+.app-nav {
+  padding: var(--space-3) var(--space-6);
+  flex-wrap: wrap; gap: var(--space-2) var(--space-4);
+  position: relative; z-index: 20;
+}
+.app-nav .nav-brand { margin-right: var(--space-2); font-size: 22px; letter-spacing: -0.02em; flex: none; }
+.nav-tabs { display: flex; gap: var(--space-1); flex-wrap: wrap; }
+.nav-tab {
+  all: unset; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 12px; border-radius: var(--radius-md); font-size: 15px;
+}
+.nav-tab:hover { color: var(--color-accent); background: var(--color-accent-100); }
+.nav-tab[aria-selected='true'] {
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  color: var(--color-accent-700);
+}
+.nav-tab:focus-visible, .nav-status:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+.quick-search { position: relative; flex: 1 1 280px; max-width: 440px; margin-left: auto; }
+.quick-search-box {
+  display: flex; align-items: center; gap: var(--space-2);
+  background: var(--color-surface); border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md); padding: 0 var(--space-2);
+}
+.quick-search-box:focus-within { border-color: var(--color-accent); }
+.quick-search-box svg { color: var(--color-neutral-700); flex: none; }
+.quick-search-input {
+  all: unset; flex: 1; min-width: 0; font-size: 14px; padding: 9px 0; font-family: var(--font-body);
+}
+.quick-search-input::placeholder { color: color-mix(in srgb, var(--color-text) 65%, transparent); }
+
+.nav-status {
+  all: unset; cursor: pointer; flex: none;
+  display: flex; align-items: center; gap: var(--space-2);
+  font-size: 13px; padding: 6px 10px; border-radius: var(--radius-md);
+}
+.nav-status:hover { background: var(--color-accent-100); }
+.status-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+
+/* — views — */
+.view { flex: 1; padding: var(--space-4) var(--space-6) var(--space-8); }
+.view-grid { display: grid; gap: var(--space-8); }
+.view-grid--liturgia { grid-template-columns: minmax(190px, 240px) minmax(0, 1fr); }
+.view-grid--biblioteca { grid-template-columns: minmax(170px, 210px) minmax(0, 1fr); }
+.view-grid--apresentar { grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); }
+.view-grid--conexao { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.view-main { max-width: 880px; }
+.kicker { margin: 0 0 var(--space-1); color: var(--color-accent-700); }
+.view h2 { font-size: 34px; }
+.empty-note { color: var(--color-neutral-700); font-size: 14px; }
+
+/* Janela desktop: abaixo de 1100px as colunas empilham. */
+@media (max-width: 1099px) {
+  .view-grid--liturgia, .view-grid--biblioteca, .view-grid--apresentar { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
+  .app-nav { padding-inline: var(--space-4); }
+  .view { padding-inline: var(--space-4); }
+}
