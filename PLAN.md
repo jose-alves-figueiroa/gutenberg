@@ -62,38 +62,38 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 
 ## Backlog (fases futuras)
 ### E3 — Dados (Fase 2)
-Plano de fontes, formatos e portões de licença: `docs/DADOS.md`.
+**Requisito funcional:** o app sai com a Bíblia ARA completa, as 246 músicas do Holyrics, os símbolos de fé de Westminster (CFW, Breve, Maior) e os 3 credos. Arquitetura, formato interno e fontes: `docs/DADOS.md`.
 
-**US3.0** Como operador, quero um banco local, para a biblioteca e as liturgias sobreviverem ao reinício.
-- [ ] SQLite (`better-sqlite3`) com o schema do README (+ `refs` em catecismo, `fonte` e créditos); migrações
-- [ ] Seed com os dados do protótipo
+**US3.0** Como mantenedor, quero os dados versionados e cifrados, para o repositório público não expor os textos.
+- [ ] git-crypt: `init`, `.gitattributes` (`data/canonical/**`), chave exportada, cifrada com a senha do mantenedor (`gpg --symmetric`) e guardada fora do repo
+- [ ] Verificação: `git-crypt status` antes de commitar dados; `data:check` avisa quando o repo está trancado
+
+**US3.1** Como desenvolvedor, quero um formato interno próprio, para não depender do esquema de nenhuma fonte.
+- [ ] `src/shared/data-model.ts`: tipos + validadores (livro da Bíblia, música, CFW, catecismo, credos), `formato: 1`
+- [ ] `src/shared/clean.ts`: remove `<ctt>`, `<desc>`, `<span>`, `&nbsp;`, `(RA)`; junta quebras simples de texto corrido; testes com o payload real do Holyrics
+- [ ] `npm run data:build`: `data/canonical/` → SQLite do app (schema do README + `refs`, créditos, `origem`); migrações
+- [ ] `npm run data:check`: completude (66 livros, 246 músicas, 33 caps. da CFW, 107 + 196 perguntas, 3 credos)
+- [ ] Seed do protótipo para desenvolvimento/testes
 - [ ] Limite de caracteres por tela persistido como configuração
 
-**US3.1** Como operador, quero textos limpos, para o OBS nunca receber HTML.
-- [ ] `src/shared/clean.ts`: remove `<ctt>`, `<desc>`, `<span>`, `&nbsp;`, `(RA)`; testes com o payload real do Holyrics
-- [ ] Normalizar quebras de linha simples (`\n`) de textos corridos — o `autobreak` (como o protótipo) preserva `\n` em segmentos curtos, o que pode gerar telas com 3+ linhas
+**US3.2** Bíblia ARA
+- [ ] `translate:biblia`: OpenLP SQLite → `data/canonical/biblia/ara/` (testes com fixture OpenLP sintética)
+- [ ] Traduzir o `ARA.sqlite` e conferir (Hb 12.14–15 igual ao protótipo)
 
-**US3.2** Como operador, quero a Bíblia ARA no app, para apresentar leituras.
-- [ ] Importador OpenLP SQLite → `biblia(livro, cap, vers, texto)` (somente leitura)
-- [ ] Testes com versão domínio público no mesmo formato (66 livros, Hb 12.15)
-
-**US3.3** Como operador, quero os salmos e hinos que a igreja já cadastrou, com os créditos.
-- [ ] Investigar (só leitura) o formato de `music` em `database.db` do Holyrics
-- [ ] `scripts/import-holyrics-db.ts`: descriptografa só a tabela `music` → `data/holyrics-music.json` (chave via `HOLYRICS_DB_KEY`, fora do git)
-- [ ] Classificar salmos (`Salmo 133B`) × hinos (HNC); créditos (autor, artista, copyright)
+**US3.3** Músicas do Holyrics (salmos, HNC e demais) com créditos
+- [ ] Investigar (só leitura) o formato da tabela `music` de `database.db`
+- [ ] `translate:musicas`: decifra só `music` (chave em `HOLYRICS_DB_KEY`, fora do git) → `data/canonical/musicas/`
+- [ ] Classificar salmo × hino; estrofes limpas; créditos (autor, artista, copyright)
 - [ ] Testes com registro sintético cifrado com chave de teste
 - [ ] Plano B (se necessário): API local do Holyrics (`GetSongs`/`GetLyrics`)
 
-**US3.4** Como operador, quero os símbolos de fé completos, para apresentar doutrina.
-- [ ] CFW: página da IP Aliança → `cfw(cap, sec, texto)`; valida 33 capítulos e seções
-- [ ] Breve Catecismo: gist JSON → `catecismo`; numera pela posição (item 81 defeituoso); valida 1–107
-- [ ] Catecismo Maior: PDF da IPB → `catecismo`; valida 1–196
-- [ ] Credos Apostólico, Niceno e Atanasiano: texto simples revisado à mão
+**US3.4** Símbolos de fé de Westminster
+- [ ] `translate:cfw`: página da IP Aliança → `westminster/cfw.json`; valida 33 capítulos e seções
+- [ ] `translate:breve`: gist JSON → `westminster/breve.json`; numera pela posição (item 81 defeituoso); valida 1–107
+- [ ] `translate:maior`: PDF da IPB → `westminster/maior.json`; valida 1–196; revisão manual
 
-**US3.5** Pendências externas (igreja)
-- [ ] Licença da ARA (SBB) para uso fora do Holyrics
-- [ ] Tradução/permissão da CFW (IP Aliança), do Breve (gist) e do Maior (IPB)
-- [ ] Tradução dos credos recitada no culto
+**US3.5** Credos
+- [ ] `translate:credos`: texto revisado à mão → `credos.json` com Apostólico, Niceno e Atanasiano
 
 ### E4 — Biblioteca (Fase 4)
 - [ ] Coleções em 3 grupos (Bíblia no topo) + breadcrumb

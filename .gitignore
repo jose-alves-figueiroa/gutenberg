@@ -8,11 +8,12 @@ release/
 # Testes / cobertura
 coverage/
 
-# Banco local e dados do usuário (Fase 2) — a ARA é licenciada, nunca versionar
+# Bancos gerados (data:build) e fontes brutas — os dados versionados ficam em data/canonical (git-crypt)
 *.sqlite
 *.sqlite3
 *.db
-data/ara*
+!tests/fixtures/*.sqlite
+data/sources/
 
 # Config local da máquina (IP do OBS etc.)
 .env

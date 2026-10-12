@@ -29,6 +29,7 @@ scripts/           scripts de apoio (ex.: gerar fixtures golden)
 - `npm run typecheck` — TypeScript sem emitir
 - `npm run lint` — ESLint
 - `npm run golden` — regenera `tests/fixtures/autobreak.golden.json` a partir do protótipo
+- `npm run translate:<fonte>` / `data:build` / `data:check` — dados (E3, ver `docs/DADOS.md`)
 
 Antes de marcar qualquer task como `[x]` ou commitar: `npm test && npm run typecheck && npm run lint` verdes.
 
@@ -40,7 +41,11 @@ Antes de marcar qualquer task como `[x]` ou commitar: `npm test && npm run typec
 - App funciona **offline**: fontes e ícones empacotados localmente, nenhuma URL externa no CSS/HTML.
 - Textos da UI em português (pt-BR). Código e identificadores podem ser em inglês ou português,
   seguindo o que já existe no arquivo.
-- Nunca versionar o texto da ARA (licença da SBB) nem bancos `.sqlite`.
+- Dados de conteúdo (ARA, músicas, símbolos de fé, credos) só em `data/canonical/`, no formato interno
+  (`docs/DADOS.md`) e **cifrados com git-crypt**. Nunca commitar esses textos em claro em outro lugar
+  (fontes brutas ficam em `tmp/` e `data/sources/`, ignorados). Antes de commitar `data/`, conferir
+  `git-crypt status`. Bancos `.sqlite` gerados não são versionados.
+- Testes não dependem dos dados reais: usam fixtures sintéticas e o seed do protótipo.
 
 ## Commits
 Formato [Conventional Commits](https://www.conventionalcommits.org/) com o épico no escopo:
