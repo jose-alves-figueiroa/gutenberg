@@ -12,6 +12,7 @@ import { bibleRefTitle, parseBibleItemRef } from '../../shared/bible-ref'
 import { DEFAULT_COLLECTIONS } from '../../shared/collections'
 import type { CreedId } from '../../shared/data-model'
 import { lyricsToStanzas } from '../../shared/lyrics'
+import type { SongCredits } from '../../shared/payload'
 import { slidesOf, songHeader, type Slide } from '../../shared/slides'
 import type { SqlDatabase } from '../db/schema'
 import * as repo from './repository'
@@ -24,6 +25,8 @@ export interface ResolvedItem {
   slides: Slide[]
   /** The referenced record no longer exists. */
   missing: boolean
+  /** Songs only: credits sent to OBS (`$system_var_music_*`). */
+  credits?: SongCredits
 }
 
 const MISSING_TITLE = '(item removido)'
@@ -72,7 +75,14 @@ export function resolveItem(db: SqlDatabase, coll: string, itemRef: string, max:
         stanzas: lyricsToStanzas(song.lyrics),
         source: { name: 'db' }
       }
-      return { ...base, title: songHeader(info, item), slides: slidesOf({ kind: 'song', songbook: info, item }, max), missing: false }
+      const title = songHeader(info, item)
+      return {
+        ...base,
+        title,
+        slides: slidesOf({ kind: 'song', songbook: info, item }, max),
+        missing: false,
+        credits: { title, artist: song.artist, author: song.author, copyright: song.copyright }
+      }
     }
     case 'confession': {
       const dot = itemRef.lastIndexOf('.')

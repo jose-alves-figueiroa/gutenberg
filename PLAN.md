@@ -8,7 +8,7 @@ Concluídos: E0–E6. Próximo: **E7 (Conexão com o OBS por HTTP)**.
 O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP** — o protocolo já em uso (substitui o JSON do Holyrics). Isso substitui o obs-websocket sugerido no README do handoff.
 
 - **Servidor HTTP** no processo principal do Electron (PC do operador): **Hono** (`@hono/node-server`) + **zod** (`@hono/zod-validator`). Um servidor, duas classes de rota:
-  - **Públicas na LAN (OBS):** `GET /overlay` (página da Browser Source, servida pelo Gutenberg), `GET /api/v1/current` (tela atual, payload v1), `GET /api/v1/events` (o mesmo payload por Server-Sent Events), `GET /api/v1/health` (latência/estado)
+  - **Públicas na LAN (OBS):** sob `/overlay`, por **saída** (ver E7 → Saídas): `GET /overlay/<saída>` (página da Browser Source, servida pelo Gutenberg), `GET /overlay/resources/<saída>` (tela atual, payload v1), `GET /overlay/resources/<saída>/events` (o mesmo payload por Server-Sent Events); sem saída (`/overlay`, `/overlay/resources`, `/overlay/resources/events`) = tudo; `GET /api/v1/health` (latência/estado)
   - **Só locais** (`127.0.0.1`; recusadas vindas da LAN): biblioteca (leitura/edição), liturgias, comandos de apresentação
 - **Payload** compatível com o JSON que o Holyrics envia hoje (`{ "map": { … } }`, ver E7 e `design_handoff_gutenberg/reference/holyrics-payload-exemplo.json.txt`), com texto **limpo** (sem HTML) e campos extras `seq`/`lines`; schema zod único em `src/shared`
 - **Renderer:** React + cliente tipado do Hono (`hono/client`) + **TanStack Query**; a UI usa a mesma API HTTP via `localhost` (sem IPC próprio)
@@ -186,18 +186,35 @@ Especificação: README → "Apresentar" e "Busca rápida"; protótipo (`goLive`
 - Extras que um overlay do Holyrics ignora: `seq` (crescente; o overlay descarta `seq` menor) e `lines` (array)
 - Estilos (`color`, `background`, `font`, `bold`, `valign`, `halign`, `font_max_rows`, `alert_*`) vêm de `settings`, com os valores do Holyrics como padrão e `valign` por tipo (Bíblia/doutrina `bottom`, música `middle`, como no exemplo)
 
+**Saídas**: cada saída é uma URL própria ligada a um conjunto de coleções, para o OBS ter uma Browser Source (e um layout) por tipo de conteúdo — por exemplo, a Bíblia como lower third e os hinos centralizados.
+| Rota (pública na LAN, CORS aberto) | Conteúdo |
+|---|---|
+| `GET /overlay/<saída>` | página HTML da Browser Source daquela saída |
+| `GET /overlay/resources/<saída>` | JSON `{ "map": … }` da saída (tela atual; `CLEAR` se o item no ar não é dela) |
+| `GET /overlay/resources/<saída>/events` | o mesmo JSON por SSE (estado ao conectar, cada mudança, heartbeat 15 s) |
+| `GET /overlay`, `/overlay/resources`, `/overlay/resources/events` | sem saída = **tudo** (compatível com o JSON do Holyrics) |
+| `GET /api/v1/health?output=<saída>&rtt=` | latência/estado (o overlay chama a cada 2 s) |
+
+- **Saídas padrão**, seguindo os grupos do app: `bible` (Bíblia: `bible:*`), `songs` (Salmos e hinos: `songbook:*`) e `doctrine` (Doutrina: `creeds`, `confession:*`, `catechism:*`)
+- **O próprio operador configura** na aba Conexão (são dados em `settings.outputs`, não código): slug da URL, nome, coleções e estilo de cada saída; ex.: só `bible` + `text` (todo o resto). Ligação exata (`songbook:hnc`) ou por tipo (`songbook:*`), a mais específica vence; cada coleção em no máximo uma saída. Uma coleção nova (Harpa Cristã) entra pelo tipo ou é ligada a outra saída sem mudar código
+- Slug `^[a-z0-9-]{1,32}$`; reservados: `resources`, `events`, `health`; saída desconhecida → 404
+- Uma saída só mostra o que é dela: quando o item no ar é de outra saída, ela recebe `CLEAR` — assim a fonte da Bíblia some quando entra um hino
+- O `seq` é único para todas as saídas (cada comando sobe um), então nenhuma saída reaproveita tela velha
+- Estilo do payload por saída (`valign`, `font_max_rows`, fonte, cores), com os padrões do Holyrics: `bible`/`doctrine` em `bottom`, `songs` em `middle`
+
 **US7.1** Como operador, quero que o OBS mostre a tela atual, para a transmissão acompanhar a apresentação.
-- [ ] Schema zod do payload (`src/shared/payload.ts`) e função pura `toPayload(slide, item, style, seq)`; testes comparando as chaves com o exemplo do Holyrics e garantindo zero HTML
-- [ ] `GET /api/v1/current` (JSON acima) e `GET /api/v1/events` (SSE: o estado atual ao conectar e a cada mudança; heartbeat a cada 15 s)
-- [ ] `GET /overlay`: HTML estático da Browser Source — conecta ao SSE, cai para polling de `/current` (1 s) se o SSE falhar, ignora `seq` menor que o último, **mantém o último texto se a rede cair**; usa os estilos do próprio `map` (como o Holyrics)
-- [ ] Compatibilidade: a mesma URL serve a quem hoje consome o JSON do Holyrics (trocar só o endereço no OBS)
-- [ ] CORS liberado só nas rotas públicas (o overlay pode estar em outra origem)
+- [x] Saídas em `settings` (`outputs`: slug, nome, coleções, estilo), com as três padrão; uma função pura decide a saída de um item (`outputFor(collection)`) e o payload de cada saída (`CLEAR` se o item no ar não for dela)
+- [x] Schema zod do payload (`src/shared/payload.ts`) e função pura `toPayload(slide, item, style, seq)`; testes comparando as chaves com o exemplo do Holyrics e garantindo zero HTML
+- [x] `GET /overlay/resources/<saída>` e `/overlay/resources/<saída>/events` (SSE: o estado atual ao conectar e a cada mudança; heartbeat a cada 15 s), mais as rotas sem saída (tudo); saída desconhecida ou reservada → 404
+- [x] `GET /overlay/<saída>` (e `/overlay`, tudo): HTML estático da Browser Source — conecta ao SSE, cai para polling de `/overlay/resources/<saída>` (1 s) se o SSE falhar, ignora `seq` menor que o último, **mantém o último texto se a rede cair**; usa os estilos do próprio `map` (como o Holyrics)
+- [x] Compatibilidade: `/overlay/resources` (tudo) serve a quem hoje consome o JSON do Holyrics (trocar só o endereço no OBS)
+- [x] CORS liberado só nas rotas públicas (o overlay pode estar em outra origem)
 
 **US7.2** Como operador, quero ver o estado da conexão com o OBS, para agir se a rede falhar.
-- [ ] Rastrear clientes do overlay (SSE conectados, último acesso, IP; latência via `GET /api/v1/health` chamado pelo overlay a cada 2 s)
+- [ ] Rastrear clientes do overlay **por saída** (SSE conectados, último acesso, IP; latência via `GET /api/v1/health?output=<saída>` chamado pelo overlay a cada 2 s)
 - [ ] Estados: conectado / instável (> 500 ms) / sem resposta (3 falhas seguidas); alimentam o indicador da nav e substituem o status estático da E1
-- [ ] Aba Conexão: IP do operador e URL do overlay exibidos (copiar), porta editável (só números, até 5 dígitos; reinicia o servidor), Testar, registro de eventos com hora
-- [ ] Estilos do payload editáveis na aba Conexão (cor, fundo, fonte, alinhamentos, linhas máximas)
+- [ ] Aba Conexão: IP do operador e, para cada saída, as URLs `/overlay/<saída>` e `/overlay/resources/<saída>` (copiar), as coleções ligadas e o estado dela (o indicador da nav resume todas), porta editável (só números, até 5 dígitos; reinicia o servidor), Testar, registro de eventos com hora
+- [ ] Saídas editáveis na aba Conexão: criar/renomear/remover, escolher as coleções (cada coleção em no máximo uma saída) e o estilo (cor, fundo, fonte, alinhamentos, linhas máximas)
 
 ### E8 — Empacotamento (Fase 8)
 Alvos: **Windows**, **macOS** (Apple Silicon/arm64 — o Mac do mantenedor, macOS 26) e **Linux** simples (Ubuntu/Debian). Comum a todos: `electron-builder`, o banco gerado por `npm run data:build` (após `data:unlock`) como recurso `gutenberg.sqlite`, ícone do app, versão do `package.json`.
@@ -215,5 +232,5 @@ Alvos: **Windows**, **macOS** (Apple Silicon/arm64 — o Mac do mantenedor, macO
 - [ ] **Linux**: se o `ufw` estiver ativo, `postinst` do `.deb` libera a porta (ou instrução `sudo ufw allow <porta>/tcp`)
 
 **US8.3** Configuração do OBS e atualização
-- [ ] Guia: Browser Source com a URL do overlay exibida na aba Conexão (ou o consumidor de JSON existente apontado para `/api/v1/current`)
+- [ ] Guia: Browser Source com a URL do overlay exibida na aba Conexão (ou o consumidor de JSON existente apontado para `/overlay/resources/<saída>` ou `/overlay/resources`)
 - [ ] Atualização preserva o banco do operador em `userData` (o banco empacotado só é copiado na 1ª execução); estratégia para incorporar dados novos da E3 sem perder edições

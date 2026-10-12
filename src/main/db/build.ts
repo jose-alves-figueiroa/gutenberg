@@ -13,7 +13,9 @@ export const SETTINGS = {
   /** Port of the HTTP server (UI and OBS). */
   httpPort: 'http_port',
   /** Presentation state (JSON, src/shared/presentation.ts), restored after a restart. */
-  presentationState: 'presentation_state'
+  presentationState: 'presentation_state',
+  /** Outputs for OBS: slug, name, collections and style of each (JSON, src/shared/outputs.ts). */
+  outputs: 'outputs'
 } as const
 
 const src = (s: SourceRef) => (s.id ? `${s.name}:${s.id}` : s.name)

@@ -10,6 +10,8 @@ import {
   type PresentCommand,
   type PresentationState
 } from '../../shared/presentation'
+import { DEFAULT_OUTPUTS, Outputs, outputPayload, type Output } from '../../shared/outputs'
+import type { Payload, SongCredits } from '../../shared/payload'
 import type { Slide } from '../../shared/slides'
 import { SETTINGS } from '../db/build'
 import type { SqlDatabase } from '../db/schema'
@@ -27,6 +29,7 @@ export interface PresentItem {
   slides: Slide[]
   missing: boolean
   adhoc: boolean
+  credits?: SongCredits
 }
 
 export interface PresentView {
@@ -40,7 +43,16 @@ export interface PresentView {
 export interface Presenter {
   view(): PresentView
   command(cmd: PresentCommand): PresentView
-  /** Called after every command (E7 pushes the new screen to OBS). */
+  /**
+   * The screen on the air in the Holyrics-compatible format OBS reads (E7), for one output
+   * (`CLEAR` when the item is not bound to it) or, without a slug, for everything. Null for an
+   * unknown output.
+   */
+  payload(slug?: string): Payload | null
+  /** Tells subscribers the screen may have changed (a library or liturgy edit). */
+  notify(): void
+  subscriberCount(): number
+  /** Called after every command and notify (E7 pushes the new screen to OBS). */
   subscribe(listener: (view: PresentView) => void): () => void
 }
 
@@ -52,6 +64,18 @@ function load(db: SqlDatabase): PresentationState {
     return parsed.success ? parsed.data : INITIAL_PRESENTATION
   } catch {
     return INITIAL_PRESENTATION
+  }
+}
+
+/** Outputs saved in settings by the operator, or the defaults (bible, songs, doctrine). */
+export function outputs(db: SqlDatabase): readonly Output[] {
+  const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(SETTINGS.outputs) as { value: string } | undefined
+  if (!row) return DEFAULT_OUTPUTS
+  try {
+    const parsed = Outputs.safeParse(JSON.parse(row.value))
+    return parsed.success ? parsed.data : DEFAULT_OUTPUTS
+  } catch {
+    return DEFAULT_OUTPUTS
   }
 }
 
@@ -93,6 +117,14 @@ export function createPresenter(db: SqlDatabase): Presenter {
 
   return {
     view,
+    payload(slug) {
+      const all = outputs(db)
+      const output = slug === undefined ? null : all.find((o) => o.slug === slug)
+      if (output === undefined) return null
+      const v = view()
+      const item = v.onAir ? v.items[v.onAir.item] : undefined
+      return outputPayload({ collection: item?.collection ?? null, slide: v.onAir, credits: item?.credits }, output, all, v.state.seq)
+    },
     command(cmd) {
       const counts = sequence(state).items.map((i) => i.slides.length)
       const next = applyCommand(state, cmd, counts)
@@ -103,6 +135,11 @@ export function createPresenter(db: SqlDatabase): Presenter {
       const v = view()
       for (const l of listeners) l(v)
       return v
+    },
+    subscriberCount: () => listeners.size,
+    notify() {
+      const v = view()
+      for (const l of listeners) l(v)
     },
     subscribe(listener) {
       listeners.add(listener)
@@ -117,5 +154,6 @@ const pick = (r: ReturnType<typeof resolveItem>) => ({
   title: r.title,
   collectionLabel: r.collectionLabel,
   slides: r.slides,
-  missing: r.missing
+  missing: r.missing,
+  ...(r.credits ? { credits: r.credits } : {})
 })

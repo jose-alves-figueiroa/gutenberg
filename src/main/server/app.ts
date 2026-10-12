@@ -5,7 +5,9 @@
  */
 import { getConnInfo } from '@hono/node-server/conninfo'
 import { zValidator } from '@hono/zod-validator'
-import { Hono, type MiddlewareHandler } from 'hono'
+import { Hono, type Context, type MiddlewareHandler } from 'hono'
+import { cors } from 'hono/cors'
+import { streamSSE } from 'hono/streaming'
 import { HTTPException } from 'hono/http-exception'
 import {
   CatechismQuestionBody,
@@ -20,6 +22,7 @@ import { resolveItem, searchCollection } from '../library/items'
 import * as repo from '../library/repository'
 import * as liturgy from '../liturgy/repository'
 import { createPresenter, type Presenter } from '../present/presenter'
+import { overlayHtml } from './overlay'
 import { PresentCommand } from '../../shared/presentation'
 
 const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1'])
@@ -124,6 +127,55 @@ function liturgyRoutes(db: SqlDatabase) {
     })
 }
 
+/** Heartbeat on the SSE stream, so proxies and OBS keep the connection open. */
+export const SSE_HEARTBEAT_MS = 15_000
+
+/**
+ * Public on the LAN (OBS), per output (PLAN.md → E7 → Saídas): `/overlay/<output>` (page),
+ * `/overlay/resources/<output>` (JSON) and `/overlay/resources/<output>/events` (SSE); without an
+ * output, everything. CORS per route, so the local routes never get it.
+ */
+function publicRoutes(presenter: Presenter) {
+  const open = cors()
+  const notFound = () => {
+    throw new HTTPException(404, { message: 'unknown output' })
+  }
+  const current = (slug?: string) => presenter.payload(slug) ?? notFound()
+  const page = (slug?: string) => {
+    current(slug)
+    return overlayHtml(slug ?? null)
+  }
+  const events = (c: Context, slug?: string) => {
+    current(slug)
+    return streamSSE(c, async (stream) => {
+      const send = () => {
+        const payload = presenter.payload(slug)
+        return payload ? stream.writeSSE({ data: JSON.stringify(payload), id: String(payload.map.seq) }) : Promise.resolve()
+      }
+      const unsubscribe = presenter.subscribe(() => void send())
+      stream.onAbort(unsubscribe)
+      await send()
+      while (!stream.aborted) {
+        await stream.sleep(SSE_HEARTBEAT_MS)
+        if (!stream.aborted) await stream.write(': ping\n\n')
+      }
+      unsubscribe()
+    })
+  }
+  const json = (c: Context, slug?: string) => {
+    c.header('Cache-Control', 'no-store')
+    return c.json(current(slug))
+  }
+  return new Hono()
+    .get('/overlay', (c) => c.html(page()))
+    .get('/overlay/resources', open, (c) => json(c))
+    .get('/overlay/resources/events', open, (c) => events(c))
+    .get('/overlay/resources/:output', open, (c) => json(c, c.req.param('output')))
+    .get('/overlay/resources/:output/events', open, (c) => events(c, c.req.param('output')))
+    .get('/overlay/:output', (c) => c.html(page(c.req.param('output'))))
+    .get('/api/v1/health', open, (c) => c.json({ ok: true, time: Date.now() }))
+}
+
 function presentRoutes(presenter: Presenter) {
   return new Hono()
     .use(localOnly)
@@ -132,6 +184,11 @@ function presentRoutes(presenter: Presenter) {
 }
 
 export function createServerApp(db: SqlDatabase, presenter: Presenter = createPresenter(db)) {
+  // An edit may change the text on the air: OBS gets the screen again (same seq).
+  const notifyAfterEdit: MiddlewareHandler = async (c, next) => {
+    await next()
+    if (c.req.method !== 'GET' && c.res.ok && presenter.subscriberCount() > 0) presenter.notify()
+  }
   return new Hono()
     .onError((err, c) => {
       if (err instanceof HTTPException) return c.json({ error: err.message }, err.status)
@@ -139,9 +196,12 @@ export function createServerApp(db: SqlDatabase, presenter: Presenter = createPr
       console.error(err)
       return c.json({ error: 'internal error' }, 500)
     })
+    .use('/api/v1/library/*', notifyAfterEdit)
+    .use('/api/v1/liturgy/*', notifyAfterEdit)
     .route('/api/v1/library', libraryRoutes(db))
     .route('/api/v1/liturgy', liturgyRoutes(db))
     .route('/api/v1/present', presentRoutes(presenter))
+    .route('/', publicRoutes(presenter))
 }
 
 /** Route types for the renderer's typed client (`hono/client`). */
