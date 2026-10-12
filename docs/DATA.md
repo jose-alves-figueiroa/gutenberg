@@ -9,8 +9,8 @@ Plano detalhado da E3 (resumo em `PLAN.md`). **Requisito funcional:** o Gutenber
 | **Símbolos de fé de Westminster** | CFW (33 capítulos, todas as seções), Breve Catecismo (107), Catecismo Maior (196) |
 | **Credos** | Apostólico, Niceno e Atanasiano |
 
-Convenção: **formato, chaves, nomes de arquivo, comandos e tabelas em inglês**; o **conteúdo** (títulos,
-textos, nomes dos livros) em português.
+Convenção: **código, formato, chaves, nomes de arquivo, comandos e tabelas em inglês**; o **conteúdo**
+(títulos, textos, nomes dos livros) em português; textos da interface via i18n (`src/shared/i18n`).
 
 ## Progresso
 
@@ -26,8 +26,11 @@ Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 - [ ] Backup de `.secrets/gutenberg-data.key.gpg` e da senha fora deste computador (mantenedor)
 
 **US3.1** Como desenvolvedor, quero um formato interno próprio, para não depender do esquema de nenhuma fonte.
-- [ ] `src/shared/data-model.ts`: tipos + validadores de `BibleBook`, `Song`, `Confession`, `Catechism`, `Creeds` (`format: 1`)
-- [ ] Alinhar os tipos de `src/shared/slides.ts` ao data-model (hoje `pergunta`/`resposta`/`cap`/`sec`)
+- [x] Convenção: código, schemas, comentários e testes em inglês; textos da UI via i18n (`src/shared/i18n`, pt-BR)
+- [x] `src/shared/data-model.ts`: tipos `BibleBook`, `Songbook`/`Song`, `Confession`, `Catechism`, `Creeds` (`format: 1`)
+- [x] Modelo genérico: hinários, confissões e catecismos são documentos com título (Harpa Cristã, Dort, Heidelberg entram sem mudar schema); `version` nos salmos (133B × 133C)
+- [x] `src/shared/slides.ts` e `collections.ts` usando o data-model; cabeçalhos via i18n + `shortTitle`/`itemLabel` do documento
+- [ ] Validadores do data-model (usados pelos tradutores e pelo `data:check`)
 - [ ] `src/shared/clean.ts`: remove `<ctt>`, `<desc>`, `<span>`, `text-force-update`, `&nbsp;`, `(RA)`; junta quebras simples de texto corrido; testes com o payload real do Holyrics
 - [ ] `npm run data:build`: `data/canonical/` → SQLite do app (schema abaixo); migrações
 - [ ] `npm run data:check`: completude (tabela do requisito); avisa quando o repo está trancado (`\0GITCRYPT`)
@@ -41,16 +44,16 @@ Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 
 **US3.3** Como operador, quero as músicas que a igreja cadastrou no Holyrics, com os créditos.
 - [ ] Investigar (só leitura) o formato da tabela `music` de `database.db`
-- [ ] `translate:songs`: decifra só `music` (chave em `HOLYRICS_DB_KEY`, fora do git) → `data/canonical/songs/`
-- [ ] Classificar salmo × hino; estrofes limpas; créditos (autor, artista, copyright)
+- [ ] `translate:songs`: decifra só `music` (chave em `HOLYRICS_DB_KEY`, fora do git) → `data/canonical/songbooks/<id>/`
+- [ ] Atribuir cada música a um hinário (`hnc`, `psalter`; as demais em `other`); número + `version` (133A/B/C); estrofes limpas; créditos (autor, artista, copyright)
 - [ ] Testes com registro sintético cifrado com chave de teste
 - [ ] Conferir: 246 músicas; Salmo 133B igual ao payload de exemplo
 - [ ] Plano B (só se a descriptografia não for viável): API local do Holyrics (`GetSongs`/`GetLyrics`)
 
 **US3.4** Como operador, quero os símbolos de fé de Westminster completos, para apresentar doutrina.
-- [ ] `translate:confession`: página da IP Aliança → `westminster/confession.json`; valida 33 capítulos e seções
-- [ ] `translate:shorter`: gist JSON → `westminster/shorter-catechism.json`; numera pela posição (item 81 defeituoso); valida 1–107
-- [ ] `translate:larger`: PDF da IPB → `westminster/larger-catechism.json`; valida 1–196; revisão manual
+- [ ] `translate:confession`: página da IP Aliança → `confessions/wcf.json`; valida 33 capítulos e seções
+- [ ] `translate:catechism -- --id wsc`: gist JSON → `catechisms/wsc.json`; numera pela posição (item 81 defeituoso); valida 1–107
+- [ ] `translate:catechism -- --id wlc`: PDF da IPB → `catechisms/wlc.json`; valida 1–196; revisão manual
 
 **US3.5** Como operador, quero os três credos, para a confissão de fé no culto.
 - [ ] Texto revisado à mão (tradução recitada no culto) em `data/sources/creeds.txt`
@@ -64,8 +67,8 @@ fontes externas            tradutores                   formato interno (version
 ARA.sqlite (OpenLP)   ──▶  translate:bible      ──┐
 database.db Holyrics  ──▶  translate:songs      ──┤
 página IP Aliança     ──▶  translate:confession ──┼──▶  data/canonical/**  (git-crypt)  ──▶ data:build ──▶ SQLite
-gist (JSON)           ──▶  translate:shorter    ──┤                                           (empacotado no
-PDF IPB               ──▶  translate:larger     ──┤                                            instalador)
+gist (JSON)           ──▶  translate:catechism  ──┤                                           (empacotado no
+PDF IPB               ──▶  translate:catechism  ──┤                                            instalador)
 texto revisado à mão  ──▶  translate:creeds     ──┘
 ```
 
@@ -84,21 +87,30 @@ texto revisado à mão  ──▶  translate:creeds     ──┘
 
 JSON UTF-8, com `"format": 1` no topo, texto já limpo (sem HTML). Texto corrido (versículo, seção,
 resposta, credo) usa linha em branco entre parágrafos e **nenhuma** quebra simples — o `autobreak`
-cuida das telas.
+cuida das telas. Tipos: `src/shared/data-model.ts`.
+
+**Documentos, não tipos fixos.** Hinários, confissões e catecismos são documentos com `id`, título,
+título curto e prefixo de busca. Para acrescentar a Harpa Cristã, os Cânones de Dort ou o Catecismo de
+Heidelberg basta um novo arquivo — sem mudar código nem schema.
 
 ```
 data/canonical/
   .gitcrypt-check.json
   bible/ara/
-    meta.json                     { format, code: "ARA", name, source }
+    meta.json                      { format, code: "ARA", name, source }
     01-Gn.json … 66-Ap.json
-  songs/
-    psalms/133B.json …
-    hymns/<slug>.json …
-  westminster/
-    confession.json
-    shorter-catechism.json
-    larger-catechism.json
+  songbooks/
+    hnc/songbook.json              hinário
+    hnc/songs/155.json …
+    psalter/songbook.json          saltério genebrino
+    psalter/songs/133B.json …      <number><version>
+    other/songbook.json            músicas do Holyrics fora de um hinário publicado
+    other/songs/<slug>.json …
+  confessions/
+    wcf.json                       Confissão de Fé de Westminster
+  catechisms/
+    wsc.json                       Breve Catecismo de Westminster
+    wlc.json                       Catecismo Maior de Westminster
   creeds.json
 ```
 
@@ -110,33 +122,41 @@ data/canonical/
 `chapters[c-1][v-1]` é o texto do versículo `c.v`. Abreviações e nomes vêm de `BOOKS`
 (`src/shared/collections.ts`).
 
-**Song** (`songs/psalms/133B.json`, `songs/hymns/castelo-forte.json`):
+**Songbook** (`songbooks/psalter/songbook.json`, `songbooks/hnc/songbook.json`):
 ```json
-{ "format": 1, "id": "psalm-133B", "kind": "psalm", "number": "133", "version": "B",
+{ "format": 1, "id": "psalter", "title": "Salmos genebrinos", "shortTitle": "Salmo",
+  "prefix": "sg", "itemLabel": "Salmo", "source": { "name": "holyrics-db" } }
+```
+`itemLabel` vai antes do número no cabeçalho (`Salmo 133B`); vazio em hinários (`155 · Castelo forte`).
+
+**Song** (`songbooks/psalter/songs/133B.json`):
+```json
+{ "format": 1, "id": "psalter-133B", "songbook": "psalter", "number": "133", "version": "B",
   "title": "Salmo 133B", "versification": "",
   "credits": { "author": "", "artist": "Comissão Brasileira de Salmodia", "copyright": "" },
   "stanzas": [ ["Oh! Como é bom e agradável,", "bem suave, sim,"], ["…"] ],
   "source": { "name": "holyrics-db", "id": "1674772445640" } }
 ```
-Hinos usam `"kind": "hymn"`; `number` = número do HNC quando houver.
+`version` distingue as versões do mesmo número (133A, 133B, 133C); vazio quando só há uma.
 
-**Confession** (`westminster/confession.json`):
+**Confession** (`confessions/wcf.json`):
 ```json
-{ "format": 1,
-  "chapters": [ { "chapter": 1, "title": "Da Escritura Sagrada",
-                  "sections": [ { "section": 1, "text": "Ainda que a luz da natureza…" } ] } ],
+{ "format": 1, "id": "wcf", "title": "Confissão de Fé de Westminster", "shortTitle": "CFW", "prefix": "cfw",
+  "chapters": [ { "id": "1", "title": "Da Escritura Sagrada",
+                  "sections": [ { "id": "1", "text": "Ainda que a luz da natureza…" } ] } ],
   "source": { "name": "ipalianca" } }
 ```
+`chapters[].id` e `sections[].id` são **rótulos** (texto): servem para `1`, `3/4` (capítulo III/IV dos
+Cânones de Dort) ou `R1` (rejeição de erros). A ordem é a do array.
 
-**Catechism** (`westminster/shorter-catechism.json`, `larger-catechism.json`):
+**Catechism** (`catechisms/wsc.json`, `wlc.json`):
 ```json
-{ "format": 1, "kind": "shorter",
+{ "format": 1, "id": "wsc", "title": "Breve Catecismo de Westminster", "shortTitle": "Breve Catecismo", "prefix": "bc",
   "questions": [ { "number": 1, "question": "Qual é o fim principal do homem?",
                    "answer": "O fim principal do homem é glorificar a Deus, e gozá-lo para sempre.",
                    "refs": "Rm 11.36; 1Co 10.31; …" } ],
   "source": { "name": "gist" } }
 ```
-`kind`: `shorter` (Breve) ou `larger` (Maior).
 
 **Creeds** (`creeds.json`):
 ```json
@@ -152,30 +172,36 @@ Hinos usam `"kind": "hymn"`; `number` = número do HNC quando houver.
 ## Schema SQLite do app (`data:build`)
 
 Gerado a partir do formato interno; nomes em inglês (substituem os nomes em português sugeridos no
-README do handoff).
+README do handoff). Documentos ficam em tabelas próprias e os itens apontam para eles — um novo
+hinário, confissão ou catecismo é só uma linha nova.
 
 | Tabela | Colunas |
 |---|---|
-| `bible_verses` | `version`, `book`, `chapter`, `verse`, `text` (somente leitura) |
-| `songs` | `id`, `kind` (`psalm`/`hymn`), `number`, `version`, `title`, `versification`, `author`, `artist`, `copyright`, `lyrics`, `source` |
-| `confession_sections` | `chapter`, `section`, `chapter_title`, `text`, `source` |
-| `catechism_questions` | `kind` (`shorter`/`larger`), `number`, `question`, `answer`, `refs`, `source` |
-| `creeds` | `id`, `title`, `text`, `source` |
+| `bible_versions` | `code` (PK), `name`, `source` |
+| `bible_verses` | `version` → `bible_versions`, `book`, `chapter`, `verse`, `text` (somente leitura) |
+| `songbooks` | `id` (PK), `title`, `short_title`, `prefix`, `item_label`, `source` |
+| `songs` | `id` (PK), `songbook_id` → `songbooks`, `number`, `version`, `title`, `versification`, `author`, `artist`, `copyright`, `lyrics`, `source`; único (`songbook_id`, `number`, `version`) |
+| `confessions` | `id` (PK), `title`, `short_title`, `prefix`, `source` |
+| `confession_sections` | `confession_id` → `confessions`, `position`, `chapter`, `chapter_title`, `section`, `section_title`, `text` |
+| `catechisms` | `id` (PK), `title`, `short_title`, `prefix`, `source` |
+| `catechism_questions` | `catechism_id` → `catechisms`, `number`, `question`, `answer`, `refs` |
+| `creeds` | `id` (PK), `title`, `text`, `source` |
 | `services` | `id`, `name` (cultos — E5) |
 | `liturgy_items` | `service_id`, `position`, `moment`, `collection`, `item_ref` (E5) |
 | `settings` | `key`, `value` (ex.: limite de caracteres por tela) |
 
-`songs.lyrics` guarda as estrofes separadas por linha em branco (o formato que `slidesOf` já usa).
+`songs.lyrics` guarda as estrofes separadas por linha em branco. `confession_sections.chapter` e
+`section` são texto (rótulos); `position` dá a ordem.
 
 ## Tradutores (fonte → formato interno)
 
 | Comando | Fonte | Tradução |
 |---|---|---|
 | `translate:bible -- --file data/sources/ARA.sqlite` | OpenLP SQLite (ex.: `ARA.sqlite` de github.com/damarals/biblias) | `book.book_reference_id` 1–66 → `BOOKS`; `verse(chapter, verse, text)` → `chapters`; limpa o texto |
-| `translate:songs -- --db tmp/Holyrics/Holyrics/files/database.db` | Banco do Holyrics da igreja, tabela `music` (246 registros cifrados) | Decifra localmente (ver abaixo) → classifica psalm × hymn → estrofes limpas + créditos |
-| `translate:confession -- --file data/sources/confession.html` | https://www.ipalianca.org/simbolos-de-fe/confiss%C3%A3o-de-f%C3%A9-de-westminster | Capítulos/seções; valida 33 capítulos e a contagem de seções (`CFW_S` do protótipo) |
-| `translate:shorter -- --file data/sources/shorter-catechism.json` | https://gist.github.com/joaolucasl/2084125f96a1275be2de55e4fed89f0c | `{numero, pergunta, resposta, refs}` → `questions`; **numera pela posição** (o item 81 tem a pergunta no campo `numero`); valida 1–107 |
-| `translate:larger -- --file data/sources/larger-catechism.pdf` | https://www.ipb.org.br/content/Arquivos/Catecismo_Maior_de_Westminster.pdf | Extrai texto do PDF, separa perguntas, remove cabeçalhos/rodapés, guarda refs; valida 1–196; revisão manual do que quebrar |
+| `translate:songs -- --db tmp/Holyrics/Holyrics/files/database.db` | Banco do Holyrics da igreja, tabela `music` (246 registros cifrados) | Decifra localmente (ver abaixo) → atribui hinário (`hnc`, `psalter`, `other`), número e `version` → estrofes limpas + créditos |
+| `translate:confession -- --id wcf --file data/sources/wcf.html` | https://www.ipalianca.org/simbolos-de-fe/confiss%C3%A3o-de-f%C3%A9-de-westminster | Capítulos/seções; valida 33 capítulos e a contagem de seções (`CFW_S` do protótipo) |
+| `translate:catechism -- --id wsc --file data/sources/wsc.json` | https://gist.github.com/joaolucasl/2084125f96a1275be2de55e4fed89f0c | `{numero, pergunta, resposta, refs}` → `questions`; **numera pela posição** (o item 81 tem a pergunta no campo `numero`); valida 1–107 |
+| `translate:catechism -- --id wlc --file data/sources/wlc.pdf` | https://www.ipb.org.br/content/Arquivos/Catecismo_Maior_de_Westminster.pdf | Extrai texto do PDF, separa perguntas, remove cabeçalhos/rodapés, guarda refs; valida 1–196; revisão manual do que quebrar |
 | `translate:creeds -- --file data/sources/creeds.txt` | Texto revisado à mão (`## Credo Apostólico` + texto) — fonte: seção "Símbolos de fé" da IP Aliança ou a tradução recitada no culto | Exatamente os 3 credos |
 
 As fontes só são baixadas quando a user story correspondente for executada.
@@ -185,7 +211,7 @@ Escopo: **somente** a tabela `music` de `files/database.db` (conteúdo cadastrad
 1. Investigar, só leitura, a classe do Holyrics que lê/grava `database.db` (decompilação local com
    CFR/jadx): algoritmo, modo, IV, origem da chave, formato do conteúdo decifrado. Validar contra o
    Salmo 133B do payload de exemplo.
-2. O tradutor lê o banco em modo somente leitura, decifra e gera `data/canonical/songs/**`.
+2. O tradutor lê o banco em modo somente leitura, decifra e gera `data/canonical/songbooks/**`.
 3. A chave do Holyrics fica em `.env` local (`HOLYRICS_DB_KEY`), fora do git.
 4. Testes com registro sintético cifrado com chave de teste.
 5. Plano B: API local do Holyrics (`GetSongs` / `GetLyrics` devolvem `slides[].text`, `artist`,

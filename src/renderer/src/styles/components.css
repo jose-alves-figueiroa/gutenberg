@@ -1,4 +1,4 @@
-/* Broadsheet — base e classes de componente portadas do design system (só o que o app usa). */
+/* Broadsheet base and component classes ported from the design system (only what the app uses). */
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; font-size: 15px; line-height: 1.55; font-weight: 400; }
 h1, h2, h3, h4, h5, h6 {

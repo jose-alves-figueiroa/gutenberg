@@ -3,18 +3,18 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-// Guarda do requisito "dados cifrados no repositório público" (docs/DADOS.md → git-crypt).
+// Guards the "data encrypted in the public repository" requirement (docs/DATA.md → git-crypt).
 const root = join(__dirname, '..')
 const git = (...args: string[]) => execFileSync('git', args, { cwd: root })
 const GITCRYPT_HEADER = Buffer.from('\0GITCRYPT\0')
 
 describe('git-crypt', () => {
-  it('.gitattributes cifra data/canonical/**', () => {
+  it('.gitattributes encrypts data/canonical/**', () => {
     const attrs = readFileSync(join(root, '.gitattributes'), 'utf8')
     expect(attrs).toMatch(/^data\/canonical\/\*\* filter=git-crypt diff=git-crypt$/m)
   })
 
-  it('todo arquivo de data/canonical/ está cifrado no git (índice)', () => {
+  it('every file under data/canonical/ is encrypted in git (index)', () => {
     const files = git('ls-files', '-z', 'data/canonical').toString().split('\0').filter(Boolean)
     expect(files.length).toBeGreaterThan(0)
     for (const f of files) {

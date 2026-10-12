@@ -1,104 +1,72 @@
 /**
- * Telas por item da biblioteca — porte de `slidesOf()` do protótipo, com os cabeçalhos
- * por coleção do README ("Cabeçalhos por coleção"). A saída já tem o formato do payload
- * para o OBS: `header` + até 2 `lines`, sem HTML.
+ * Screens for a library item — port of the prototype's `slidesOf()`, with the per-collection
+ * headers from the README ("Cabeçalhos por coleção"). The output already has the OBS payload
+ * shape: `header` + up to 2 `lines`, no HTML. Header wording comes from i18n and from the
+ * document's own short title (`CFW`, `Breve Catecismo`, `Salmo`).
  */
-import { autobreak, DEFAULT_MAX, splitSegments } from './autobreak'
-import { bookName, COLLECTION, type CollectionKey } from './collections'
+import { autobreak, DEFAULT_MAX } from './autobreak'
+import { bookName } from './collections'
+import type { Catechism, CatechismQuestion, Confession, ConfessionSection, Creed, Song, Songbook } from './data-model'
+import { t } from './i18n'
 
 export interface Slide {
   header: string
   lines: string[]
 }
 
-export interface BibleVerse {
-  n: number | string
-  t: string
-}
-export interface BibleItem {
-  /** Abreviação do livro (`Hb`). */
+/** A Bible reading: consecutive verses of one chapter. */
+export interface BiblePassage {
+  /** Book abbreviation (`Hb`). */
   book: string
-  ch: number | string
-  verses: BibleVerse[]
-}
-export interface CatechismItem {
-  q: number | string
-  pergunta: string
-  resposta: string
-}
-export interface CfwItem {
-  cap: number | string
-  sec: number | string
-  text: string
-}
-export interface CreedItem {
-  title: string
-  text: string
-}
-export interface PsalmItem {
-  num: number | string
-  /** Versão (`A`, `B`…); vazia quando o salmo tem uma só. */
-  ver?: string
-  text: string
-}
-export interface HymnItem {
-  num?: number | string
-  title: string
-  text: string
+  chapter: number
+  verses: { number: number; text: string }[]
 }
 
 export type LibraryEntry =
-  | { collection: 'biblia'; item: BibleItem }
-  | { collection: 'breve' | 'maior'; item: CatechismItem }
-  | { collection: 'cfw'; item: CfwItem }
-  | { collection: 'credos'; item: CreedItem }
-  | { collection: 'salmos'; item: PsalmItem }
-  | { collection: 'hnc'; item: HymnItem }
+  | { kind: 'bible'; item: BiblePassage }
+  | { kind: 'catechism'; catechism: Pick<Catechism, 'shortTitle'>; item: CatechismQuestion }
+  | { kind: 'confession'; confession: Pick<Confession, 'shortTitle'>; chapter: string; item: ConfessionSection }
+  | { kind: 'creed'; item: Creed }
+  | { kind: 'song'; songbook: Pick<Songbook, 'itemLabel'>; item: Song }
 
 const toSlide = (header: string, text: string): Slide => ({ header, lines: text.split('\n') })
 
-/** Título do cântico usado como cabeçalho (`Salmo 133B`, `12 · Castelo forte`). */
-export function songTitle(collection: Extract<CollectionKey, 'salmos' | 'hnc'>, item: PsalmItem | HymnItem): string {
-  if (collection === 'salmos') {
-    const p = item as PsalmItem
-    return `Salmo ${p.num}${p.ver ?? ''}`
-  }
-  const h = item as HymnItem
-  return (h.num ? `${h.num} · ` : '') + h.title
+/** Header for a song: `Salmo 133B` when the songbook has an item label, else `155 · Castelo forte`. */
+export function songHeader(songbook: Pick<Songbook, 'itemLabel'>, song: Song): string {
+  if (songbook.itemLabel) return t('slide.songLabeled', { label: songbook.itemLabel, number: song.number, version: song.version })
+  return song.number ? t('slide.songNumbered', { number: song.number, title: song.title }) : song.title
 }
 
-/** Divide um item em telas. `max` é o limite de caracteres por tela (60–160). */
+/** Splits a library item into screens. `max` is the per-screen character limit (60–160). */
 export function slidesOf(entry: LibraryEntry, max: number = DEFAULT_MAX): Slide[] {
-  switch (entry.collection) {
-    case 'biblia': {
-      const { book, ch, verses } = entry.item
+  switch (entry.kind) {
+    case 'bible': {
+      const { book, chapter, verses } = entry.item
       const name = bookName(book)
       return verses.flatMap((v) => {
-        const parts = autobreak(v.t, max)
-        const ref = `${name} ${ch}.${v.n}`
-        return parts.map((t, i) => toSlide(parts.length > 1 ? `${ref} (${i + 1}/${parts.length})` : ref, t))
+        const parts = autobreak(v.text, max)
+        const ref = `${name} ${chapter}.${v.number}`
+        return parts.map((text, i) => toSlide(parts.length > 1 ? `${ref} (${i + 1}/${parts.length})` : ref, text))
       })
     }
-    case 'breve':
-    case 'maior': {
-      const { q, pergunta, resposta } = entry.item
-      const header = `${COLLECTION[entry.collection].short} · P. ${q}`
+    case 'catechism': {
+      const { number, question, answer } = entry.item
+      const name = entry.catechism.shortTitle
       return [
-        ...autobreak(pergunta, max).map((t) => toSlide(`${header} · pergunta`, t)),
-        ...autobreak(resposta, max).map((t) => toSlide(header, t))
+        ...autobreak(question, max).map((text) => toSlide(t('slide.catechismQuestion', { name, number }), text)),
+        ...autobreak(answer, max).map((text) => toSlide(t('slide.catechismAnswer', { name, number }), text))
       ]
     }
-    case 'cfw': {
-      const { cap, sec, text } = entry.item
-      return autobreak(text, max).map((t) => toSlide(`CFW ${cap}.${sec}`, t))
+    case 'confession': {
+      const header = t('slide.confession', { name: entry.confession.shortTitle, chapter: entry.chapter, section: entry.item.id })
+      return autobreak(entry.item.text, max).map((text) => toSlide(header, text))
     }
-    case 'credos':
-      return autobreak(entry.item.text, max).map((t) => toSlide(entry.item.title, t))
-    case 'salmos':
-    case 'hnc': {
-      // Cânticos não usam a quebra automática: cada estrofe é uma tela.
-      const header = songTitle(entry.collection, entry.item)
-      return splitSegments(entry.item.text).map((t) => toSlide(header, t))
+    case 'creed':
+      return autobreak(entry.item.text, max).map((text) => toSlide(entry.item.title, text))
+    case 'song': {
+      // Songs never use autobreak: each stanza is one screen.
+      const header = songHeader(entry.songbook, entry.item)
+      return entry.item.stanzas.filter((s) => s.length > 0).map((lines) => ({ header, lines: [...lines] }))
     }
   }
 }

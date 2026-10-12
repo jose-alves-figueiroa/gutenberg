@@ -1,26 +1,26 @@
-# Dependências e build
+# Dependencies and build
 node_modules/
 out/
 dist/
 release/
 *.tsbuildinfo
 
-# Testes / cobertura
+# Tests / coverage
 coverage/
 
-# Bancos gerados (data:build) e fontes brutas — os dados versionados ficam em data/canonical (git-crypt)
+# Generated databases (data:build) and raw sources — versioned data lives in data/canonical (git-crypt)
 *.sqlite
 *.sqlite3
 *.db
 !tests/fixtures/*.sqlite
 data/sources/
 
-# Config local da máquina (IP do OBS etc.)
+# Machine-local config (OBS IP etc.)
 .env
 .env.*
 !.env.example
 
-# Chave do git-crypt cifrada com GUTENBERG_DATA_PASSWORD (npm run data:key / data:unlock)
+# git-crypt key encrypted with GUTENBERG_DATA_PASSWORD (npm run data:key / data:unlock)
 .secrets/
 gutenberg.config.local.json
 
@@ -28,14 +28,14 @@ gutenberg.config.local.json
 *.log
 npm-debug.log*
 
-# IDE / SO
+# IDE / OS
 .idea/
 .vscode/
 .DS_Store
 Thumbs.db
 
-# Pacote original do handoff (conteúdo já está em design_handoff_gutenberg/)
+# Original handoff package (its content is in design_handoff_gutenberg/)
 *.zip
 
-# Cópias locais de apps/dados de terceiros (Holyrics, ARA) — nunca versionar
+# Local copies of third-party apps/data (Holyrics, ARA) — never commit
 tmp/

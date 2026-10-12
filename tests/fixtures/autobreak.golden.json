@@ -1,24 +1,24 @@
 {
   "source": "design_handoff_gutenberg/design/Gutenberg.dc.html#autobreak",
   "texts": {
-    "cfw-1.1": "Ainda que a luz da natureza e as obras da criação e da providência manifestem de tal modo a bondade, a sabedoria e o poder de Deus, que os homens ficam inescusáveis, contudo não são suficientes para dar aquele conhecimento de Deus e da sua vontade, necessário para a salvação.",
-    "hb-12.14": "Segui a paz com todos e a santificação, sem a qual ninguém verá o Senhor,",
-    "hb-12.15": "atentando, diligentemente, por que ninguém seja faltoso, separando-se da graça de Deus; nem haja alguma raiz de amargura que, brotando, vos perturbe, e, por meio dela, muitos sejam contaminados;",
-    "bc-1-pergunta": "Qual é o fim principal do homem?",
-    "bc-1-resposta": "O fim principal do homem é glorificar a Deus, e gozá-lo para sempre.",
-    "bc-2-pergunta": "Que regra deu Deus para nos dirigir na maneira de glorificá-lo e gozá-lo?",
-    "bc-2-resposta": "A palavra de Deus, que se acha nas Escrituras do Velho e do Novo Testamento, é a única regra para nos dirigir na maneira de glorificá-lo e gozá-lo.",
-    "bc-3-resposta": "As Escrituras ensinam principalmente o que o homem deve crer acerca de Deus, e o dever que Deus requer do homem.",
-    "credo-apostolico": "Creio em Deus Pai, todo-poderoso, Criador do céu e da terra. Creio em Jesus Cristo, seu único Filho, nosso Senhor, o qual foi concebido pelo Espírito Santo, nasceu da virgem Maria, padeceu sob Pôncio Pilatos, foi crucificado, morto e sepultado; ressuscitou ao terceiro dia, subiu ao céu, e está sentado à direita de Deus Pai, donde há de vir para julgar os vivos e os mortos. Creio no Espírito Santo, na santa Igreja universal, na comunhão dos santos, na remissão dos pecados, na ressurreição do corpo e na vida eterna. Amém.",
-    "linha-em-branco": "Primeiro parágrafo curto.\n\nSegundo parágrafo, também curto.\n\n\n   \n\nTerceiro.",
-    "quebras-simples": "Uma linha\nque continua na outra linha e segue por bastante tempo, com vírgulas, pausas; e pontos.\nE mais uma linha que deixa o segmento comprido demais para caber numa tela só.",
-    "frase-sem-pausa": "Esta frase muito longa não tem nenhuma pausa de pontuação no meio e por isso precisa ser cortada em pedaços equilibrados por palavras para caber nas telas da transmissão sem ficar desigual",
-    "sobra-curta": "Bendize, ó minha alma, ao Senhor, e tudo o que há em mim bendiga o seu santo nome, e não te esqueças de nenhum de seus benefícios. Amém.",
-    "vazio": "",
-    "so-espacos": "  \n\n  "
+    "confession-1.1": "Ainda que a luz da natureza e as obras da criação e da providência manifestem de tal modo a bondade, a sabedoria e o poder de Deus, que os homens ficam inescusáveis, contudo não são suficientes para dar aquele conhecimento de Deus e da sua vontade, necessário para a salvação.",
+    "heb-12.14": "Segui a paz com todos e a santificação, sem a qual ninguém verá o Senhor,",
+    "heb-12.15": "atentando, diligentemente, por que ninguém seja faltoso, separando-se da graça de Deus; nem haja alguma raiz de amargura que, brotando, vos perturbe, e, por meio dela, muitos sejam contaminados;",
+    "shorter-1-question": "Qual é o fim principal do homem?",
+    "shorter-1-answer": "O fim principal do homem é glorificar a Deus, e gozá-lo para sempre.",
+    "shorter-2-question": "Que regra deu Deus para nos dirigir na maneira de glorificá-lo e gozá-lo?",
+    "shorter-2-answer": "A palavra de Deus, que se acha nas Escrituras do Velho e do Novo Testamento, é a única regra para nos dirigir na maneira de glorificá-lo e gozá-lo.",
+    "shorter-3-answer": "As Escrituras ensinam principalmente o que o homem deve crer acerca de Deus, e o dever que Deus requer do homem.",
+    "apostles-creed": "Creio em Deus Pai, todo-poderoso, Criador do céu e da terra. Creio em Jesus Cristo, seu único Filho, nosso Senhor, o qual foi concebido pelo Espírito Santo, nasceu da virgem Maria, padeceu sob Pôncio Pilatos, foi crucificado, morto e sepultado; ressuscitou ao terceiro dia, subiu ao céu, e está sentado à direita de Deus Pai, donde há de vir para julgar os vivos e os mortos. Creio no Espírito Santo, na santa Igreja universal, na comunhão dos santos, na remissão dos pecados, na ressurreição do corpo e na vida eterna. Amém.",
+    "blank-lines": "Primeiro parágrafo curto.\n\nSegundo parágrafo, também curto.\n\n\n   \n\nTerceiro.",
+    "single-newlines": "Uma linha\nque continua na outra linha e segue por bastante tempo, com vírgulas, pausas; e pontos.\nE mais uma linha que deixa o segmento comprido demais para caber numa tela só.",
+    "no-pause-sentence": "Esta frase muito longa não tem nenhuma pausa de pontuação no meio e por isso precisa ser cortada em pedaços equilibrados por palavras para caber nas telas da transmissão sem ficar desigual",
+    "short-tail": "Bendize, ó minha alma, ao Senhor, e tudo o que há em mim bendiga o seu santo nome, e não te esqueças de nenhum de seus benefícios. Amém.",
+    "empty": "",
+    "whitespace-only": "  \n\n  "
   },
   "cases": {
-    "cfw-1.1": {
+    "confession-1.1": {
       "60": [
         "Ainda que a luz da natureza\ne as obras da criação",
         "e da providência manifestem\nde tal modo a bondade,",
@@ -52,7 +52,7 @@
         "que os homens ficam inescusáveis, contudo não são suficientes para dar\naquele conhecimento de Deus e da sua vontade, necessário para a salvação."
       ]
     },
-    "hb-12.14": {
+    "heb-12.14": {
       "60": [
         "Segui a paz com todos\ne a santificação,",
         "sem a qual ninguém verá o Senhor,"
@@ -71,7 +71,7 @@
         "Segui a paz com todos e a santificação, sem a qual ninguém verá o Senhor,"
       ]
     },
-    "hb-12.15": {
+    "heb-12.15": {
       "60": [
         "atentando, diligentemente,\npor que ninguém seja faltoso,",
         "separando-se da graça de Deus;",
@@ -96,7 +96,7 @@
         "por meio dela, muitos sejam contaminados;"
       ]
     },
-    "bc-1-pergunta": {
+    "shorter-1-question": {
       "60": [
         "Qual é o fim principal do homem?"
       ],
@@ -113,7 +113,7 @@
         "Qual é o fim principal do homem?"
       ]
     },
-    "bc-1-resposta": {
+    "shorter-1-answer": {
       "60": [
         "O fim principal do homem\né glorificar a Deus,",
         "e gozá-lo para sempre."
@@ -131,7 +131,7 @@
         "O fim principal do homem é glorificar a Deus, e gozá-lo para sempre."
       ]
     },
-    "bc-2-pergunta": {
+    "shorter-2-question": {
       "60": [
         "Que regra deu Deus\npara nos dirigir",
         "na maneira de\nglorificá-lo e gozá-lo?"
@@ -150,7 +150,7 @@
         "Que regra deu Deus para nos dirigir na maneira de glorificá-lo e gozá-lo?"
       ]
     },
-    "bc-2-resposta": {
+    "shorter-2-answer": {
       "60": [
         "A palavra de Deus,",
         "que se acha nas Escrituras do\nVelho e do Novo Testamento,",
@@ -174,7 +174,7 @@
         "A palavra de Deus, que se acha nas Escrituras do Velho e do Novo Testamento,\né a única regra para nos dirigir na maneira de glorificá-lo e gozá-lo."
       ]
     },
-    "bc-3-resposta": {
+    "shorter-3-answer": {
       "60": [
         "As Escrituras ensinam\nprincipalmente o",
         "que o homem deve\ncrer acerca de Deus,",
@@ -196,7 +196,7 @@
         "As Escrituras ensinam principalmente o que o homem deve\ncrer acerca de Deus, e o dever que Deus requer do homem."
       ]
     },
-    "credo-apostolico": {
+    "apostles-creed": {
       "60": [
         "Creio em Deus Pai, todo-poderoso,\nCriador do céu e da terra.",
         "Creio em Jesus Cristo,\nseu único Filho, nosso Senhor,",
@@ -245,7 +245,7 @@
         "na comunhão dos santos, na remissão dos pecados,\nna ressurreição do corpo e na vida eterna. Amém."
       ]
     },
-    "linha-em-branco": {
+    "blank-lines": {
       "60": [
         "Primeiro parágrafo curto.",
         "Segundo parágrafo, também curto.",
@@ -272,7 +272,7 @@
         "Terceiro."
       ]
     },
-    "quebras-simples": {
+    "single-newlines": {
       "60": [
         "Uma linha que continua na outra",
         "linha e segue por bastante tempo,\ncom vírgulas, pausas;",
@@ -297,7 +297,7 @@
         "E mais uma linha que deixa o segmento comprido demais para caber numa tela só."
       ]
     },
-    "frase-sem-pausa": {
+    "no-pause-sentence": {
       "60": [
         "Esta frase muito longa\nnão tem nenhuma pausa de",
         "pontuação no meio e\npor isso precisa ser",
@@ -322,7 +322,7 @@
         "cortada em pedaços equilibrados por palavras para\ncaber nas telas da transmissão sem ficar desigual"
       ]
     },
-    "sobra-curta": {
+    "short-tail": {
       "60": [
         "Bendize, ó minha alma, ao Senhor,",
         "e tudo o que há em mim\nbendiga o seu santo nome,",
@@ -345,14 +345,14 @@
         "Bendize, ó minha alma, ao Senhor, e tudo o que há em mim bendiga o\nseu santo nome, e não te esqueças de nenhum de seus benefícios. Amém."
       ]
     },
-    "vazio": {
+    "empty": {
       "60": [],
       "72": [],
       "96": [],
       "128": [],
       "160": []
     },
-    "so-espacos": {
+    "whitespace-only": {
       "60": [],
       "72": [],
       "96": [],

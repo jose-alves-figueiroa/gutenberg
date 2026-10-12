@@ -10,6 +10,7 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 - [x] `AGENTS.md` (regras para agentes + estrutura de commits) e `CLAUDE.md`
 - [x] `.gitignore`
 - [x] Repositório git com remoto `git@github.com:jose-alves-figueiroa/gutenberg.git`
+- [x] Convenção: código, schemas, comentários e testes em inglês; textos da UI via i18n (`src/shared/i18n`, pt-BR)
 
 ## E1 — Base do app (Fase 1)
 **US1.1** Como desenvolvedor, quero um projeto Electron + Vite + React + TS rodando, para ter onde construir o app.
@@ -19,7 +20,7 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 - [x] Janela 1280×820 (mín. 900 para permitir o empilhamento abaixo de 1100px); `contextIsolation` ligado, sem `nodeIntegration`
 
 **US1.2** Como operador, quero o visual Broadsheet funcionando offline, para o app ficar igual ao design sem internet.
-- [x] Portar tokens de `design/_ds/.../styles.css` para `src/renderer/styles/tokens.css` (cores, espaçamento, raio, sombra, tipografia)
+- [x] Portar tokens de `design/_ds/.../styles.css` para `src/renderer/src/styles/tokens.css` (cores, espaçamento, raio, sombra, tipografia)
 - [x] Portar classes de componente (`.btn` primário/secundário/ghost/ícone, `.input`, `.field`, `.tag`, `.seg`, `.nav`)
 - [x] Remover o `@import` do Google Fonts; empacotar Source Serif 4 (400, 600, 400 itálico) via `@fontsource/source-serif-4`
 - [x] Estados globais: hover `--color-accent-100`, foco `outline 2px accent / offset 2px`, desabilitado 45% opacidade
@@ -30,7 +31,7 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 - [x] Abas Liturgia · Biblioteca · Apresentar · Conexão, ícone Phosphor duotone 18px + texto 15px, padding 8×12; ativa com `color-mix(accent 12%)` e texto `--color-accent-700`
 - [x] Campo de busca rápida (placeholder, sem lógica): flex `1 1 280px`, máx. 440px, fundo surface, borda divider
 - [x] Indicador de conexão (bolinha 9px + rótulo + "192.168.0.12 · 18 ms", estado estático); clique abre a aba Conexão
-- [x] 4 views vazias (`LiturgiaView`, `BibliotecaView`, `ApresentarView`, `ConexaoView`) com kicker/título
+- [x] 4 views vazias (`LiturgyView`, `LibraryView`, `PresentView`, `ConnectionView`) com kicker/título
 - [x] Layout empilha colunas abaixo de 1100px
 - [x] Testes (RTL): renderiza as 4 abas; clicar troca a view e marca a aba ativa (`aria-current`/`aria-selected`); clicar no status abre Conexão
 
@@ -52,7 +53,7 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
   - [x] texto vazio/nulo → `[]`
 
 **US3.2** Como operador, quero cabeçalhos corretos em cada tela, para o OBS mostrar a referência certa.
-- [x] `src/shared/slides.ts`: `slidesOf(collection, item, max)` → `{ header, lines[] }` (porte de `slidesOf` do protótipo)
+- [x] `src/shared/slides.ts`: `slidesOf(entry, max)` → `{ header, lines[] }` (porte de `slidesOf` do protótipo)
 - [x] Bíblia: `Hebreus 12.15` + ` (i/n)` quando o versículo ocupa várias telas
 - [x] CFW: `CFW 1.1`
 - [x] Catecismo: `Breve Catecismo · P. 1 · pergunta` / `Breve Catecismo · P. 1` na resposta
@@ -63,12 +64,12 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 ## Backlog (fases futuras)
 ### E3 — Dados (Fase 2)
 **Requisito funcional:** o app sai com a Bíblia ARA completa, as 246 músicas do Holyrics, os símbolos de fé de Westminster (CFW, Breve, Maior) e os 3 credos.
-Tasks detalhadas, schemas (em inglês) e fontes: **`docs/DADOS.md` → Progresso**. Aqui só o status das user stories.
+Tasks detalhadas, schemas (em inglês) e fontes: **`docs/DATA.md` → Progresso**. Aqui só o status das user stories.
 - [~] US3.0 Dados versionados e cifrados (git-crypt + chave por senha) — falta o backup da chave
-- [ ] US3.1 Formato interno (`data-model.ts`), limpeza (`clean.ts`), `data:build`, `data:check`
+- [~] US3.1 Formato interno (`data-model.ts` feito), limpeza (`clean.ts`), `data:build`, `data:check`
 - [ ] US3.2 Bíblia ARA (`translate:bible`)
-- [ ] US3.3 Músicas do Holyrics com créditos (`translate:songs`)
-- [ ] US3.4 Símbolos de Westminster (`translate:confession`, `translate:shorter`, `translate:larger`)
+- [ ] US3.3 Músicas do Holyrics por hinário (HNC, Saltério…) com créditos (`translate:songs`)
+- [ ] US3.4 Símbolos de Westminster (`translate:confession`, `translate:catechism`)
 - [ ] US3.5 Credos Apostólico, Niceno e Atanasiano (`translate:creeds`)
 
 ### E4 — Biblioteca (Fase 4)

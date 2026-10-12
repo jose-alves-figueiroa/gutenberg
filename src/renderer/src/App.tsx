@@ -1,23 +1,23 @@
 import { useState } from 'react'
 import { Nav } from './components/Nav'
 import type { ConnStatus, TabId } from './tabs'
-import { ApresentarView, BibliotecaView, ConexaoView, LiturgiaView } from './views/Views'
+import { ConnectionView, LibraryView, LiturgyView, PresentView } from './views/Views'
 
 const VIEWS: Record<TabId, () => React.JSX.Element> = {
-  liturgia: LiturgiaView,
-  biblioteca: BibliotecaView,
-  apresentar: ApresentarView,
-  conexao: ConexaoView
+  liturgy: LiturgyView,
+  library: LibraryView,
+  present: PresentView,
+  connection: ConnectionView
 }
 
 interface AppProps {
   initialTab?: TabId
-  /** Estado estático até a Fase 7 (obs-websocket). */
+  /** Static until phase 7 (obs-websocket). */
   conn?: ConnStatus
   ip?: string
 }
 
-export function App({ initialTab = 'liturgia', conn = 'online', ip = '192.168.0.12' }: AppProps) {
+export function App({ initialTab = 'liturgy', conn = 'online', ip = '192.168.0.12' }: AppProps) {
   const [tab, setTab] = useState<TabId>(initialTab)
   const Current = VIEWS[tab]
   return (

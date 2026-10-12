@@ -1,5 +1,6 @@
 import { MagnifyingGlassIcon } from '@phosphor-icons/react'
-import { CONN_VIEW, TABS, type ConnStatus, type TabId } from '../tabs'
+import { t } from '@shared/i18n'
+import { CONN_VIEW, TABS, tabLabel, type ConnStatus, type TabId } from '../tabs'
 
 interface NavProps {
   tab: TabId
@@ -10,11 +11,12 @@ interface NavProps {
 
 export function Nav({ tab, onTab, conn, ip }: NavProps) {
   const c = CONN_VIEW[conn]
+  const label = c.label()
   return (
     <nav className="nav app-nav">
-      <span className="nav-brand">Gutenberg</span>
-      <div className="nav-tabs" role="tablist" aria-label="Seções">
-        {TABS.map(({ id, label, icon: Icon }) => (
+      <span className="nav-brand">{t('app.brand')}</span>
+      <div className="nav-tabs" role="tablist" aria-label={t('nav.sections')}>
+        {TABS.map(({ id, icon: Icon }) => (
           <button
             key={id}
             type="button"
@@ -26,20 +28,30 @@ export function Nav({ tab, onTab, conn, ip }: NavProps) {
             onClick={() => onTab(id)}
           >
             <Icon size={18} weight="duotone" aria-hidden />
-            {label}
+            {tabLabel(id)}
           </button>
         ))}
       </div>
       <div className="quick-search">
-        {/* Busca rápida: só o campo na Fase 1; a lógica entra na Fase 6. */}
+        {/* Quick search: field only in phase 1; the logic arrives in phase 6. */}
         <label className="quick-search-box">
           <MagnifyingGlassIcon size={17} weight="duotone" aria-hidden />
-          <input className="quick-search-input" type="search" aria-label="Busca rápida" placeholder="Buscar: hb 12.14, bc 1, sg 133…" />
+          <input
+            className="quick-search-input"
+            type="search"
+            aria-label={t('nav.quickSearch')}
+            placeholder={t('nav.quickSearchPlaceholder')}
+          />
         </label>
       </div>
-      <button type="button" className="nav-status" onClick={() => onTab('conexao')} aria-label={`${c.label} — abrir Conexão`}>
+      <button
+        type="button"
+        className="nav-status"
+        onClick={() => onTab('connection')}
+        aria-label={t('nav.openConnection', { status: label })}
+      >
         <span className="status-dot" style={{ background: c.dot }} />
-        <span style={{ color: c.fg }}>{c.label}</span>
+        <span style={{ color: c.fg }}>{label}</span>
         <span className="text-muted">{c.short(ip)}</span>
       </button>
     </nav>

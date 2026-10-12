@@ -1,12 +1,12 @@
-// Chave do git-crypt protegida por senha (docs/DADOS.md → git-crypt).
+// Password-protected git-crypt key (docs/DATA.md → git-crypt).
 //
-//   npm run data:key      exporta a chave do repositório destrancado e (re)gera
-//                         .secrets/gutenberg-data.key.gpg cifrado com GUTENBERG_DATA_PASSWORD
-//   npm run data:unlock   decifra .secrets/gutenberg-data.key.gpg com a senha e roda
-//                         `git-crypt unlock` (nada a fazer se já estiver destrancado)
+//   npm run data:key      exports the key of the unlocked repository and (re)creates
+//                         .secrets/gutenberg-data.key.gpg encrypted with GUTENBERG_DATA_PASSWORD
+//   npm run data:unlock   decrypts .secrets/gutenberg-data.key.gpg with the password and runs
+//                         `git-crypt unlock` (no-op when already unlocked)
 //
-// A senha vem de GUTENBERG_DATA_PASSWORD (variável de ambiente ou .env). A chave em claro
-// só existe num arquivo temporário (0600) apagado ao final.
+// The password comes from GUTENBERG_DATA_PASSWORD (environment or .env). The plaintext key only
+// exists in a temporary 0600 file that is removed at the end.
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -25,7 +25,7 @@ function fail(msg) {
 function password() {
   if (!process.env.GUTENBERG_DATA_PASSWORD && existsSync(join(ROOT, '.env'))) process.loadEnvFile(join(ROOT, '.env'))
   const pw = process.env.GUTENBERG_DATA_PASSWORD
-  if (!pw) fail('defina GUTENBERG_DATA_PASSWORD no ambiente ou no .env (ver .env.example)')
+  if (!pw) fail('set GUTENBERG_DATA_PASSWORD in the environment or in .env (see .env.example)')
   return pw
 }
 
@@ -48,39 +48,39 @@ const gpg = (args, input) =>
 const isUnlocked = () => existsSync(UNLOCKED_MARK)
 
 function key() {
-  if (!isUnlocked()) fail('repositório trancado: rode `npm run data:unlock` antes de regenerar a chave')
+  if (!isUnlocked()) fail('repository is locked: run `npm run data:unlock` before regenerating the key')
   const pw = password()
   withTempKey((file) => {
     execFileSync('git-crypt', ['export-key', file], { cwd: ROOT })
     execFileSync('mkdir', ['-p', join(ROOT, '.secrets')])
     gpg(['--symmetric', '--cipher-algo', 'AES256', '-o', KEY_GPG, file], pw)
     execFileSync('chmod', ['600', KEY_GPG])
-    // Confere que a senha abre o que acabou de ser gerado.
+    // Check that the password opens what was just written.
     const back = gpg(['-d', KEY_GPG], pw)
     const orig = execFileSync('cat', [file])
-    if (!back.equals(orig)) fail('verificação falhou: o .gpg gerado não decifra para a mesma chave')
+    if (!back.equals(orig)) fail('verification failed: the new .gpg does not decrypt to the same key')
   })
-  console.log(`data-key: chave cifrada em ${KEY_GPG}`)
+  console.log(`data-key: encrypted key written to ${KEY_GPG}`)
 }
 
 function unlock() {
-  if (isUnlocked()) return console.log('data-key: repositório já destrancado')
-  if (!existsSync(KEY_GPG)) fail(`chave não encontrada em ${KEY_GPG} — copie o .gpg para .secrets/`)
+  if (isUnlocked()) return console.log('data-key: repository already unlocked')
+  if (!existsSync(KEY_GPG)) fail(`key not found at ${KEY_GPG} — copy the .gpg into .secrets/`)
   const pw = password()
   withTempKey((file) => {
     let plain
     try {
       plain = gpg(['-d', KEY_GPG], pw)
     } catch {
-      fail('não consegui decifrar a chave — confira GUTENBERG_DATA_PASSWORD')
+      fail('could not decrypt the key — check GUTENBERG_DATA_PASSWORD')
     }
     writeFileSync(file, plain, { mode: 0o600 })
     execFileSync('git-crypt', ['unlock', file], { cwd: ROOT, stdio: 'inherit' })
   })
-  console.log('data-key: repositório destrancado')
+  console.log('data-key: repository unlocked')
 }
 
 const cmd = process.argv[2]
 if (cmd === 'key') key()
 else if (cmd === 'unlock') unlock()
-else fail('uso: node scripts/data-key.mjs <key|unlock>')
+else fail('usage: node scripts/data-key.mjs <key|unlock>')

@@ -7,20 +7,20 @@ import { App } from '@renderer/App'
 afterEach(cleanup)
 
 describe('Nav', () => {
-  it('mostra a marca e as 4 abas na ordem do design', () => {
+  it('shows the brand and the 4 tabs in design order', () => {
     render(<App />)
     expect(screen.getByText('Gutenberg')).toBeInTheDocument()
     const tabs = screen.getAllByRole('tab').map((t) => t.textContent)
     expect(tabs).toEqual(['Liturgia', 'Biblioteca', 'Apresentar', 'Conexão'])
   })
 
-  it('abre em Liturgia com a aba marcada como ativa', () => {
+  it('opens on Liturgy with that tab selected', () => {
     render(<App />)
     expect(screen.getByRole('tab', { name: 'Liturgia' })).toHaveAttribute('aria-selected', 'true')
-    expect(screen.getByRole('tabpanel')).toHaveAttribute('id', 'view-liturgia')
+    expect(screen.getByRole('tabpanel')).toHaveAttribute('id', 'view-liturgy')
   })
 
-  it('troca a view ao clicar numa aba', async () => {
+  it('switches the view when a tab is clicked', async () => {
     render(<App />)
     await userEvent.click(screen.getByRole('tab', { name: 'Biblioteca' }))
     expect(screen.getByRole('tab', { name: 'Biblioteca' })).toHaveAttribute('aria-selected', 'true')
@@ -28,27 +28,27 @@ describe('Nav', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Biblioteca' })).toBeInTheDocument()
   })
 
-  it('clicar no status da conexão abre a aba Conexão', async () => {
+  it('clicking the connection status opens the Connection tab', async () => {
     render(<App />)
     await userEvent.click(screen.getByRole('button', { name: /OBS conectado/ }))
     expect(screen.getByRole('tab', { name: 'Conexão' })).toHaveAttribute('aria-selected', 'true')
-    expect(screen.getByRole('tabpanel')).toHaveAttribute('id', 'view-conexao')
+    expect(screen.getByRole('tabpanel')).toHaveAttribute('id', 'view-connection')
   })
 
-  it('mostra o IP e a latência no status', () => {
+  it('shows IP and latency in the status', () => {
     render(<App ip="10.0.0.5" />)
     expect(screen.getByText('10.0.0.5 · 18 ms')).toBeInTheDocument()
   })
 
   it.each([
-    ['instavel', 'Conexão instável'],
+    ['unstable', 'Conexão instável'],
     ['offline', 'OBS sem resposta']
-  ] as const)('status %s mostra "%s"', (conn, label) => {
+  ] as const)('status %s shows "%s"', (conn, label) => {
     render(<App conn={conn} />)
     expect(screen.getByText(label)).toBeInTheDocument()
   })
 
-  it('tem o campo de busca rápida', () => {
+  it('has the quick search field', () => {
     render(<App />)
     expect(screen.getByRole('searchbox', { name: 'Busca rápida' })).toBeInTheDocument()
   })

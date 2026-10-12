@@ -1,4 +1,4 @@
-/* Estilos do app Gutenberg sobre o Broadsheet (README → Screens / Interações). */
+/* Gutenberg app styles on top of Broadsheet (README → Screens / Interactions). */
 html, body { margin: 0; background: var(--color-bg); }
 body { color: var(--color-text); font-family: var(--font-body); }
 a:hover { color: var(--color-accent-600); }
@@ -50,18 +50,18 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 /* — views — */
 .view { flex: 1; padding: var(--space-4) var(--space-6) var(--space-8); }
 .view-grid { display: grid; gap: var(--space-8); }
-.view-grid--liturgia { grid-template-columns: minmax(190px, 240px) minmax(0, 1fr); }
-.view-grid--biblioteca { grid-template-columns: minmax(170px, 210px) minmax(0, 1fr); }
-.view-grid--apresentar { grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); }
-.view-grid--conexao { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.view-grid--liturgy { grid-template-columns: minmax(190px, 240px) minmax(0, 1fr); }
+.view-grid--library { grid-template-columns: minmax(170px, 210px) minmax(0, 1fr); }
+.view-grid--present { grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); }
+.view-grid--connection { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
 .view-main { max-width: 880px; }
 .kicker { margin: 0 0 var(--space-1); color: var(--color-accent-700); }
 .view h2 { font-size: 34px; }
 .empty-note { color: var(--color-neutral-700); font-size: 14px; }
 
-/* Janela desktop: abaixo de 1100px as colunas empilham. */
+/* Desktop window: below 1100px the columns stack. */
 @media (max-width: 1099px) {
-  .view-grid--liturgia, .view-grid--biblioteca, .view-grid--apresentar { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
+  .view-grid--liturgy, .view-grid--library, .view-grid--present { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
   .app-nav { padding-inline: var(--space-4); }
   .view { padding-inline: var(--space-4); }
 }

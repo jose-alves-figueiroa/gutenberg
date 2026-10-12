@@ -1,25 +1,25 @@
 /**
- * Quebra automática de telas — porte fiel de `autobreak()` do protótipo
- * (design_handoff_gutenberg/design/Gutenberg.dc.html). Paridade garantida por
- * tests/fixtures/autobreak.golden.json; não altere o algoritmo sem regenerar o golden
- * (`npm run golden`) e justificar.
+ * Automatic screen breaking — faithful port of the prototype's `autobreak()`
+ * (design_handoff_gutenberg/design/Gutenberg.dc.html). Parity is enforced by
+ * tests/fixtures/autobreak.golden.json; do not change the algorithm without regenerating
+ * the golden file (`npm run golden`) and explaining why.
  *
- * Cada tela é uma string com no máximo uma quebra `\n` (2 linhas equilibradas).
+ * Each screen is a string with at most one `\n` (2 balanced lines).
  */
 
-/** Limite padrão de caracteres por tela. */
+/** Default characters per screen. */
 export const DEFAULT_MAX = 96
-/** Faixa permitida para a configuração do limite. */
+/** Allowed range for the per-screen limit setting. */
 export const MIN_MAX = 60
 export const MAX_MAX = 160
 
-/** Ajusta o limite à faixa 60–160 (valores inválidos voltam ao padrão). */
+/** Clamps the limit to 60–160 (invalid values fall back to the default). */
 export function clampMax(max: number): number {
   if (!Number.isFinite(max)) return DEFAULT_MAX
   return Math.min(MAX_MAX, Math.max(MIN_MAX, Math.round(max)))
 }
 
-/** Divide o texto em segmentos nas linhas em branco (regra 1). */
+/** Splits text into segments at blank lines (rule 1). */
 export function splitSegments(text: string | null | undefined): string[] {
   return (text || '')
     .split(/\n\s*\n/)
@@ -27,7 +27,7 @@ export function splitSegments(text: string | null | undefined): string[] {
     .filter(Boolean)
 }
 
-/** Divide uma frase longa demais em pedaços equilibrados por palavras (regra 3). */
+/** Splits an over-long phrase into word-balanced chunks (rule 3). */
 export function wordChunks(s: string, max: number): string[] {
   const n = Math.ceil(s.length / max)
   const target = s.length / n
@@ -44,8 +44,8 @@ export function wordChunks(s: string, max: number): string[] {
 }
 
 /**
- * Quebra a tela em 2 linhas equilibradas: no espaço mais perto do meio, preferindo
- * depois de `, ; :` (regra 6). Telas curtas (≤ 55% do limite) ficam numa linha só.
+ * Breaks a screen into 2 balanced lines at the space nearest the middle, preferring
+ * one right after `, ; :` (rule 6). Short screens (≤ 55% of the limit) stay on one line.
  */
 export function twoLines(s: string, max: number): string {
   if (s.includes('\n') || s.length <= Math.round(max * 0.55)) return s
@@ -63,20 +63,20 @@ export function twoLines(s: string, max: number): string {
   return best < 0 ? s : s.slice(0, best) + '\n' + s.slice(best + 1)
 }
 
-/** Divide um texto em telas. Ver README → "Quebra automática de telas". */
+/** Splits text into screens. See README → "Quebra automática de telas". */
 export function autobreak(text: string | null | undefined, max: number = DEFAULT_MAX): string[] {
   max = clampMax(max)
   const out: string[] = []
   for (const seg of splitSegments(text)) {
-    // Regra 2: cabe numa tela.
+    // Rule 2: fits in one screen.
     if (seg.length <= max) {
       out.push(twoLines(seg, max))
       continue
     }
-    // Regra 3: frases nas pausas; frase longa demais vira pedaços por palavra.
+    // Rule 3: phrases at pauses; an over-long phrase becomes word chunks.
     const flat = seg.replace(/\s*\n\s*/g, ' ')
     const phrases = flat.split(/(?<=[,;:.!?])\s+/).flatMap((p) => (p.length > max ? wordChunks(p, max) : [p]))
-    // Regra 4: agrupa as frases, em ordem, até o limite.
+    // Rule 4: group phrases, in order, up to the limit.
     const screens: string[] = []
     let cur = ''
     for (const p of phrases) {
@@ -86,7 +86,7 @@ export function autobreak(text: string | null | undefined, max: number = DEFAULT
       } else cur = cur ? cur + ' ' + p : p
     }
     if (cur) screens.push(cur)
-    // Regra 5: sobra curta (< 30%) junta com a anterior se couber em 120%.
+    // Rule 5: a short tail (< 30%) merges into the previous screen if it fits in 120%.
     const n = screens.length
     if (n > 1 && screens[n - 1].length < max * 0.3 && (screens[n - 2] + ' ' + screens[n - 1]).length <= max * 1.2) {
       screens.splice(-2, 2, screens[n - 2] + ' ' + screens[n - 1])

@@ -7,7 +7,7 @@ e envia telas limpas para o OBS via obs-websocket.
 ## Fontes de verdade
 - **Especificação:** `design_handoff_gutenberg/README.md`. O protótipo `design/Gutenberg.dc.html`
   (classe `Component`) é a referência de comportamento — **não é código de produção**.
-- **Plano e progresso:** `PLAN.md` (épicos) e `docs/DADOS.md` → Progresso (tasks da E3). Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito.
+- **Plano e progresso:** `PLAN.md` (épicos) e `docs/DATA.md` → Progresso (tasks da E3). Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito.
   - Marque `[~]` ao começar uma task e `[x]` só quando ela estiver pronta **e** com testes passando.
   - Não crie épicos/tasks novos sem registrar no `PLAN.md`.
 - **Design:** tokens Broadsheet em `src/renderer/src/styles/tokens.css`. Alta fidelidade: não invente
@@ -18,7 +18,7 @@ e envia telas limpas para o OBS via obs-websocket.
 src/main/          processo principal do Electron
 src/preload/       ponte contextBridge (contextIsolation ligado, sem nodeIntegration)
 src/renderer/src/  React: components/, views/, styles/
-src/shared/        lógica pura, sem Electron/DOM (autobreak, slides, coleções) — usada por main e renderer
+src/shared/        lógica pura, sem Electron/DOM (autobreak, slides, collections, data-model, i18n) — usada por main e renderer
 tests/             Vitest (+ Testing Library); fixtures em tests/fixtures/
 scripts/           scripts de apoio (ex.: gerar fixtures golden)
 ```
@@ -29,7 +29,7 @@ scripts/           scripts de apoio (ex.: gerar fixtures golden)
 - `npm run typecheck` — TypeScript sem emitir
 - `npm run lint` — ESLint
 - `npm run golden` — regenera `tests/fixtures/autobreak.golden.json` a partir do protótipo
-- `npm run translate:<source>` / `data:build` / `data:check` / `data:unlock` / `data:key` — dados (E3, ver `docs/DADOS.md`)
+- `npm run translate:<source>` / `data:build` / `data:check` / `data:unlock` / `data:key` — dados (E3, ver `docs/DATA.md`)
 
 Antes de marcar qualquer task como `[x]` ou commitar: `npm test && npm run typecheck && npm run lint` verdes.
 
@@ -39,10 +39,14 @@ Antes de marcar qualquer task como `[x]` ou commitar: `npm test && npm run typec
 - `autobreak` deve continuar idêntico ao protótipo — mudanças exigem atualizar o golden e justificar.
 - Payload para o OBS: sem HTML, sem `&nbsp;`, no máximo 2 linhas por tela.
 - App funciona **offline**: fontes e ícones empacotados localmente, nenhuma URL externa no CSS/HTML.
-- Textos da UI em português (pt-BR). Código e identificadores podem ser em inglês ou português,
-  seguindo o que já existe no arquivo.
+- **Tudo em inglês no código:** identificadores, tipos, chaves de schema/JSON, tabelas, nomes de arquivo,
+  comentários, nomes de testes e mensagens de scripts. Textos que o usuário vê ficam em
+  `src/shared/i18n/pt-BR.ts` (chaves em inglês) e são lidos com `t()` — nunca literais na UI.
+  O conteúdo (Bíblia, hinos, símbolos de fé) continua em português.
+- Coleções são documentos (hinário, confissão, catecismo) com `id`, título e prefixo: acrescentar uma
+  nova (Harpa Cristã, Dort, Heidelberg) é dado, não código nem schema.
 - Dados de conteúdo (ARA, músicas, símbolos de fé, credos) só em `data/canonical/`, no formato interno
-  (`docs/DADOS.md`; schema, chaves e nomes de arquivo em inglês) e **cifrados com git-crypt**. Nunca commitar esses textos em claro em outro lugar
+  (`docs/DATA.md`; schema, chaves e nomes de arquivo em inglês) e **cifrados com git-crypt**. Nunca commitar esses textos em claro em outro lugar
   (fontes brutas ficam em `tmp/` e `data/sources/`, ignorados). Antes de commitar `data/`, conferir
   `git-crypt status`. Bancos `.sqlite` gerados não são versionados.
 - Testes não dependem dos dados reais: usam fixtures sintéticas e o seed do protótipo.

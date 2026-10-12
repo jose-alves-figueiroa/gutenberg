@@ -1,38 +1,50 @@
-/** Coleções e livros da Bíblia (README → Biblioteca; protótipo `BOOKS`/`COLS`). */
+/**
+ * Library collections and Bible books (README → Library; prototype `COLS` / `BOOKS`).
+ * A collection is a data document (a songbook, a confession, a catechism…), so new ones —
+ * Harpa Cristã, the Canons of Dort, Heidelberg — need data, not code or schema changes.
+ */
+import { t } from './i18n'
 
-export type CollectionKey = 'biblia' | 'hnc' | 'salmos' | 'credos' | 'cfw' | 'breve' | 'maior'
-export type CollectionKind = 'biblia' | 'musica' | 'credo' | 'cfw' | 'catecismo'
-export type CollectionGroup = 'Bíblia' | 'Hinário e salmos' | 'Doutrina'
+export type CollectionKind = 'bible' | 'songbook' | 'creeds' | 'confession' | 'catechism'
+export type CollectionGroup = 'bible' | 'songs' | 'doctrine'
 
 export interface Collection {
-  key: CollectionKey
-  label: string
   kind: CollectionKind
-  /** Nome curto usado nos cabeçalhos das telas. */
-  short: string
-  group: CollectionGroup
-  /** Prefixo na busca rápida (`bc 1`, `sg 133`…). */
-  prefix?: string
+  /** Document id (`ara`, `hnc`, `psalter`, `wcf`, `wsc`…). */
+  id: string
+  /** pt-BR content: the document's own title. */
+  title: string
+  shortTitle: string
+  /** Quick-search prefix (`bc 1`, `sg 133`…); empty for the Bible. */
+  prefix: string
 }
 
-/** Ordem dos grupos em qualquer menu: a Bíblia sempre no topo. */
-export const GROUPS: readonly CollectionGroup[] = ['Bíblia', 'Hinário e salmos', 'Doutrina']
+const KIND_GROUP: Record<CollectionKind, CollectionGroup> = {
+  bible: 'bible',
+  songbook: 'songs',
+  creeds: 'doctrine',
+  confession: 'doctrine',
+  catechism: 'doctrine'
+}
 
-export const COLLECTIONS: readonly Collection[] = [
-  { key: 'biblia', label: 'Bíblia ARA', kind: 'biblia', short: 'ARA', group: 'Bíblia' },
-  { key: 'hnc', label: 'Hinário Novo Cântico', kind: 'musica', short: 'HNC', group: 'Hinário e salmos', prefix: 'hnc' },
-  { key: 'salmos', label: 'Salmos genebrinos', kind: 'musica', short: 'Salmo', group: 'Hinário e salmos', prefix: 'sg' },
-  { key: 'credos', label: 'Credos', kind: 'credo', short: 'Credo', group: 'Doutrina', prefix: 'credo' },
-  { key: 'cfw', label: 'Confissão de Westminster', kind: 'cfw', short: 'CFW', group: 'Doutrina', prefix: 'cfw' },
-  { key: 'breve', label: 'Breve Catecismo', kind: 'catecismo', short: 'Breve Catecismo', group: 'Doutrina', prefix: 'bc' },
-  { key: 'maior', label: 'Catecismo Maior', kind: 'catecismo', short: 'Catecismo Maior', group: 'Doutrina', prefix: 'cm' }
+/** Group order in every menu: the Bible always comes first. */
+export const GROUPS: readonly CollectionGroup[] = ['bible', 'songs', 'doctrine']
+
+export const groupOf = (kind: CollectionKind): CollectionGroup => KIND_GROUP[kind]
+export const groupLabel = (group: CollectionGroup): string => t(`group.${group}`)
+
+/** Collections shipped with the app (docs/DATA.md), in the prototype's menu order. */
+export const DEFAULT_COLLECTIONS: readonly Collection[] = [
+  { kind: 'bible', id: 'ara', title: 'Bíblia ARA', shortTitle: 'ARA', prefix: '' },
+  { kind: 'songbook', id: 'hnc', title: 'Hinário Novo Cântico', shortTitle: 'HNC', prefix: 'hnc' },
+  { kind: 'songbook', id: 'psalter', title: 'Salmos genebrinos', shortTitle: 'Salmo', prefix: 'sg' },
+  { kind: 'creeds', id: 'creeds', title: 'Credos', shortTitle: 'Credo', prefix: 'credo' },
+  { kind: 'confession', id: 'wcf', title: 'Confissão de Westminster', shortTitle: 'CFW', prefix: 'cfw' },
+  { kind: 'catechism', id: 'wsc', title: 'Breve Catecismo', shortTitle: 'Breve Catecismo', prefix: 'bc' },
+  { kind: 'catechism', id: 'wlc', title: 'Catecismo Maior', shortTitle: 'Catecismo Maior', prefix: 'cm' }
 ]
 
-export const COLLECTION: Readonly<Record<CollectionKey, Collection>> = Object.fromEntries(
-  COLLECTIONS.map((c) => [c.key, c])
-) as Record<CollectionKey, Collection>
-
-/** Livros da Bíblia na ordem canônica: [abreviação, nome]. */
+/** Bible books in canonical order: [abbreviation, name], as printed in the ARA (pt-BR content). */
 export const BOOKS: readonly (readonly [string, string])[] = [
   ['Gn', 'Gênesis'], ['Êx', 'Êxodo'], ['Lv', 'Levítico'], ['Nm', 'Números'], ['Dt', 'Deuteronômio'],
   ['Js', 'Josué'], ['Jz', 'Juízes'], ['Rt', 'Rute'], ['1Sm', '1 Samuel'], ['2Sm', '2 Samuel'],
@@ -52,9 +64,9 @@ export const BOOKS: readonly (readonly [string, string])[] = [
 
 const BOOK_NAME: Readonly<Record<string, string>> = Object.fromEntries(BOOKS)
 
-/** Nome do livro pela abreviação (`Hb` → `Hebreus`). */
+/** Book name from its abbreviation (`Hb` → `Hebreus`). */
 export function bookName(abbrev: string): string {
   const name = BOOK_NAME[abbrev]
-  if (!name) throw new Error(`Livro desconhecido: ${abbrev}`)
+  if (!name) throw new Error(`Unknown Bible book: ${abbrev}`)
   return name
 }

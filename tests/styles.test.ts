@@ -6,8 +6,8 @@ const dir = join(__dirname, '../src/renderer/src/styles')
 const css = Object.fromEntries(readdirSync(dir).map((f) => [f, readFileSync(join(dir, f), 'utf8')]))
 const html = readFileSync(join(__dirname, '../src/renderer/index.html'), 'utf8')
 
-describe('estilos Broadsheet', () => {
-  it('não referenciam URLs externas (o app roda offline)', () => {
+describe('Broadsheet styles', () => {
+  it('reference no external URLs (the app runs offline)', () => {
     for (const [file, src] of Object.entries({ ...css, 'index.html': html })) {
       expect(src, file).not.toMatch(/https?:\/\//)
       expect(src, file).not.toMatch(/@import/)
@@ -31,18 +31,18 @@ describe('estilos Broadsheet', () => {
     expect(css['tokens.css']).toContain(`${name}: ${value};`)
   })
 
-  it('usa Source Serif 4 em tudo', () => {
+  it('uses Source Serif 4 everywhere', () => {
     expect(css['tokens.css']).toMatch(/--font-body: "Source Serif 4"/)
     expect(css['tokens.css']).toMatch(/--font-heading: "Source Serif 4"/)
   })
 
-  it('aplica foco, hover e desabilitado do README', () => {
+  it('applies the README focus, hover and disabled states', () => {
     expect(css['components.css']).toMatch(/:focus-visible \{ outline: 2px solid var\(--color-accent\); outline-offset: 2px; \}/)
     expect(css['app.css']).toMatch(/opacity: 0\.45/)
     expect(css['app.css']).toMatch(/background: var\(--color-accent-100\)/)
   })
 
-  it('empilha as colunas abaixo de 1100px', () => {
+  it('stacks the columns below 1100px', () => {
     expect(css['app.css']).toMatch(/@media \(max-width: 1099px\)/)
   })
 })

@@ -1,4 +1,4 @@
-# Dados de conteúdo (ARA, músicas, símbolos de fé, credos) — cifrados no repositório (docs/DADOS.md)
+# Content data (ARA, songs, confessions, catechisms, creeds) — encrypted in the repository (docs/DATA.md)
 data/canonical/** filter=git-crypt diff=git-crypt
-# Os próprios atributos nunca são cifrados
+# The attributes file itself is never encrypted
 .gitattributes !filter !diff

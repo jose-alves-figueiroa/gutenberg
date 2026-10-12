@@ -1,66 +1,70 @@
 import type { ReactNode } from 'react'
-import type { TabId } from '../tabs'
+import { t } from '@shared/i18n'
+import { tabLabel, type TabId } from '../tabs'
 
-function View({ id, grid, children }: { id: TabId; grid: string; children: ReactNode }) {
+function View({ id, children }: { id: TabId; children: ReactNode }) {
   return (
     <main className="view" role="tabpanel" id={`view-${id}`} aria-labelledby={`tab-${id}`}>
-      <div className={`view-grid view-grid--${grid}`}>{children}</div>
+      <div className={`view-grid view-grid--${id}`}>{children}</div>
     </main>
   )
 }
 
-export function LiturgiaView() {
+/** Kicker + h2 + empty-state note shared by the placeholder views. */
+function Heading({ id, note }: { id: TabId; note: string }) {
   return (
-    <View id="liturgia" grid="liturgia">
+    <>
+      <h6 className="kicker">{tabLabel(id)}</h6>
+      <h2>{tabLabel(id)}</h2>
+      <p className="empty-note">{note}</p>
+    </>
+  )
+}
+
+export function LiturgyView() {
+  return (
+    <View id="liturgy">
       <aside>
-        <h6 className="text-muted">Cultos</h6>
+        <h6 className="text-muted">{t('liturgy.aside')}</h6>
       </aside>
       <section className="view-main">
-        <h6 className="kicker">Liturgia</h6>
-        <h2>Liturgia</h2>
-        <p className="empty-note">Os cultos e a ordem dos itens aparecem aqui.</p>
+        <Heading id="liturgy" note={t('liturgy.empty')} />
       </section>
     </View>
   )
 }
 
-export function BibliotecaView() {
+export function LibraryView() {
   return (
-    <View id="biblioteca" grid="biblioteca">
+    <View id="library">
       <aside>
-        <h6 className="text-muted">Coleções</h6>
+        <h6 className="text-muted">{t('library.aside')}</h6>
       </aside>
       <section className="view-main">
-        <h6 className="kicker">Biblioteca</h6>
-        <h2>Biblioteca</h2>
-        <p className="empty-note">Bíblia, hinário, salmos e textos de doutrina.</p>
+        <Heading id="library" note={t('library.empty')} />
       </section>
     </View>
   )
 }
 
-export function ApresentarView() {
+export function PresentView() {
   return (
-    <View id="apresentar" grid="apresentar">
+    <View id="present">
       <aside>
-        <h6 className="text-muted">Itens</h6>
+        <h6 className="text-muted">{t('present.aside')}</h6>
       </aside>
       <section>
-        <h6 className="kicker">Apresentar</h6>
-        <h2>Apresentar</h2>
-        <p className="empty-note">As telas do item no ar aparecem aqui.</p>
+        <Heading id="present" note={t('present.empty')} />
       </section>
     </View>
   )
 }
 
-export function ConexaoView() {
+export function ConnectionView() {
   return (
-    <View id="conexao" grid="conexao">
+    <View id="connection">
       <section>
-        <h6 className="kicker">Conexão</h6>
-        <h2>Conexão</h2>
-        <p className="empty-note">Estado da ligação com o OBS e registro de eventos.</p>
+        <Heading id="connection" note={t('connection.empty')} />
       </section>
     </View>
   )

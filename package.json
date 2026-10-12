@@ -1,7 +1,7 @@
 {
   "name": "gutenberg",
   "version": "0.1.0",
-  "description": "Projeção de liturgia para OBS",
+  "description": "Liturgy projection for OBS",
   "main": "./out/main/index.js",
   "type": "module",
   "private": true,
