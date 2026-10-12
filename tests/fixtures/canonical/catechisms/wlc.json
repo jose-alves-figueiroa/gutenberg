@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "id": "wlc",
+  "title": "Catecismo Maior de Westminster",
+  "shortTitle": "Catecismo Maior",
+  "prefix": "cm",
+  "questions": [
+    {
+      "number": 1,
+      "question": "Qual é o fim supremo e principal do homem?",
+      "answer": "O fim supremo e principal do homem é glorificar a Deus e gozá-lo inteiramente para sempre."
+    }
+  ],
+  "source": {
+    "name": "prototype"
+  }
+}

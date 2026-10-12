@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "id": "hnc-h2",
+  "songbook": "hnc",
+  "number": "",
+  "version": "",
+  "title": "Santo! Santo! Santo!",
+  "versification": "",
+  "credits": {
+    "author": "Reginald Heber",
+    "artist": "",
+    "copyright": ""
+  },
+  "stanzas": [
+    [
+      "[estrofe 1]"
+    ],
+    [
+      "[estrofe 2]"
+    ]
+  ],
+  "source": {
+    "name": "prototype",
+    "id": "h2"
+  }
+}

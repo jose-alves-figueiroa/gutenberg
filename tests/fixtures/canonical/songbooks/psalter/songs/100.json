@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "id": "psalter-100",
+  "songbook": "psalter",
+  "number": "100",
+  "version": "",
+  "title": "Salmo 100",
+  "versification": "",
+  "credits": {
+    "author": "",
+    "artist": "Comissão Brasileira de Salmodia",
+    "copyright": ""
+  },
+  "stanzas": [
+    [
+      "[estrofe 1]"
+    ],
+    [
+      "[estrofe 2]"
+    ]
+  ],
+  "source": {
+    "name": "prototype",
+    "id": "s100"
+  }
+}

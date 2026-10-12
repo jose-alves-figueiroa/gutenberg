@@ -1,0 +1,28 @@
+{
+  "format": 1,
+  "id": "hnc-h1",
+  "songbook": "hnc",
+  "number": "",
+  "version": "",
+  "title": "Castelo forte",
+  "versification": "",
+  "credits": {
+    "author": "Martinho Lutero",
+    "artist": "",
+    "copyright": ""
+  },
+  "stanzas": [
+    [
+      "Castelo forte é nosso Deus,",
+      "espada e bom escudo;"
+    ],
+    [
+      "com seu poder defende os seus",
+      "em todo transe agudo."
+    ]
+  ],
+  "source": {
+    "name": "prototype",
+    "id": "h1"
+  }
+}

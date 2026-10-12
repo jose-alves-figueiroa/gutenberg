@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "id": "wcf",
+  "title": "Confissão de Fé de Westminster",
+  "shortTitle": "CFW",
+  "prefix": "cfw",
+  "chapters": [
+    {
+      "id": "1",
+      "title": "Da Escritura Sagrada",
+      "sections": [
+        {
+          "id": "1",
+          "text": "Ainda que a luz da natureza e as obras da criação e da providência manifestem de tal modo a bondade, a sabedoria e o poder de Deus, que os homens ficam inescusáveis, contudo não são suficientes para dar aquele conhecimento de Deus e da sua vontade, necessário para a salvação."
+        },
+        {
+          "id": "2",
+          "text": "[texto da seção]"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "name": "prototype"
+  }
+}

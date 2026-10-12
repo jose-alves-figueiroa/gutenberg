@@ -65,8 +65,8 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 ### E3 — Dados (Fase 2)
 **Requisito funcional:** o app sai com a Bíblia ARA completa, as 246 músicas do Holyrics, os símbolos de fé de Westminster (CFW, Breve, Maior) e os 3 credos.
 Tasks detalhadas, schemas (em inglês) e fontes: **`docs/DATA.md` → Progresso**. Aqui só o status das user stories.
-- [~] US3.0 Dados versionados e cifrados (git-crypt + chave por senha) — falta o backup da chave
-- [~] US3.1 Formato interno (`data-model.ts` feito), limpeza (`clean.ts`), `data:build`, `data:check`
+- [x] US3.0 Dados versionados e cifrados (git-crypt + chave por senha, com backup)
+- [x] US3.1 Formato interno, validadores, limpeza (`clean.ts`), `data:build`, `data:check`, seed
 - [ ] US3.2 Bíblia ARA (`translate:bible`)
 - [ ] US3.3 Músicas do Holyrics por hinário (HNC, Saltério…) com créditos (`translate:songs`)
 - [ ] US3.4 Símbolos de Westminster (`translate:confession`, `translate:catechism`)

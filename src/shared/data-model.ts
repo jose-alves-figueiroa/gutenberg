@@ -135,3 +135,12 @@ export interface Creeds {
   creeds: Creed[]
   source: SourceRef
 }
+
+/** Everything under data/canonical/, loaded in memory (scripts/lib/canonical.ts). */
+export interface CanonicalData {
+  bibles: { meta: BibleVersionMeta; books: BibleBook[] }[]
+  songbooks: { songbook: Songbook; songs: Song[] }[]
+  confessions: Confession[]
+  catechisms: Catechism[]
+  creeds: Creeds | null
+}

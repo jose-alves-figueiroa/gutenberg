@@ -1,0 +1,18 @@
+{
+  "format": 1,
+  "creeds": [
+    {
+      "id": "apostles",
+      "title": "Credo Apostólico",
+      "text": "Creio em Deus Pai, todo-poderoso, Criador do céu e da terra. Creio em Jesus Cristo, seu único Filho, nosso Senhor, o qual foi concebido pelo Espírito Santo, nasceu da virgem Maria, padeceu sob Pôncio Pilatos, foi crucificado, morto e sepultado; ressuscitou ao terceiro dia, subiu ao céu, e está sentado à direita de Deus Pai, donde há de vir para julgar os vivos e os mortos. Creio no Espírito Santo, na santa Igreja universal, na comunhão dos santos, na remissão dos pecados, na ressurreição do corpo e na vida eterna. Amém."
+    },
+    {
+      "id": "nicene",
+      "title": "Credo Niceno",
+      "text": "[texto]"
+    }
+  ],
+  "source": {
+    "name": "prototype"
+  }
+}

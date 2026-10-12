@@ -1,0 +1,11 @@
+{
+  "format": 1,
+  "id": "psalter",
+  "title": "Salmos genebrinos",
+  "shortTitle": "Salmo",
+  "prefix": "sg",
+  "itemLabel": "Salmo",
+  "source": {
+    "name": "prototype"
+  }
+}

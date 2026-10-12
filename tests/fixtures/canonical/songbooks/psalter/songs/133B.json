@@ -1,0 +1,36 @@
+{
+  "format": 1,
+  "id": "psalter-133B",
+  "songbook": "psalter",
+  "number": "133",
+  "version": "B",
+  "title": "Salmo 133B",
+  "versification": "",
+  "credits": {
+    "author": "",
+    "artist": "Comissão Brasileira de Salmodia",
+    "copyright": ""
+  },
+  "stanzas": [
+    [
+      "Oh! Como é bom e agradável,",
+      "bem suave, sim,"
+    ],
+    [
+      "quando os irmãos em harmonia",
+      "vivem juntos, assim:"
+    ],
+    [
+      "é como o óleo precioso",
+      "sobre a fronte a correr,"
+    ],
+    [
+      "é como o orvalho do Hermom",
+      "que desce ao amanhecer."
+    ]
+  ],
+  "source": {
+    "name": "prototype",
+    "id": "s133b"
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "format": 1,
+  "check": "git-crypt ok"
+}

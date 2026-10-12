@@ -1,0 +1,27 @@
+{
+  "format": 1,
+  "id": "wsc",
+  "title": "Breve Catecismo de Westminster",
+  "shortTitle": "Breve Catecismo",
+  "prefix": "bc",
+  "questions": [
+    {
+      "number": 1,
+      "question": "Qual é o fim principal do homem?",
+      "answer": "O fim principal do homem é glorificar a Deus, e gozá-lo para sempre."
+    },
+    {
+      "number": 2,
+      "question": "Que regra deu Deus para nos dirigir na maneira de glorificá-lo e gozá-lo?",
+      "answer": "A palavra de Deus, que se acha nas Escrituras do Velho e do Novo Testamento, é a única regra para nos dirigir na maneira de glorificá-lo e gozá-lo."
+    },
+    {
+      "number": 3,
+      "question": "Qual é a principal coisa que as Escrituras nos ensinam?",
+      "answer": "As Escrituras ensinam principalmente o que o homem deve crer acerca de Deus, e o dever que Deus requer do homem."
+    }
+  ],
+  "source": {
+    "name": "prototype"
+  }
+}

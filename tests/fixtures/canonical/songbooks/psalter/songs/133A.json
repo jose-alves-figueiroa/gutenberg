@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "id": "psalter-133A",
+  "songbook": "psalter",
+  "number": "133",
+  "version": "A",
+  "title": "Salmo 133A",
+  "versification": "",
+  "credits": {
+    "author": "",
+    "artist": "Comissão Brasileira de Salmodia",
+    "copyright": ""
+  },
+  "stanzas": [
+    [
+      "[estrofe 1]"
+    ],
+    [
+      "[estrofe 2]"
+    ]
+  ],
+  "source": {
+    "name": "prototype",
+    "id": "s133a"
+  }
+}

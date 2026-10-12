@@ -11,6 +11,6 @@ export function loadPrototype() {
   const start = html.indexOf('>', html.indexOf('<script type="text/x-dc" data-dc-script')) + 1
   const end = html.indexOf('class Component', start)
   if (start <= 0 || end < 0) throw new Error('Prototype script not found in Gutenberg.dc.html')
-  const src = html.slice(start, end) + '\n;({ autobreak, split, BOOKS, COLS, LIB0 })'
+  const src = html.slice(start, end) + '\n;({ autobreak, split, BOOKS, COLS, LIB0, CH, CFW_S, CFW_T, CAT_N })'
   return vm.runInNewContext(src, {})
 }

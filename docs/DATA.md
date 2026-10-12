@@ -23,19 +23,19 @@ Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 - [x] Chave exportada, cifrada com `GUTENBERG_DATA_PASSWORD` em `.secrets/` (ignorado); `npm run data:key` / `data:unlock` (também no `prebuild`)
 - [x] Teste `tests/gitcrypt.test.ts`: falha se algum arquivo de `data/canonical/` estiver em claro no git
 - [x] Renomear `data/canonical/.verificacao.json` → `.gitcrypt-check.json` com o schema em inglês
-- [ ] Backup de `.secrets/gutenberg-data.key.gpg` e da senha fora deste computador (mantenedor)
+- [x] Backup de `.secrets/gutenberg-data.key.gpg` e da senha fora deste computador (mantenedor)
 
 **US3.1** Como desenvolvedor, quero um formato interno próprio, para não depender do esquema de nenhuma fonte.
 - [x] Convenção: código, schemas, comentários e testes em inglês; textos da UI via i18n (`src/shared/i18n`, pt-BR)
 - [x] `src/shared/data-model.ts`: tipos `BibleBook`, `Songbook`/`Song`, `Confession`, `Catechism`, `Creeds` (`format: 1`)
 - [x] Modelo genérico: hinários, confissões e catecismos são documentos com título (Harpa Cristã, Dort, Heidelberg entram sem mudar schema); `version` nos salmos (133B × 133C)
 - [x] `src/shared/slides.ts` e `collections.ts` usando o data-model; cabeçalhos via i18n + `shortTitle`/`itemLabel` do documento
-- [ ] Validadores do data-model (usados pelos tradutores e pelo `data:check`)
-- [ ] `src/shared/clean.ts`: remove `<ctt>`, `<desc>`, `<span>`, `text-force-update`, `&nbsp;`, `(RA)`; junta quebras simples de texto corrido; testes com o payload real do Holyrics
-- [ ] `npm run data:build`: `data/canonical/` → SQLite do app (schema abaixo); migrações
-- [ ] `npm run data:check`: completude (tabela do requisito); avisa quando o repo está trancado (`\0GITCRYPT`)
-- [ ] Seed do protótipo (`LIB0`) no formato interno, para desenvolvimento e testes
-- [ ] Limite de caracteres por tela persistido como configuração
+- [x] Validadores do data-model (`src/shared/validate.ts`; usados pelos tradutores, `data:check` e `data:build`)
+- [x] `src/shared/clean.ts`: remove `<ctt>`, `<desc>`, `<span>`, `text-force-update`, `&nbsp;`, `(RA)`; junta quebras simples de texto corrido; testes com o payload real do Holyrics
+- [x] `npm run data:build`: `data/canonical/` → SQLite do app (`src/main/db/schema.ts` com migrações via `user_version`; `node:sqlite` no build)
+- [x] `npm run data:check`: completude (`src/shared/requirements.ts`, contagens conferidas contra o protótipo); avisa quando o repo está trancado (`\0GITCRYPT`)
+- [x] Seed do protótipo (`LIB0`) no formato interno: `npm run data:seed` → `tests/fixtures/canonical/`
+- [x] Limite de caracteres por tela persistido como configuração (`settings.screen_char_limit`, padrão 96; preservado entre builds). A UI que o altera fica para a E4/E6
 
 **US3.2** Como operador, quero a Bíblia ARA completa, para apresentar qualquer leitura.
 - [ ] `translate:bible`: OpenLP SQLite → `data/canonical/bible/ara/` (testes com fixture OpenLP sintética)
@@ -180,7 +180,7 @@ hinário, confissão ou catecismo é só uma linha nova.
 | `bible_versions` | `code` (PK), `name`, `source` |
 | `bible_verses` | `version` → `bible_versions`, `book`, `chapter`, `verse`, `text` (somente leitura) |
 | `songbooks` | `id` (PK), `title`, `short_title`, `prefix`, `item_label`, `source` |
-| `songs` | `id` (PK), `songbook_id` → `songbooks`, `number`, `version`, `title`, `versification`, `author`, `artist`, `copyright`, `lyrics`, `source`; único (`songbook_id`, `number`, `version`) |
+| `songs` | `id` (PK), `songbook_id` → `songbooks`, `number`, `version`, `title`, `versification`, `author`, `artist`, `copyright`, `lyrics`, `source`; único (`songbook_id`, `number`, `version`, `title`) — o título entra porque músicas avulsas (`other`) não têm número |
 | `confessions` | `id` (PK), `title`, `short_title`, `prefix`, `source` |
 | `confession_sections` | `confession_id` → `confessions`, `position`, `chapter`, `chapter_title`, `section`, `section_title`, `text` |
 | `catechisms` | `id` (PK), `title`, `short_title`, `prefix`, `source` |
@@ -190,7 +190,7 @@ hinário, confissão ou catecismo é só uma linha nova.
 | `liturgy_items` | `service_id`, `position`, `moment`, `collection`, `item_ref` (E5) |
 | `settings` | `key`, `value` (ex.: limite de caracteres por tela) |
 
-`songs.lyrics` guarda as estrofes separadas por linha em branco. `confession_sections.chapter` e
+`songs.lyrics` guarda as estrofes separadas por linha em branco. O `data:build` substitui as tabelas de conteúdo e preserva `services`, `liturgy_items` e `settings`. O build usa `node:sqlite` (sem dependência nativa); o driver do app em runtime é decidido na E4 — o código só depende da interface `SqlDatabase`. `confession_sections.chapter` e
 `section` são texto (rótulos); `position` dá a ordem.
 
 ## Tradutores (fonte → formato interno)
