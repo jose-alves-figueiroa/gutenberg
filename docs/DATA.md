@@ -5,7 +5,8 @@ Plano detalhado da E3 (resumo em `PLAN.md`). **Requisito funcional:** o Gutenber
 | Conteúdo | Completo quando |
 |---|---|
 | **Bíblia ARA** | 66 livros, todos os capítulos e versículos |
-| **Músicas do Holyrics** (salmos genebrinos, HNC e demais) | as 246 músicas cadastradas pela igreja, com letra e créditos |
+| **Saltério de Genebra em Português** | os 150 salmos (com as versões A/B/C da fonte) e os 2 cânticos (Os Dez Mandamentos, O Cântico de Simeão), com autoria da metrificação |
+| **Hinário Novo Cântico (HNC)** | os 400 hinos e os apêndices da fonte, com estrofes e créditos |
 | **Símbolos de fé de Westminster** | CFW na edição da IP Aliança (35 capítulos, 179 seções), Breve Catecismo (107), Catecismo Maior (196) |
 | **Credos** | Apostólico, Niceno e Atanasiano |
 
@@ -42,13 +43,24 @@ Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 - [x] Obter o `ARA.sqlite` (github.com/damarals/biblias) em `data/sources/`
 - [x] Traduzir e conferir: 66 livros, 1.189 capítulos, 31.104 versículos; Hb 12.14–15 idêntico ao protótipo. A fonte usa "Cânticos", "Oséias", "Miquéias" e "Atos dos Apóstolos": o nome da fonte fica no formato interno, os cabeçalhos usam `BOOKS`
 
-**US3.3** Como operador, quero as músicas que a igreja cadastrou no Holyrics, com os créditos.
-- [x] Investigar (só leitura) o formato da tabela `music` de `database.db`: cada registro é cifrado, e o próprio Holyrics protege o código que o lê (strings ofuscadas e 36 pacotes `lib/pack*.dat` cifrados). Descriptografar exigiria quebrar essa proteção — **não seguimos por aí**; vale o plano B
-- [x] Plano B — `npm run holyrics:dump`: cliente da API local do Holyrics (`GetSongs` → `GetLyrics` por música) → `data/sources/holyrics-songs.json` (bruto, fora do git)
-- [x] `translate:songs`: dump → `data/canonical/songbooks/<id>/`; atribui hinário (`psalter` por "Salmo 133B"/artista "Comissão Brasileira de Salmodia", `hnc` por número no título, o resto em `other` com lista para revisão); número + `version`; estrofes na ordem de apresentação do Holyrics (refrão repetido); créditos (autor, artista, copyright)
-- [x] Testes com API simulada e dump sintético
-- [ ] **Mantenedor:** no PC do Holyrics, Configurações → API Server → habilitar e criar um token com `GetSongs` e `GetLyrics`; preencher `HOLYRICS_API_URL` e `HOLYRICS_API_TOKEN` no `.env`; rodar `npm run holyrics:dump`
-- [ ] Rodar `translate:songs`, revisar a lista `other` e conferir: 246 músicas; Salmo 133B igual ao payload de exemplo
+**US3.3** Como operador, quero o Saltério de Genebra e o Hinário Novo Cântico completos, com os créditos.
+
+Fontes (as músicas cadastradas no Holyrics não puderam ser lidas: o `database.db` é cifrado e o Holyrics protege o código que o lê — ver "Músicas do Holyrics"):
+
+- [ ] **Saltério** — `translate:psalter`: `letras.docx` de salteriodegenebra.com.br (**licença CC0 / domínio público**) → `songbooks/psalter/`
+  - estrutura do docx: título `Salmo 1A` (número + versão), linha de autoria `(CBS - Saltério de Genebra)`, estrofes numeradas, versos
+  - limpeza: remover os números de versículo bíblico dentro dos versos (`1 Quão…`, `Dizendo:_3 “Os laços…`) e trocar `_` (marca de elisão) por espaço
+  - créditos: autoria da metrificação (CBS, Arthur Elohim Pires, Lucas Grassi Freire, Vítor Augusto Olivier…) e origem da melodia; os 2 cânticos entram sem número, pelo título
+  - conferir: os 150 salmos presentes; total de títulos igual ao do docx (173 na versão de 01/09/2026)
+- [ ] **HNC** — `translate:hymnal`: um XML por hino em novocantico.com.br (`hino/NNN/NNN.xml`, mais os apêndices `B`, `C`, `D`), baixados uma vez para `data/sources/hnc/` → `songbooks/hnc/`
+  - estrutura do XML: `numero`, `titulo`, `texto/estrofe/verso`, `secao`, `assunto`, `origem_letra` (e demais campos de origem quando houver)
+  - créditos: `origem_letra` → autor da letra; origem da música quando presente
+  - o PDF `novo_cantico.pdf` (ePub da IPB convertido pelo calibre) fica como conferência: a extração dele perde espaços ("emseus", "teupovo") e não separa estrofes
+  - conferir: 400 hinos numerados + apêndices; Hino 3 "A Igreja em Adoração" com 3 estrofes de 8 versos
+- [ ] **Telas de 2 linhas para cânticos**: as fontes trazem estrofes de até 8 versos e a faixa do OBS tem no máximo 2 linhas. O formato interno guarda a estrofe inteira (fiel à fonte); `slidesOf` divide cada estrofe em telas de 2 versos, sem juntar estrofes diferentes. Ajusta a regra do README ("cada estrofe é uma tela"), que valia para os slides do Holyrics, já divididos pelo operador
+- [ ] Requisito em `requirements.ts`: contagens do Saltério e do HNC no lugar das "246 músicas do Holyrics"
+- [ ] Testes com docx e XML sintéticos (versículos embutidos, elisões, apêndices, créditos)
+- [x] Ferramental da API do Holyrics (`holyrics:dump` + `translate:songs`) — **opcional**: serve para trazer, no futuro, as músicas da igreja que não estão no Saltério nem no HNC (hinário `other`, "Outros cânticos")
 
 **US3.4** Como operador, quero os símbolos de fé de Westminster completos, para apresentar doutrina.
 - [x] `translate:confession`: página da IP Aliança → `confessions/wcf.json`: **35 capítulos, 179 seções**, todas com referências — a edição da IP Aliança: revisão americana (cap. 31 com 4 seções; o protótipo contava 5, do texto de 1647) e os capítulos 34 "Do Espírito Santo" e 35 "Do Amor de Deus e das Missões"
@@ -65,7 +77,8 @@ Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 fontes externas            tradutores                   formato interno (versionado, cifrado)        app
 ────────────────           ─────────────                ──────────────────────────────────────      ───────────────
 ARA.sqlite (OpenLP)   ──▶  translate:bible      ──┐
-API do Holyrics      ──▶  translate:songs      ──┤
+letras.docx Saltério ──▶  translate:psalter    ──┤
+XML do HNC           ──▶  translate:hymnal     ──┤
 página IP Aliança     ──▶  translate:confession ──┼──▶  data/canonical/**  (git-crypt)  ──▶ data:build ──▶ SQLite
 gist (JSON)           ──▶  translate:catechism  ──┤                                           (empacotado no
 PDF IPB               ──▶  translate:catechism  ──┤                                            instalador)
@@ -104,7 +117,7 @@ data/canonical/
     hnc/songs/155.json …
     psalter/songbook.json          saltério genebrino
     psalter/songs/133B.json …      <number><version>
-    other/songbook.json            "Outros cânticos": músicas do Holyrics fora de um hinário publicado
+    other/songbook.json            "Outros cânticos" (opcional): músicas do Holyrics fora do Saltério e do HNC
     other/songs/<slug>.json …
   confessions/
     wcf.json                       Confissão de Fé de Westminster
@@ -198,7 +211,9 @@ hinário, confissão ou catecismo é só uma linha nova.
 | Comando | Fonte | Tradução |
 |---|---|---|
 | `translate:bible -- --file data/sources/ARA.sqlite` | OpenLP SQLite (ex.: `ARA.sqlite` de github.com/damarals/biblias) | `book.book_reference_id` 1–66 → `BOOKS`; `verse(chapter, verse, text)` → `chapters`; limpa o texto |
-| `holyrics:dump` + `translate:songs -- --file data/sources/holyrics-songs.json` | API local do Holyrics da igreja (246 músicas) | `GetSongs`/`GetLyrics` → dump bruto → atribui hinário (`hnc`, `psalter`, `other`), número e `version` → estrofes na ordem do Holyrics + créditos |
+| `translate:psalter -- --file data/sources/psalter-letras.docx` | https://salteriodegenebra.com.br/ → `letras.docx` (CC0) | Títulos `Salmo NX` → número + versão; autoria; estrofes sem números de versículo e sem `_` |
+| `translate:hymnal -- --dir data/sources/hnc` | https://novocantico.com.br/ → `hino/NNN/NNN.xml` (+ apêndices); conferência com https://novocantico.com.br/novo_cantico.pdf | `titulo`, estrofes/versos, `origem_letra` → créditos |
+| `holyrics:dump` + `translate:songs` (opcional) | API local do Holyrics da igreja | Músicas fora do Saltério e do HNC → hinário `other` |
 | `translate:confession -- --id wcf --file data/sources/wcf.html` | https://www.ipalianca.org/simbolos-de-fe/confiss%C3%A3o-de-f%C3%A9-de-westminster | Capítulos/seções/referências; valida os 35 capítulos e a contagem de seções da edição da IP Aliança |
 | `translate:catechism -- --id wsc --file data/sources/wsc.json` | https://gist.github.com/joaolucasl/2084125f96a1275be2de55e4fed89f0c | `{numero, pergunta, resposta, refs}` → `questions`; **numera pela posição** (o item 81 tem a pergunta no campo `numero`); valida 1–107 |
 | `translate:catechism -- --id wlc --file data/sources/wlc.pdf` | https://www.ipb.org.br/content/Arquivos/Catecismo_Maior_de_Westminster.pdf + complemento da IP Bom Pastor | `pdftotext -raw`; separa perguntas, junta hifenização, guarda refs; aplica `wlc-supplement.json` (perguntas ausentes ou correções parciais); valida 1–196 |
@@ -206,11 +221,12 @@ hinário, confissão ou catecismo é só uma linha nova.
 
 As fontes só são baixadas quando a user story correspondente for executada. O tradutor do PDF usa `pdftotext` (poppler: `brew install poppler`); só o mantenedor roda tradutores, e o resultado é versionado.
 
-### Músicas do Holyrics — API local
+### Músicas do Holyrics — API local (opcional)
 A tabela `music` de `files/database.db` é cifrada registro a registro, e o Holyrics protege o código
-que a lê (strings ofuscadas, classes em pacotes `lib/pack*.dat` cifrados). Não quebramos essa
-proteção: as músicas saem pela **API local oficial** (github.com/holyrics/API-Server), que entrega o
-mesmo conteúdo — letra por slide, ordem de apresentação e créditos.
+que a lê (strings ofuscadas, classes em pacotes `lib/pack*.dat` cifrados); nenhum outro arquivo da
+instalação tem as letras em claro. Não quebramos essa proteção. O Saltério e o HNC vêm das fontes
+públicas acima; a **API local oficial** (github.com/holyrics/API-Server) fica para trazer, se a igreja
+quiser, as músicas cadastradas fora desses dois hinários.
 
 1. No PC do Holyrics: Configurações → API Server → habilitar; criar um token com permissão para
    `GetSongs` e `GetLyrics`; anotar IP e porta.
