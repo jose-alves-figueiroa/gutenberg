@@ -32,3 +32,6 @@ Thumbs.db
 
 # Pacote original do handoff (conteúdo já está em design_handoff_gutenberg/)
 *.zip
+
+# Cópias locais de apps/dados de terceiros (Holyrics, ARA) — nunca versionar
+tmp/

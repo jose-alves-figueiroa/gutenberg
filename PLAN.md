@@ -62,12 +62,38 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 
 ## Backlog (fases futuras)
 ### E3 — Dados (Fase 2)
-- [ ] SQLite (`better-sqlite3`) com o schema do README; migrações
+Plano de fontes, formatos e portões de licença: `docs/DADOS.md`.
+
+**US3.0** Como operador, quero um banco local, para a biblioteca e as liturgias sobreviverem ao reinício.
+- [ ] SQLite (`better-sqlite3`) com o schema do README (+ `refs` em catecismo, `fonte` e créditos); migrações
 - [ ] Seed com os dados do protótipo
-- [ ] Importação da ARA (licença da igreja; tabela somente leitura)
-- [ ] Script de importação do Holyrics com limpeza de HTML (`<ctt>`, `<desc>`, `&nbsp;`, `<span>`)
 - [ ] Limite de caracteres por tela persistido como configuração
-- [ ] Normalizar quebras de linha simples (`\n`) de textos corridos na importação — o `autobreak` (como o protótipo) preserva `\n` em segmentos curtos, o que pode gerar telas com 3+ linhas
+
+**US3.1** Como operador, quero textos limpos, para o OBS nunca receber HTML.
+- [ ] `src/shared/clean.ts`: remove `<ctt>`, `<desc>`, `<span>`, `&nbsp;`, `(RA)`; testes com o payload real do Holyrics
+- [ ] Normalizar quebras de linha simples (`\n`) de textos corridos — o `autobreak` (como o protótipo) preserva `\n` em segmentos curtos, o que pode gerar telas com 3+ linhas
+
+**US3.2** Como operador, quero a Bíblia ARA no app, para apresentar leituras.
+- [ ] Importador OpenLP SQLite → `biblia(livro, cap, vers, texto)` (somente leitura)
+- [ ] Testes com versão domínio público no mesmo formato (66 livros, Hb 12.15)
+
+**US3.3** Como operador, quero os salmos e hinos que a igreja já cadastrou, com os créditos.
+- [ ] Investigar (só leitura) o formato de `music` em `database.db` do Holyrics
+- [ ] `scripts/import-holyrics-db.ts`: descriptografa só a tabela `music` → `data/holyrics-music.json` (chave via `HOLYRICS_DB_KEY`, fora do git)
+- [ ] Classificar salmos (`Salmo 133B`) × hinos (HNC); créditos (autor, artista, copyright)
+- [ ] Testes com registro sintético cifrado com chave de teste
+- [ ] Plano B (se necessário): API local do Holyrics (`GetSongs`/`GetLyrics`)
+
+**US3.4** Como operador, quero os símbolos de fé completos, para apresentar doutrina.
+- [ ] CFW: página da IP Aliança → `cfw(cap, sec, texto)`; valida 33 capítulos e seções
+- [ ] Breve Catecismo: gist JSON → `catecismo`; numera pela posição (item 81 defeituoso); valida 1–107
+- [ ] Catecismo Maior: PDF da IPB → `catecismo`; valida 1–196
+- [ ] Credos Apostólico, Niceno e Atanasiano: texto simples revisado à mão
+
+**US3.5** Pendências externas (igreja)
+- [ ] Licença da ARA (SBB) para uso fora do Holyrics
+- [ ] Tradução/permissão da CFW (IP Aliança), do Breve (gist) e do Maior (IPB)
+- [ ] Tradução dos credos recitada no culto
 
 ### E4 — Biblioteca (Fase 4)
 - [ ] Coleções em 3 grupos (Bíblia no topo) + breadcrumb
