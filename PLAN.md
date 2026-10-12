@@ -2,7 +2,7 @@
 
 Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 Fonte: `design_handoff_gutenberg/README.md` + protótipo `design/Gutenberg.dc.html` (classe `Component`).
-Concluídos: E0–E4. Próximo: **E5 (Liturgia)**.
+Concluídos: E0–E4. Em execução: **E5 (Liturgia)**.
 
 ## Stack e protocolo (decisão)
 O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP** — o protocolo já em uso (substitui o JSON do Holyrics). Isso substitui o obs-websocket sugerido no README do handoff.
@@ -123,9 +123,24 @@ Especificação: README → "Biblioteca" e protótipo (`Component.render`, ramo 
 - [x] Barra sticky: Apresentar agora / Adicionar à liturgia (desabilitados até as E5/E6), Descartar / Salvar (desabilitados sem alterações), "Alterações não salvas" / "Salvo — vale para todas as liturgias"
 
 ### E5 — Liturgia (Fase 5)
-- [ ] CRUD de cultos
-- [ ] Linhas com Momento editável, ↑ ↓ ✕
-- [ ] Picker agrupado por coleção + busca + atalho de referência bíblica
+Especificação: README → "Liturgia" e protótipo (ramo `isLit`, `addToCulto`, `pickList`).
+
+**US5.1** Como operador, quero itens de liturgia com referência estável, para editar a biblioteca e valer em todas as liturgias.
+- [x] `src/shared/bible-ref.ts`: busca de livros (abreviação ou nome, sem acento: `1` → 1Sm…1Jo, `1c` → 1Cr, 1Co), parser de referência (`hb 12`, `hb 12.14`, `hb 12.14-15`, também `:`), `item_ref` (`Hb:12:14-15`) e título (`Hebreus 12.14–15`); paridade com o protótipo, exceto `jo` → **João** (o protótipo dava Jó; a abreviação digitada exatamente tem prioridade, `jó` → Jó)
+- [x] `collection` + `item_ref`: `bible:ara` / `Hb:12:14-15`; `songbook:<id>` / id da música; `confession:<id>` / `1.1`; `catechism:<id>` / número; `creeds` / id (validado por zod)
+- [x] Resolver no main (`src/main/library/items.ts`, rota `/api/v1/library/resolve`): título, rótulo da coleção e telas (`slidesOf` com o limite salvo) de qualquer item; item inexistente aparece como "(item removido)"
+
+**US5.2** Como operador, quero cadastrar e organizar cultos, para preparar a liturgia antes do culto.
+- [x] Repositório e rotas locais `/api/v1/liturgy/*`: cultos (listar com nº de itens, criar, renomear, excluir) e itens (incluir no fim, editar momento, mover ↑/↓, remover, renumerando posições)
+- [ ] Coluna esquerda: cultos (nome + "N itens", selecionado em tint de accent), "+ Novo culto"
+- [ ] Cabeçalho: kicker "LITURGIA", nome do culto em h2 34px (editável), "Excluir culto" (com confirmação), "Apresentar este culto" (habilitado na E6)
+- [ ] Linhas `28px | minmax(110px,180px) | 1fr | auto`: nº, Momento (input transparente), título + "coleção · N telas", ↑ ↓ ✕
+
+**US5.3** Como operador, quero adicionar itens por coleção ou referência, para montar a liturgia rápido.
+- [x] Busca por coleção (`/api/v1/library/search`): número ou título (hinários), número ou texto da pergunta (catecismos), `1.1` ou texto (confissões), título (credos)
+- [ ] Picker: chips agrupados Bíblia | Hinário e salmos | Doutrina; campo de busca com placeholder por tipo; resultados em grade `auto-fill minmax(240px,1fr)`
+- [ ] Bíblia no picker: digitando um livro, lista os livros (clicar completa `hb `); referência completa mostra "Adicionar Hebreus 12.14–15"
+- [ ] "Adicionar à liturgia" na Biblioteca (E4) passa a adicionar o item ao culto selecionado
 
 ### E6 — Apresentar e busca rápida (Fase 6)
 - [ ] Lista de itens, item "Avulso", cartões NO AR / A SEGUIR

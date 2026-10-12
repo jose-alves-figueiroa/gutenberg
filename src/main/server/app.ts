@@ -12,10 +12,13 @@ import {
   ConfessionSectionBody,
   CreedBody,
   LibraryParams as P,
+  LiturgySchemas as L,
   SongBody
 } from '../../shared/library-schemas'
 import type { SqlDatabase } from '../db/schema'
+import { resolveItem, searchCollection } from '../library/items'
 import * as repo from '../library/repository'
+import * as liturgy from '../liturgy/repository'
 
 const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1'])
 
@@ -40,6 +43,14 @@ function libraryRoutes(db: SqlDatabase) {
     .use(localOnly)
     .get('/collections', (c) => c.json(repo.collections(db)))
     .get('/settings', (c) => c.json(repo.settings(db)))
+    .get('/search', zValidator('query', L.searchQuery), (c) => {
+      const { collection, q } = c.req.valid('query')
+      return c.json(searchCollection(db, collection, q))
+    })
+    .get('/resolve', zValidator('query', L.resolveQuery), (c) => {
+      const { collection, itemRef } = c.req.valid('query')
+      return c.json(resolveItem(db, collection, itemRef, repo.settings(db).screenCharLimit))
+    })
     .get('/bible/:version/books', zValidator('param', P.version), (c) => c.json(repo.bibleBooks(db, c.req.valid('param').version)))
     .get('/bible/:version/:book/:chapter', zValidator('param', P.chapter), (c) => {
       const { version, book, chapter } = c.req.valid('param')
@@ -75,6 +86,42 @@ function libraryRoutes(db: SqlDatabase) {
     })
 }
 
+function liturgyRoutes(db: SqlDatabase) {
+  const max = () => repo.settings(db).screenCharLimit
+  return new Hono()
+    .use(localOnly)
+    .get('/services', (c) => c.json(liturgy.services(db)))
+    .post('/services', zValidator('json', L.serviceBody), (c) => c.json(liturgy.createService(db, c.req.valid('json').name), 201))
+    .get('/services/:id', zValidator('param', L.serviceParam), (c) => c.json(liturgy.service(db, c.req.valid('param').id, max())))
+    .patch('/services/:id', zValidator('param', L.serviceParam), zValidator('json', L.serviceBody), (c) => {
+      liturgy.renameService(db, c.req.valid('param').id, c.req.valid('json').name)
+      return c.json({ ok: true })
+    })
+    .delete('/services/:id', zValidator('param', L.serviceParam), (c) => {
+      liturgy.deleteService(db, c.req.valid('param').id)
+      return c.json({ ok: true })
+    })
+    .post('/services/:id/items', zValidator('param', L.serviceParam), zValidator('json', L.itemBody), (c) => {
+      const position = liturgy.addItem(db, c.req.valid('param').id, c.req.valid('json'))
+      return c.json({ position }, 201)
+    })
+    .patch('/services/:id/items/:position', zValidator('param', L.itemParam), zValidator('json', L.momentBody), (c) => {
+      const { id, position } = c.req.valid('param')
+      liturgy.setMoment(db, id, position, c.req.valid('json').moment)
+      return c.json({ ok: true })
+    })
+    .post('/services/:id/items/:position/move', zValidator('param', L.itemParam), zValidator('json', L.moveBody), (c) => {
+      const { id, position } = c.req.valid('param')
+      liturgy.moveItem(db, id, position, c.req.valid('json').delta)
+      return c.json({ ok: true })
+    })
+    .delete('/services/:id/items/:position', zValidator('param', L.itemParam), (c) => {
+      const { id, position } = c.req.valid('param')
+      liturgy.removeItem(db, id, position)
+      return c.json({ ok: true })
+    })
+}
+
 export function createServerApp(db: SqlDatabase) {
   return new Hono()
     .onError((err, c) => {
@@ -84,6 +131,7 @@ export function createServerApp(db: SqlDatabase) {
       return c.json({ error: 'internal error' }, 500)
     })
     .route('/api/v1/library', libraryRoutes(db))
+    .route('/api/v1/liturgy', liturgyRoutes(db))
 }
 
 /** Route types for the renderer's typed client (`hono/client`). */

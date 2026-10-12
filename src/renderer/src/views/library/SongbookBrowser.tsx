@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import type { Song } from '@shared/data-model'
 import { t } from '@shared/i18n'
+import { lyricsToStanzas } from '@shared/lyrics'
 import type { SongRecord, SongbookInfo, SongSummary } from '@shared/library-schemas'
 import { REQUIRED } from '@shared/requirements'
 import { slidesOf, songHeader } from '@shared/slides'
@@ -140,10 +141,7 @@ function toSong(r: SongRecord): Song {
     title: r.title,
     versification: r.versification,
     credits: { author: r.author, artist: r.artist, copyright: r.copyright },
-    stanzas: r.lyrics
-      .split(/\n\s*\n/)
-      .map((st) => st.split('\n').map((l) => l.trim()).filter(Boolean))
-      .filter((st) => st.length > 0),
+    stanzas: lyricsToStanzas(r.lyrics),
     source: { name: 'edited' }
   }
 }

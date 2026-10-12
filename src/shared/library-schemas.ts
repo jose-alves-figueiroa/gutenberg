@@ -94,3 +94,17 @@ export interface SongSummary {
   author: string
   firstLine: string
 }
+
+/** `bible:ara`, `songbook:hnc`, `confession:wcf`, `catechism:wsc` or `creeds`. */
+export const CollectionRef = z.string().regex(/^(?:(?:bible|songbook|confession|catechism):[a-z0-9-]{1,40}|creeds)$/)
+
+export const LiturgySchemas = {
+  serviceBody: z.object({ name: z.string().trim().min(1).max(120) }),
+  itemBody: z.object({ collection: CollectionRef, itemRef: z.string().trim().min(1).max(60), moment: z.string().max(80).default('') }),
+  momentBody: z.object({ moment: z.string().max(80) }),
+  moveBody: z.object({ delta: z.union([z.literal(-1), z.literal(1)]) }),
+  serviceParam: z.object({ id: z.coerce.number().int().min(1) }),
+  itemParam: z.object({ id: z.coerce.number().int().min(1), position: z.coerce.number().int().min(1) }),
+  searchQuery: z.object({ collection: CollectionRef, q: z.string().max(100).default('') }),
+  resolveQuery: z.object({ collection: CollectionRef, itemRef: z.string().min(1).max(60) })
+}

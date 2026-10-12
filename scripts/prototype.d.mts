@@ -11,4 +11,6 @@ export function loadPrototype(): {
   /** WCF chapter titles (index 0 unused). */
   CFW_T: string[]
   CAT_N: { breve: number; maior: number }
+  booksFor: (q: string) => [string, string][]
+  parseBible: (raw: string) => { ab: string; ch: number; v1: number; v2: number } | null
 }
