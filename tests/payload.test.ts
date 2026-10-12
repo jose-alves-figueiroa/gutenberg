@@ -73,7 +73,7 @@ describe('public routes for OBS (US7.1)', () => {
     addItem(api.db, s.id, { collection: 'songbook:psalter', itemRef: 'psalter-133B', moment: 'Salmo' })
     addItem(api.db, s.id, { collection: 'creeds', itemRef: 'apostles', moment: 'Credo' })
     const presenter = createPresenter(api.db)
-    return { ...api, presenter, app: createServerApp(api.db, presenter) }
+    return { ...api, presenter, app: createServerApp(api.db, { presenter }) }
   }
 
   it('GET /overlay/resources answers the LAN with the screen on the air, CORS open', async () => {

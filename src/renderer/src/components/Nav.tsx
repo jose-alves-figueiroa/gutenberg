@@ -1,17 +1,21 @@
 import { t } from '@shared/i18n'
+import { useConnection } from '../connection'
+import { CONN_VIEW, TABS, connShort, tabLabel, type TabId } from '../tabs'
 import { QuickSearch } from './QuickSearch'
-import { CONN_VIEW, TABS, tabLabel, type ConnStatus, type TabId } from '../tabs'
 
 interface NavProps {
   tab: TabId
   onTab: (tab: TabId) => void
-  conn: ConnStatus
-  ip: string
 }
 
-export function Nav({ tab, onTab, conn, ip }: NavProps) {
-  const c = CONN_VIEW[conn]
+export function Nav({ tab, onTab }: NavProps) {
+  const conn = useConnection().data
+  const status = conn?.status ?? 'offline'
+  const c = CONN_VIEW[status]
   const label = c.label()
+  const clients = conn ? [...conn.outputs.flatMap((o) => o.clients), ...conn.all.clients] : []
+  const obsIp = clients.find((x) => x.status !== 'offline')?.ip ?? clients[0]?.ip ?? null
+  const url = conn ? `${conn.addresses[0] ?? '127.0.0.1'}:${conn.port}` : '…'
   return (
     <nav className="nav app-nav">
       <span className="nav-brand">{t('app.brand')}</span>
@@ -41,7 +45,7 @@ export function Nav({ tab, onTab, conn, ip }: NavProps) {
       >
         <span className="status-dot" style={{ background: c.dot }} />
         <span style={{ color: c.fg }}>{label}</span>
-        <span className="text-muted">{c.short(ip)}</span>
+        <span className="text-muted">{connShort(status, obsIp, conn?.rtt ?? null, url)}</span>
       </button>
     </nav>
   )

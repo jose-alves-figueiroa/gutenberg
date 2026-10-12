@@ -1,36 +1,4 @@
-import type { ReactNode } from 'react'
-import { t } from '@shared/i18n'
-import { tabLabel, type TabId } from '../tabs'
-
+export { ConnectionView } from './connection/ConnectionView'
 export { LibraryView } from './library/LibraryView'
 export { LiturgyView } from './liturgy/LiturgyView'
 export { PresentView } from './present/PresentView'
-
-function View({ id, children }: { id: TabId; children: ReactNode }) {
-  return (
-    <main className="view" role="tabpanel" id={`view-${id}`} aria-labelledby={`tab-${id}`}>
-      <div className={`view-grid view-grid--${id}`}>{children}</div>
-    </main>
-  )
-}
-
-/** Kicker + h2 + empty-state note shared by the placeholder views. */
-function Heading({ id, note }: { id: TabId; note: string }) {
-  return (
-    <>
-      <h6 className="kicker">{tabLabel(id)}</h6>
-      <h2>{tabLabel(id)}</h2>
-      <p className="empty-note">{note}</p>
-    </>
-  )
-}
-
-export function ConnectionView() {
-  return (
-    <View id="connection">
-      <section>
-        <Heading id="connection" note={t('connection.empty')} />
-      </section>
-    </View>
-  )
-}

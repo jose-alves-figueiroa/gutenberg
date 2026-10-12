@@ -2,7 +2,7 @@
 import { serve, type ServerType } from '@hono/node-server'
 import type { Hono } from 'hono'
 
-export const DEFAULT_HTTP_PORT = 8484
+export { DEFAULT_HTTP_PORT } from '../db/build'
 
 export function startHttpServer(app: Hono, port: number, hostname = '0.0.0.0'): Promise<ServerType> {
   return new Promise((resolve, reject) => {

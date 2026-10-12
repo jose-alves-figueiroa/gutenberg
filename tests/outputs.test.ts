@@ -62,7 +62,7 @@ describe('output routes under /overlay (US7.1)', () => {
     addItem(api.db, s.id, { collection: 'songbook:psalter', itemRef: 'psalter-133B', moment: 'Salmo' })
     addItem(api.db, s.id, { collection: 'bible:ara', itemRef: 'Hb:12:14', moment: 'Leitura' })
     const presenter = createPresenter(api.db)
-    const app = createServerApp(api.db, presenter)
+    const app = createServerApp(api.db, { presenter })
     const map = async (path: string) => (await (await app.request(path, {}, LAN)).json()).map
     return { ...api, presenter, app, map }
   }

@@ -2,7 +2,7 @@
 
 Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 Fonte: `design_handoff_gutenberg/README.md` + protótipo `design/Gutenberg.dc.html` (classe `Component`).
-Concluídos: E0–E6. Próximo: **E7 (Conexão com o OBS por HTTP)**.
+Concluídos: E0–E7. Próximo: **E8 (Empacotamento)**.
 
 ## Stack e protocolo (decisão)
 O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP** — o protocolo já em uso (substitui o JSON do Holyrics). Isso substitui o obs-websocket sugerido no README do handoff.
@@ -161,7 +161,7 @@ Especificação: README → "Apresentar" e "Busca rápida"; protótipo (`goLive`
 - [x] Lógica pura (`src/shared/quick-search.ts`): referência bíblica completa, lista de livros (tag do livro + `capítulo.versículo`), prefixos das coleções (`bc cm cfw sg hnc credo`, vindos dos dados; um prefixo cadastrado vence a abreviação de livro igual)
 - [x] Sugestões com ↑↓/Enter/Esc/Backspace (volta ao livro); Bíblia primeiro; Enter apresenta como Avulso e abre Apresentar
 
-### E7 — Conexão com o OBS por HTTP (Fase 7)
+### E7 — Conexão com o OBS por HTTP (Fase 7) ✓
 **Payload**: as rotas públicas entregam o **mesmo formato do Holyrics** (`{ "map": { … } }`, mesmas chaves), para o overlay atual do OBS continuar funcionando, mas com os valores limpos — o que motivou o projeto (README → "Problemas"):
 
 ```json
@@ -211,10 +211,10 @@ Especificação: README → "Apresentar" e "Busca rápida"; protótipo (`goLive`
 - [x] CORS liberado só nas rotas públicas (o overlay pode estar em outra origem)
 
 **US7.2** Como operador, quero ver o estado da conexão com o OBS, para agir se a rede falhar.
-- [ ] Rastrear clientes do overlay **por saída** (SSE conectados, último acesso, IP; latência via `GET /api/v1/health?output=<saída>` chamado pelo overlay a cada 2 s)
-- [ ] Estados: conectado / instável (> 500 ms) / sem resposta (3 falhas seguidas); alimentam o indicador da nav e substituem o status estático da E1
-- [ ] Aba Conexão: IP do operador e, para cada saída, as URLs `/overlay/<saída>` e `/overlay/resources/<saída>` (copiar), as coleções ligadas e o estado dela (o indicador da nav resume todas), porta editável (só números, até 5 dígitos; reinicia o servidor), Testar, registro de eventos com hora
-- [ ] Saídas editáveis na aba Conexão: criar/renomear/remover, escolher as coleções (cada coleção em no máximo uma saída) e o estilo (cor, fundo, fonte, alinhamentos, linhas máximas)
+- [x] Rastrear clientes do overlay **por saída** (SSE conectados, último acesso, IP; latência via `GET /api/v1/health?output=<saída>` chamado pelo overlay a cada 2 s)
+- [x] Estados: conectado / instável (> 500 ms) / sem resposta (3 falhas seguidas); alimentam o indicador da nav e substituem o status estático da E1
+- [x] Aba Conexão: IP do operador e, para cada saída, as URLs `/overlay/<saída>` e `/overlay/resources/<saída>` (copiar), as coleções ligadas e o estado dela (o indicador da nav resume todas), porta editável (só números, até 5 dígitos; reinicia só o servidor da LAN — a interface usa um servidor próprio no loopback, em porta livre; porta ocupada mantém a anterior e entra no registro), Testar, registro de eventos com hora
+- [x] Saídas editáveis na aba Conexão: criar/renomear/remover, escolher as coleções (cada coleção em no máximo uma saída) e o estilo (cor, fundo, fonte, alinhamentos, linhas máximas)
 
 ### E8 — Empacotamento (Fase 8)
 Alvos: **Windows**, **macOS** (Apple Silicon/arm64 — o Mac do mantenedor, macOS 26) e **Linux** simples (Ubuntu/Debian). Comum a todos: `electron-builder`, o banco gerado por `npm run data:build` (após `data:unlock`) como recurso `gutenberg.sqlite`, ícone do app, versão do `package.json`.

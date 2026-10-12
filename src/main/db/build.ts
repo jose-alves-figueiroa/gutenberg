@@ -6,6 +6,9 @@ import { DEFAULT_MAX } from '../../shared/autobreak'
 import type { CanonicalData, SourceRef } from '../../shared/data-model'
 import type { SqlDatabase } from './schema'
 
+/** HTTP port when none is saved. */
+export const DEFAULT_HTTP_PORT = 8484
+
 /** Setting keys stored in the `settings` table. */
 export const SETTINGS = {
   /** Characters per screen for autobreak (60–160). */

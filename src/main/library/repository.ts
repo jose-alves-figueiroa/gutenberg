@@ -18,7 +18,7 @@ import type {
 } from '../../shared/library-schemas'
 import { REQUIRED } from '../../shared/requirements'
 import { DEFAULT_MAX, clampMax } from '../../shared/autobreak'
-import { SETTINGS } from '../db/build'
+import { DEFAULT_HTTP_PORT, SETTINGS } from '../db/build'
 import type { SqlDatabase } from '../db/schema'
 
 type Row = Record<string, string | number | null>
@@ -248,3 +248,17 @@ export function settings(db: SqlDatabase): { screenCharLimit: number } {
   const row = get<{ value: string }>(db, 'SELECT value FROM settings WHERE key = ?', SETTINGS.screenCharLimit)
   return { screenCharLimit: row ? clampMax(Number(row.value)) : DEFAULT_MAX }
 }
+
+/** Writes one setting (`settings` table). */
+export function saveSetting(db: SqlDatabase, key: string, value: string): void {
+  db.prepare('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value').run(key, value)
+}
+
+/** Port of the LAN server (OBS and UI), or the default. */
+export function httpPort(db: SqlDatabase): number {
+  const row = get<{ value: string }>(db, 'SELECT value FROM settings WHERE key = ?', SETTINGS.httpPort)
+  const port = Number(row?.value)
+  return Number.isInteger(port) && port > 0 && port < 65536 ? port : DEFAULT_HTTP_PORT
+}
+
+export const saveHttpPort = (db: SqlDatabase, port: number): void => saveSetting(db, SETTINGS.httpPort, String(port))

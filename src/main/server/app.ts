@@ -1,14 +1,15 @@
 /**
  * Gutenberg's HTTP API (PLAN.md → "Stack e protocolo"). One Hono app, two kinds of routes:
  * - public on the LAN, for OBS (overlay, current screen, events, health) — E7;
- * - local only (`127.0.0.1` / `::1`): the library, liturgies and presentation commands (`/present`).
+ * - local only (`127.0.0.1` / `::1`): the library, liturgies, presentation commands (`/present`)
+ *   and the connection with OBS (`/connection`).
  */
-import { getConnInfo } from '@hono/node-server/conninfo'
 import { zValidator } from '@hono/zod-validator'
 import { Hono, type Context, type MiddlewareHandler } from 'hono'
 import { cors } from 'hono/cors'
 import { streamSSE } from 'hono/streaming'
 import { HTTPException } from 'hono/http-exception'
+import { z } from 'zod'
 import {
   CatechismQuestionBody,
   ConfessionSectionBody,
@@ -22,22 +23,11 @@ import { resolveItem, searchCollection } from '../library/items'
 import * as repo from '../library/repository'
 import * as liturgy from '../liturgy/repository'
 import { createPresenter, type Presenter } from '../present/presenter'
+import { connectionRoutes, type NetworkControl } from './connection'
+import { localOnly, remoteIp } from './guards'
+import { createConnectionMonitor, type ConnectionMonitor } from './monitor'
 import { overlayHtml } from './overlay'
 import { PresentCommand } from '../../shared/presentation'
-
-const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1'])
-
-/** Rejects requests that do not come from this computer (the operator UI). */
-export const localOnly: MiddlewareHandler = async (c, next) => {
-  let address: string | undefined
-  try {
-    address = getConnInfo(c).remote.address
-  } catch {
-    address = undefined
-  }
-  if (!address || !LOOPBACK.has(address)) throw new HTTPException(403, { message: 'local only' })
-  await next()
-}
 
 function libraryRoutes(db: SqlDatabase) {
   const orNotFound = <T>(value: T | null): T => {
@@ -127,6 +117,11 @@ function liturgyRoutes(db: SqlDatabase) {
     })
 }
 
+const HealthQuery = z.object({
+  output: z.string().regex(/^[a-z0-9-]{0,32}$/).default(''),
+  rtt: z.coerce.number().int().min(0).max(600_000).optional()
+})
+
 /** Heartbeat on the SSE stream, so proxies and OBS keep the connection open. */
 export const SSE_HEARTBEAT_MS = 15_000
 
@@ -135,7 +130,7 @@ export const SSE_HEARTBEAT_MS = 15_000
  * `/overlay/resources/<output>` (JSON) and `/overlay/resources/<output>/events` (SSE); without an
  * output, everything. CORS per route, so the local routes never get it.
  */
-function publicRoutes(presenter: Presenter) {
+function publicRoutes(presenter: Presenter, monitor: ConnectionMonitor) {
   const open = cors()
   const notFound = () => {
     throw new HTTPException(404, { message: 'unknown output' })
@@ -147,24 +142,35 @@ function publicRoutes(presenter: Presenter) {
   }
   const events = (c: Context, slug?: string) => {
     current(slug)
+    const ip = remoteIp(c)
+    monitor.streamOpened(slug ?? '', ip)
     return streamSSE(c, async (stream) => {
       const send = () => {
         const payload = presenter.payload(slug)
         return payload ? stream.writeSSE({ data: JSON.stringify(payload), id: String(payload.map.seq) }) : Promise.resolve()
       }
       const unsubscribe = presenter.subscribe(() => void send())
-      stream.onAbort(unsubscribe)
+      let closed = false
+      const close = () => {
+        if (closed) return
+        closed = true
+        unsubscribe()
+        monitor.streamClosed(slug ?? '', ip)
+      }
+      stream.onAbort(close)
       await send()
       while (!stream.aborted) {
         await stream.sleep(SSE_HEARTBEAT_MS)
         if (!stream.aborted) await stream.write(': ping\n\n')
       }
-      unsubscribe()
+      close()
     })
   }
   const json = (c: Context, slug?: string) => {
+    const payload = current(slug)
+    monitor.seen(slug ?? '', remoteIp(c))
     c.header('Cache-Control', 'no-store')
-    return c.json(current(slug))
+    return c.json(payload)
   }
   return new Hono()
     .get('/overlay', (c) => c.html(page()))
@@ -173,7 +179,11 @@ function publicRoutes(presenter: Presenter) {
     .get('/overlay/resources/:output', open, (c) => json(c, c.req.param('output')))
     .get('/overlay/resources/:output/events', open, (c) => events(c, c.req.param('output')))
     .get('/overlay/:output', (c) => c.html(page(c.req.param('output'))))
-    .get('/api/v1/health', open, (c) => c.json({ ok: true, time: Date.now() }))
+    .get('/api/v1/health', open, zValidator('query', HealthQuery), (c) => {
+      const { output, rtt } = c.req.valid('query')
+      monitor.seen(output, remoteIp(c), rtt)
+      return c.json({ ok: true, time: Date.now() })
+    })
 }
 
 function presentRoutes(presenter: Presenter) {
@@ -183,7 +193,24 @@ function presentRoutes(presenter: Presenter) {
     .post('/command', zValidator('json', PresentCommand), (c) => c.json(presenter.command(c.req.valid('json'))))
 }
 
-export function createServerApp(db: SqlDatabase, presenter: Presenter = createPresenter(db)) {
+export interface ServerOptions {
+  presenter?: Presenter
+  monitor?: ConnectionMonitor
+  /** Port and addresses of the LAN server (the main process restarts it on a port change). */
+  network?: NetworkControl
+}
+
+/** For tests and tools: a fixed address, port changes only saved. */
+const staticNetwork = (db: SqlDatabase): NetworkControl => ({
+  addresses: () => ['192.168.0.12'],
+  port: () => repo.httpPort(db),
+  setPort: async (port) => repo.saveHttpPort(db, port)
+})
+
+export function createServerApp(db: SqlDatabase, options: ServerOptions = {}) {
+  const presenter = options.presenter ?? createPresenter(db)
+  const monitor = options.monitor ?? createConnectionMonitor()
+  const network = options.network ?? staticNetwork(db)
   // An edit may change the text on the air: OBS gets the screen again (same seq).
   const notifyAfterEdit: MiddlewareHandler = async (c, next) => {
     await next()
@@ -201,7 +228,8 @@ export function createServerApp(db: SqlDatabase, presenter: Presenter = createPr
     .route('/api/v1/library', libraryRoutes(db))
     .route('/api/v1/liturgy', liturgyRoutes(db))
     .route('/api/v1/present', presentRoutes(presenter))
-    .route('/', publicRoutes(presenter))
+    .route('/api/v1/connection', connectionRoutes(db, presenter, monitor, network))
+    .route('/', publicRoutes(presenter, monitor))
 }
 
 /** Route types for the renderer's typed client (`hono/client`). */

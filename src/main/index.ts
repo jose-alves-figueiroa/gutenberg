@@ -1,10 +1,13 @@
+import type { Server } from 'node:http'
+import type { AddressInfo } from 'node:net'
+import { networkInterfaces } from 'node:os'
 import { join } from 'node:path'
 import { app, BrowserWindow, dialog, shell } from 'electron'
-import { SETTINGS } from './db/build'
 import { openAppDatabase } from './db/open'
-import type { SqlDatabase } from './db/schema'
+import { httpPort, saveHttpPort } from './library/repository'
 import { createServerApp } from './server/app'
-import { DEFAULT_HTTP_PORT, startHttpServer } from './server/listen'
+import type { NetworkControl } from './server/connection'
+import { startHttpServer } from './server/listen'
 
 function createWindow(serverUrl: string): void {
   const win = new BrowserWindow({
@@ -39,19 +42,50 @@ function createWindow(serverUrl: string): void {
 const seedDatabase = () =>
   app.isPackaged ? join(process.resourcesPath, 'gutenberg.sqlite') : join(app.getAppPath(), 'data', 'build', 'gutenberg.sqlite')
 
-function httpPort(db: SqlDatabase): number {
-  const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(SETTINGS.httpPort) as { value: string } | undefined
-  const port = Number(row?.value)
-  return Number.isInteger(port) && port > 0 && port < 65536 ? port : DEFAULT_HTTP_PORT
+/** IPv4 addresses of this computer on the LAN (shown in the Connection tab). */
+const lanAddresses = (): string[] =>
+  Object.values(networkInterfaces())
+    .flat()
+    .filter((i) => i && i.family === 'IPv4' && !i.internal)
+    .map((i) => i!.address)
+
+function closeServer(server: Server): Promise<void> {
+  return new Promise((resolve) => {
+    server.close(() => resolve())
+    // Open SSE streams would keep the old port busy.
+    server.closeAllConnections()
+  })
 }
 
 app.whenReady().then(async () => {
   let serverUrl: string
   try {
     const db = openAppDatabase({ file: join(app.getPath('userData'), 'gutenberg.sqlite'), seed: seedDatabase() })
-    const port = httpPort(db)
-    await startHttpServer(createServerApp(db), port)
-    serverUrl = `http://127.0.0.1:${port}`
+    // Two listeners on one app: the UI talks to a fixed loopback port, so changing the LAN port
+    // (Connection tab) restarts only the server OBS uses.
+    let lan: Server | null = null
+    let lanPort = httpPort(db)
+    const network: NetworkControl = {
+      addresses: lanAddresses,
+      port: () => lanPort,
+      async setPort(port) {
+        if (port === lanPort && lan) return
+        const next = (await startHttpServer(server, port)) as Server
+        if (lan) await closeServer(lan)
+        lan = next
+        lanPort = port
+        saveHttpPort(db, port)
+      }
+    }
+    const server = createServerApp(db, { network })
+    const ui = (await startHttpServer(server, 0, '127.0.0.1')) as Server
+    serverUrl = `http://127.0.0.1:${(ui.address() as AddressInfo).port}`
+    try {
+      lan = (await startHttpServer(server, lanPort)) as Server
+    } catch (err) {
+      // The UI still works; the Connection tab shows the port and lets the operator change it.
+      console.error(`LAN server on port ${lanPort}: ${(err as Error).message}`)
+    }
   } catch (err) {
     dialog.showErrorBox('Gutenberg', (err as Error).message)
     app.quit()

@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { App } from '@renderer/App'
+import { createTestApi } from './helpers/test-api'
 
 afterEach(cleanup)
 
@@ -30,22 +31,36 @@ describe('Nav', () => {
 
   it('clicking the connection status opens the Connection tab', async () => {
     render(<App />)
-    await userEvent.click(screen.getByRole('button', { name: /OBS conectado/ }))
+    await userEvent.click(screen.getByRole('button', { name: /OBS sem resposta/ }))
     expect(screen.getByRole('tab', { name: 'Conexão' })).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByRole('tabpanel')).toHaveAttribute('id', 'view-connection')
   })
 
-  it('shows IP and latency in the status', () => {
-    render(<App ip="10.0.0.5" />)
-    expect(screen.getByText('10.0.0.5 · 18 ms')).toBeInTheDocument()
+  /** An overlay on 10.0.0.5 reporting `rtt` ms (as the /overlay page does every 2 s). */
+  async function withOverlay(rtt?: number) {
+    const api = createTestApi()
+    if (rtt !== undefined)
+      await api.app.request(`/api/v1/health?output=bible&rtt=${rtt}`, {}, { incoming: { socket: { remoteAddress: '::ffff:10.0.0.5' } } })
+    render(<App api={api.client} />)
+    return api
+  }
+
+  it('shows the OBS address and latency when an overlay answers', async () => {
+    await withOverlay(18)
+    expect(await screen.findByText('10.0.0.5 · 18 ms')).toBeInTheDocument()
+    expect(screen.getByText('OBS conectado')).toBeInTheDocument()
   })
 
-  it.each([
-    ['unstable', 'Conexão instável'],
-    ['offline', 'OBS sem resposta']
-  ] as const)('status %s shows "%s"', (conn, label) => {
-    render(<App conn={conn} />)
-    expect(screen.getByText(label)).toBeInTheDocument()
+  it('a slow overlay (> 500 ms) is "Conexão instável"', async () => {
+    await withOverlay(640)
+    expect(await screen.findByText('Conexão instável')).toBeInTheDocument()
+    expect(screen.getByText('10.0.0.5 · 640 ms')).toBeInTheDocument()
+  })
+
+  it('no overlay → "OBS sem resposta", waiting on this computer', async () => {
+    await withOverlay()
+    expect(await screen.findByText('tentando 192.168.0.12:8484')).toBeInTheDocument()
+    expect(screen.getByText('OBS sem resposta')).toBeInTheDocument()
   })
 
   it('has the quick search field', () => {
