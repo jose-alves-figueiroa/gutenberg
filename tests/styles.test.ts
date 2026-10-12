@@ -9,7 +9,8 @@ const html = readFileSync(join(__dirname, '../src/renderer/index.html'), 'utf8')
 describe('Broadsheet styles', () => {
   it('reference no external URLs (the app runs offline)', () => {
     for (const [file, src] of Object.entries({ ...css, 'index.html': html })) {
-      expect(src, file).not.toMatch(/https?:\/\//)
+      // Loopback is allowed (the CSP lets the UI reach the local HTTP API); anything else is external.
+      expect(src.replace(/http:\/\/127\.0\.0\.1(:\*|:\d+)?/g, ''), file).not.toMatch(/https?:\/\//)
       expect(src, file).not.toMatch(/@import/)
     }
   })

@@ -1,8 +1,8 @@
 /**
- * Library queries and edits over the app database (schema: src/main/db/schema.ts). Synchronous,
- * driver-agnostic (`SqlDatabase`); the IPC layer wraps it in the async `LibraryApi`.
+ * Library queries and edits over the app database (schema: src/main/db/schema.ts). Synchronous and
+ * driver-agnostic (`SqlDatabase`); the HTTP routes in src/main/server expose it.
  */
-import { BOOKS } from '../../shared/collections'
+import { BOOKS, DEFAULT_COLLECTIONS, GROUPS, groupOf } from '../../shared/collections'
 import type {
   BibleBookSummary,
   CatechismIndex,
@@ -15,7 +15,7 @@ import type {
   SongSummary,
   SongbookInfo,
   VerseRecord
-} from '../../shared/library-api'
+} from '../../shared/library-schemas'
 import { REQUIRED } from '../../shared/requirements'
 import type { SqlDatabase } from '../db/schema'
 
@@ -26,6 +26,9 @@ const get = <T>(db: SqlDatabase, sql: string, ...params: (string | number)[]) =>
 const BOOK_NAME = new Map(BOOKS.map(([abbrev, name]) => [abbrev, name]))
 const BOOK_ORDER = new Map(BOOKS.map(([abbrev], i) => [abbrev, i + 1]))
 const EDITED = 'edited'
+
+/** A document that does not exist (→ HTTP 404). */
+export class NotFoundError extends Error {}
 
 export function collections(db: SqlDatabase): CollectionSummary[] {
   const out: CollectionSummary[] = []
@@ -44,7 +47,15 @@ export function collections(db: SqlDatabase): CollectionSummary[] {
   if (creeds && creeds.n > 0) out.push({ kind: 'creeds', id: 'creeds', title: 'Credos', shortTitle: 'Credo', prefix: 'credo', count: creeds.n })
   out.push(...docs('confession', 'confessions', 'confession_sections', 'confession_id'))
   out.push(...docs('catechism', 'catechisms', 'catechism_questions', 'catechism_id'))
+  // Menu order: groups (Bible first), then the shipped order; other documents last in their group.
+  const known = (c: CollectionSummary) => {
+    const i = DEFAULT_COLLECTIONS.findIndex((d) => d.kind === c.kind && d.id === c.id)
+    return i < 0 ? DEFAULT_COLLECTIONS.length : i
+  }
   return out
+    .map((c, i) => ({ c, i }))
+    .sort((a, b) => GROUPS.indexOf(groupOf(a.c.kind)) - GROUPS.indexOf(groupOf(b.c.kind)) || known(a.c) - known(b.c) || a.i - b.i)
+    .map(({ c }) => c)
 }
 
 /** `ara` / `ARA` → the stored version code. */
@@ -138,7 +149,7 @@ export function saveConfessionSection(db: SqlDatabase, s: ConfessionSectionRecor
 
 export function catechism(db: SqlDatabase, catechismId: string): CatechismIndex {
   const doc = get<Row>(db, 'SELECT id, title, short_title FROM catechisms WHERE id = ?', catechismId)
-  if (!doc) throw new Error(`unknown catechism ${catechismId}`)
+  if (!doc) throw new NotFoundError(`unknown catechism ${catechismId}`)
   const questions = all<{ number: number; question: string }>(
     db,
     'SELECT number, question FROM catechism_questions WHERE catechism_id = ? ORDER BY number',
@@ -162,7 +173,7 @@ export function saveCatechismQuestion(db: SqlDatabase, q: CatechismQuestionRecor
 
 export function songbook(db: SqlDatabase, songbookId: string): { info: SongbookInfo; songs: SongSummary[] } {
   const b = get<Row>(db, 'SELECT id, title, short_title, prefix, item_label FROM songbooks WHERE id = ?', songbookId)
-  if (!b) throw new Error(`unknown songbook ${songbookId}`)
+  if (!b) throw new NotFoundError(`unknown songbook ${songbookId}`)
   const songs = all<Row>(db, 'SELECT id, number, version, title, author, lyrics FROM songs WHERE songbook_id = ?', songbookId)
     .map((r) => ({
       id: String(r.id),

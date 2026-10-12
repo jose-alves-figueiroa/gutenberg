@@ -87,18 +87,18 @@ Tasks detalhadas, schemas (em inglês) e fontes: **`docs/DATA.md` → Progresso*
 Especificação: README → "Biblioteca" e protótipo (`Component.render`, ramo `libCol`). Os dados vêm do banco gerado na E3.
 
 **US4.1** Como operador, quero que o app abra a biblioteca do banco local, para usar os dados da E3.
-- [~] `src/main/db/open.ts`: banco em `userData`; na 1ª execução copia o banco empacotado (dev: `data/build/gutenberg.sqlite`); migra; `node:sqlite` (validado no Electron 44)
-- [~] `src/main/library/repository.ts`: consultas e gravações sobre `SqlDatabase` (coleções com contagem, Bíblia, confissões, catecismos, hinários, credos) — escrito; faltam os testes sobre o banco do seed
+- [x] `src/main/db/open.ts`: banco em `userData`; na 1ª execução copia o banco empacotado (dev: `data/build/gutenberg.sqlite`); migra; `node:sqlite` (validado no Electron 44)
+- [x] `src/main/library/repository.ts`: consultas e gravações sobre `SqlDatabase` (coleções na ordem do menu, Bíblia, confissões com inserção ordenada de seções, catecismos, hinários, credos); testes sobre o banco do seed
 
 **US4.2** Como desenvolvedor, quero a API HTTP local da biblioteca, para a UI e o OBS usarem o mesmo servidor.
-- [ ] Servidor Hono no main (`src/main/server/`): sobe junto com o app, porta configurável; middleware que restringe rotas locais a `127.0.0.1`
-- [ ] Rotas `/api/v1/library/*` (só locais) sobre o repositório, com validação zod de parâmetros e corpos
-- [ ] Remover a ponte IPC provisória (`src/main/library/ipc.ts`, `window.gutenberg.library`); manter `LibraryApi` só como tipo de domínio se ainda útil
-- [ ] Renderer: cliente `hono/client` + TanStack Query (`QueryClientProvider`); CSP com `connect-src` para o servidor local
-- [ ] Testes: rotas via `app.request()` do Hono sobre o banco do seed (sem abrir porta); recusa de rota local vinda da LAN
+- [x] Servidor Hono no main (`src/main/server/`): sobe com o app em `0.0.0.0`, porta em `settings.http_port` (padrão 8484); middleware `localOnly` (loopback) — conferido no app real: LAN recebe 403
+- [x] Rotas `/api/v1/library/*` (só locais) sobre o repositório, com validação zod (`src/shared/library-schemas.ts`, tipos inferidos dos schemas); 400 para entrada inválida, 404 para registro ausente
+- [x] Ponte IPC provisória removida; o preload só expõe `serverUrl`
+- [x] Renderer: `ApiProvider` (cliente `hono/client` tipado pelo `AppType` do servidor + `QueryClientProvider`); CSP `connect-src` para `http://127.0.0.1:*`
+- [x] Testes: rotas via `app.request()` sobre o banco do seed; recusa de chamadas da LAN e sem origem conhecida
 
 **US4.3** Como operador, quero navegar pelas coleções, para achar qualquer texto.
-- [ ] Coluna esquerda: coleções nos 3 grupos (Bíblia no topo) com contagem; selecionada em tint de accent
+- [ ] Coluna esquerda: coleções nos 3 grupos (Bíblia no topo) com contagem; selecionada em tint de accent; rótulos do menu do protótipo para os documentos conhecidos ("Confissão de Westminster", "Breve Catecismo"), título do banco para os demais
 - [ ] Breadcrumb clicável, título h2 32px e dica 14px
 
 **US4.4** Bíblia (somente leitura)

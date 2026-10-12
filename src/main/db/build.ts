@@ -9,7 +9,9 @@ import type { SqlDatabase } from './schema'
 /** Setting keys stored in the `settings` table. */
 export const SETTINGS = {
   /** Characters per screen for autobreak (60–160). */
-  screenCharLimit: 'screen_char_limit'
+  screenCharLimit: 'screen_char_limit',
+  /** Port of the HTTP server (UI and OBS). */
+  httpPort: 'http_port'
 } as const
 
 const src = (s: SourceRef) => (s.id ? `${s.name}:${s.id}` : s.name)

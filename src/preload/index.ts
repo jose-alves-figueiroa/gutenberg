@@ -1,9 +1,6 @@
-import { contextBridge, ipcRenderer } from 'electron'
-import { LIBRARY_METHODS, type LibraryApi } from '../shared/library-api'
+import { contextBridge } from 'electron'
 
-// Main ↔ renderer bridge. The library API is a typed proxy over one allow-listed IPC channel.
-const library = Object.fromEntries(
-  LIBRARY_METHODS.map((method) => [method, (...args: unknown[]) => ipcRenderer.invoke('library', method, ...args)])
-) as unknown as LibraryApi
+// The renderer talks to the local HTTP API (src/main/server); main passes its URL as an argument.
+const serverUrl = process.argv.find((a) => a.startsWith('--gutenberg-server='))?.split('=')[1] ?? ''
 
-contextBridge.exposeInMainWorld('gutenberg', { version: '0.1.0', library })
+contextBridge.exposeInMainWorld('gutenberg', { version: '0.1.0', serverUrl })
