@@ -10,7 +10,7 @@ O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP
 - **Servidor HTTP** no processo principal do Electron (PC do operador): **Hono** (`@hono/node-server`) + **zod** (`@hono/zod-validator`). Um servidor, duas classes de rota:
   - **Públicas na LAN (OBS):** `GET /overlay` (página da Browser Source, servida pelo Gutenberg), `GET /api/v1/current` (tela atual, payload v1), `GET /api/v1/events` (o mesmo payload por Server-Sent Events), `GET /api/v1/health` (latência/estado)
   - **Só locais** (`127.0.0.1`; recusadas vindas da LAN): biblioteca (leitura/edição), liturgias, comandos de apresentação
-- **Payload v1** (README → "Payload"): `{ v, seq, type, header, lines, meta }`, schema zod único em `src/shared`; sem HTML, até 2 linhas
+- **Payload** compatível com o JSON que o Holyrics envia hoje (`{ "map": { … } }`, ver E7 e `design_handoff_gutenberg/reference/holyrics-payload-exemplo.json.txt`), com texto **limpo** (sem HTML) e campos extras `seq`/`lines`; schema zod único em `src/shared`
 - **Renderer:** React + cliente tipado do Hono (`hono/client`) + **TanStack Query**; a UI usa a mesma API HTTP via `localhost` (sem IPC próprio)
 - **Banco:** SQLite via `node:sqlite` (Node 24 do Electron 44), repositório em `src/main/library/`
 - **Rede:** o OBS aponta a Browser Source para `http://<ip-do-operador>:<porta>/overlay`; IP e porta exibidos na aba Conexão (porta configurável); regra de firewall do Windows criada no instalador (E8)
@@ -149,18 +149,58 @@ Especificação: README → "Liturgia" e protótipo (ramo `isLit`, `addToCulto`,
 - [ ] Estado de apresentação persistido em disco
 
 ### E7 — Conexão com o OBS por HTTP (Fase 7)
+**Payload**: as rotas públicas entregam o **mesmo formato do Holyrics** (`{ "map": { … } }`, mesmas chaves), para o overlay atual do OBS continuar funcionando, mas com os valores limpos — o que motivou o projeto (README → "Problemas"):
+
+```json
+{
+  "map": {
+    "type": "BIBLE",
+    "header": "Hebreus 12.15 (2/2)",
+    "text": "nem haja alguma raiz de amargura que, brotando,\nvos perturbe, e, por meio dela, muitos sejam contaminados;",
+    "lines": ["nem haja alguma raiz de amargura que, brotando,", "vos perturbe, e, por meio dela, muitos sejam contaminados;"],
+    "seq": 128,
+    "key_ok": "true", "key_error": "", "display_errors": "_true", "attention": false,
+    "color": "#FAFAFA", "background": "#FFFFFF", "font": "Open Sans", "bold": false,
+    "valign": "bottom", "halign": "center", "font_max_rows": "15", "max_html_types": "3",
+    "alert_velocity": "160", "alert_height": "15%", "alert_bold": false,
+    "alert_background": "#000000", "alert_font": "Arial", "alert_color": "#FAFAFA"
+  }
+}
+```
+- `type`: `BIBLE`, `MUSIC`, `CREED`, `CONFESSION`, `CATECHISM`, `CLEAR` (README); em `CLEAR`, `header` e `text` vazios
+- `header` e `text` **sem HTML** (sem `<desc>`, `<ctt>`, `&nbsp;`, `<span>`, sem o sufixo `(RA)` e sem o `text-force-update`); `text` com as até 2 linhas separadas por `\n`
+- Em `MUSIC`, também `$system_var_music_title`, `$system_var_music_artist`, `$system_var_music_author`, `$system_var_music_copyright` (créditos da E3)
+- Extras que um overlay do Holyrics ignora: `seq` (crescente; o overlay descarta `seq` menor) e `lines` (array)
+- Estilos (`color`, `background`, `font`, `bold`, `valign`, `halign`, `font_max_rows`, `alert_*`) vêm de `settings`, com os valores do Holyrics como padrão e `valign` por tipo (Bíblia/doutrina `bottom`, música `middle`, como no exemplo)
+
 **US7.1** Como operador, quero que o OBS mostre a tela atual, para a transmissão acompanhar a apresentação.
-- [ ] Schema zod do payload v1 (`src/shared/payload.ts`) gerado a partir de `slidesOf`; `type: CLEAR` para "Limpar tela"; `seq` crescente persistido com o estado de apresentação
-- [ ] `GET /api/v1/current` (JSON) e `GET /api/v1/events` (SSE: envia o estado atual ao conectar e a cada mudança; heartbeat)
-- [ ] `GET /overlay`: HTML estático da Browser Source — conecta ao SSE, cai para polling de `/current` se o SSE falhar, ignora `seq` menor que o último, **mantém o último texto se a rede cair**; estilo (fonte, cor, posição) no overlay/OBS
-- [ ] Ao reconectar, o overlay recebe o estado atual (último `seq`) — sem reenvio manual
+- [ ] Schema zod do payload (`src/shared/payload.ts`) e função pura `toPayload(slide, item, style, seq)`; testes comparando as chaves com o exemplo do Holyrics e garantindo zero HTML
+- [ ] `GET /api/v1/current` (JSON acima) e `GET /api/v1/events` (SSE: o estado atual ao conectar e a cada mudança; heartbeat a cada 15 s)
+- [ ] `GET /overlay`: HTML estático da Browser Source — conecta ao SSE, cai para polling de `/current` (1 s) se o SSE falhar, ignora `seq` menor que o último, **mantém o último texto se a rede cair**; usa os estilos do próprio `map` (como o Holyrics)
+- [ ] Compatibilidade: a mesma URL serve a quem hoje consome o JSON do Holyrics (trocar só o endereço no OBS)
+- [ ] CORS liberado só nas rotas públicas (o overlay pode estar em outra origem)
 
 **US7.2** Como operador, quero ver o estado da conexão com o OBS, para agir se a rede falhar.
-- [ ] Rastrear clientes do overlay (SSE conectados, último acesso, latência via `GET /api/v1/health` chamado pelo overlay a cada 2 s)
-- [ ] Estados: conectado / instável (> 500 ms) / sem resposta (3 falhas seguidas); alimentam o indicador da nav
-- [ ] Aba Conexão: IP do operador e URL do overlay exibidos (copiar), porta editável (só números, até 5 dígitos), Reconectar/Testar, registro de eventos com hora
+- [ ] Rastrear clientes do overlay (SSE conectados, último acesso, IP; latência via `GET /api/v1/health` chamado pelo overlay a cada 2 s)
+- [ ] Estados: conectado / instável (> 500 ms) / sem resposta (3 falhas seguidas); alimentam o indicador da nav e substituem o status estático da E1
+- [ ] Aba Conexão: IP do operador e URL do overlay exibidos (copiar), porta editável (só números, até 5 dígitos; reinicia o servidor), Testar, registro de eventos com hora
+- [ ] Estilos do payload editáveis na aba Conexão (cor, fundo, fonte, alinhamentos, linhas máximas)
 
 ### E8 — Empacotamento (Fase 8)
-- [ ] `electron-builder` para Windows, com o banco (`data:build`) como recurso
-- [ ] Regra de firewall do Windows para a porta do servidor HTTP (instalador)
-- [ ] Guia de configuração do OBS: Browser Source com a URL do overlay exibida na aba Conexão
+Alvos: **Windows**, **macOS** (Apple Silicon/arm64 — o Mac do mantenedor, macOS 26) e **Linux** simples (Ubuntu/Debian). Comum a todos: `electron-builder`, o banco gerado por `npm run data:build` (após `data:unlock`) como recurso `gutenberg.sqlite`, ícone do app, versão do `package.json`.
+
+**US8.1** Build e artefatos
+- [ ] `electron-builder.yml` com `extraResources` (banco), `asar`, e scripts `dist:win`, `dist:mac`, `dist:linux`
+- [ ] **Windows**: instalador NSIS (x64), atalho no menu Iniciar; build no Windows ou via CI
+- [ ] **macOS**: `.dmg` arm64 (Apple Silicon); assinatura ad-hoc (sem conta de desenvolvedor) e instrução para abrir na 1ª vez (Gatekeeper: botão direito → Abrir / "Abrir mesmo assim")
+- [ ] **Linux**: `.deb` (Ubuntu/Debian, amd64) com atalho no menu; `AppImage` opcional
+- [ ] CI (GitHub Actions) com matriz `windows-latest` / `macos-latest` / `ubuntu-latest`, publicando os artefatos; a chave do git-crypt entra como segredo (`GUTENBERG_DATA_PASSWORD` + `.gpg`)
+
+**US8.2** Rede no PC do operador (o OBS acessa a porta do Gutenberg)
+- [ ] **Windows**: regra de firewall para a porta (`netsh advfirewall`) criada pelo instalador NSIS e removida na desinstalação
+- [ ] **macOS**: o firewall do sistema pergunta na 1ª execução ("permitir conexões de entrada") — documentar; verificar com `socketfilterfw`
+- [ ] **Linux**: se o `ufw` estiver ativo, `postinst` do `.deb` libera a porta (ou instrução `sudo ufw allow <porta>/tcp`)
+
+**US8.3** Configuração do OBS e atualização
+- [ ] Guia: Browser Source com a URL do overlay exibida na aba Conexão (ou o consumidor de JSON existente apontado para `/api/v1/current`)
+- [ ] Atualização preserva o banco do operador em `userData` (o banco empacotado só é copiado na 1ª execução); estratégia para incorporar dados novos da E3 sem perder edições
