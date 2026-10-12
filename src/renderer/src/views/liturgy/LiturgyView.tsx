@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { t } from '@shared/i18n'
 import { json, useApi } from '../../api'
+import { usePresentAndOpen } from '../../present'
 import { useServices } from '../../service'
 import { Picker } from './Picker'
 
@@ -77,6 +78,7 @@ export function LiturgyView() {
 
 function ServiceHeader({ id, name, onRenamed, onDelete }: { id: number; name: string; onRenamed: () => void; onDelete: () => void }) {
   const api = useApi()
+  const present = usePresentAndOpen()
   // Remounted (key) when the stored name changes, so local state starts from it.
   const [value, setValue] = useState(name)
   const rename = useMutation({
@@ -104,7 +106,7 @@ function ServiceHeader({ id, name, onRenamed, onDelete }: { id: number; name: st
       <button type="button" className="btn btn-ghost" onClick={onDelete}>
         {t('liturgy.delete')}
       </button>
-      <button type="button" className="btn btn-primary" disabled title={t('leaf.notYet')}>
+      <button type="button" className="btn btn-primary" disabled={present.pending} onClick={() => void present.run({ type: 'service', serviceId: id })}>
         <PresentationIcon size={16} weight="duotone" aria-hidden />
         {t('liturgy.present')}
       </button>

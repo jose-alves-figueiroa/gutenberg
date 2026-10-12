@@ -50,6 +50,6 @@ describe('Nav', () => {
 
   it('has the quick search field', () => {
     render(<App />)
-    expect(screen.getByRole('searchbox', { name: 'Busca rápida' })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: 'Busca rápida' })).toBeInTheDocument()
   })
 })

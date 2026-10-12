@@ -4,6 +4,7 @@ import { tabLabel, type TabId } from '../tabs'
 
 export { LibraryView } from './library/LibraryView'
 export { LiturgyView } from './liturgy/LiturgyView'
+export { PresentView } from './present/PresentView'
 
 function View({ id, children }: { id: TabId; children: ReactNode }) {
   return (
@@ -21,19 +22,6 @@ function Heading({ id, note }: { id: TabId; note: string }) {
       <h2>{tabLabel(id)}</h2>
       <p className="empty-note">{note}</p>
     </>
-  )
-}
-
-export function PresentView() {
-  return (
-    <View id="present">
-      <aside>
-        <h6 className="text-muted">{t('present.aside')}</h6>
-      </aside>
-      <section>
-        <Heading id="present" note={t('present.empty')} />
-      </section>
-    </View>
   )
 }
 

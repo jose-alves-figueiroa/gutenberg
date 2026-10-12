@@ -1,7 +1,7 @@
 /**
  * Gutenberg's HTTP API (PLAN.md → "Stack e protocolo"). One Hono app, two kinds of routes:
  * - public on the LAN, for OBS (overlay, current screen, events, health) — E7;
- * - local only (`127.0.0.1` / `::1`): the library, liturgies and presentation commands.
+ * - local only (`127.0.0.1` / `::1`): the library, liturgies and presentation commands (`/present`).
  */
 import { getConnInfo } from '@hono/node-server/conninfo'
 import { zValidator } from '@hono/zod-validator'
@@ -19,6 +19,8 @@ import type { SqlDatabase } from '../db/schema'
 import { resolveItem, searchCollection } from '../library/items'
 import * as repo from '../library/repository'
 import * as liturgy from '../liturgy/repository'
+import { createPresenter, type Presenter } from '../present/presenter'
+import { PresentCommand } from '../../shared/presentation'
 
 const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1'])
 
@@ -122,7 +124,14 @@ function liturgyRoutes(db: SqlDatabase) {
     })
 }
 
-export function createServerApp(db: SqlDatabase) {
+function presentRoutes(presenter: Presenter) {
+  return new Hono()
+    .use(localOnly)
+    .get('/', (c) => c.json(presenter.view()))
+    .post('/command', zValidator('json', PresentCommand), (c) => c.json(presenter.command(c.req.valid('json'))))
+}
+
+export function createServerApp(db: SqlDatabase, presenter: Presenter = createPresenter(db)) {
   return new Hono()
     .onError((err, c) => {
       if (err instanceof HTTPException) return c.json({ error: err.message }, err.status)
@@ -132,6 +141,7 @@ export function createServerApp(db: SqlDatabase) {
     })
     .route('/api/v1/library', libraryRoutes(db))
     .route('/api/v1/liturgy', liturgyRoutes(db))
+    .route('/api/v1/present', presentRoutes(presenter))
 }
 
 /** Route types for the renderer's typed client (`hono/client`). */

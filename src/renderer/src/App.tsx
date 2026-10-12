@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ApiProvider, type ApiClient } from './api'
+import { NavigationContext } from './navigation'
 import { ServiceProvider } from './service'
 import { Nav } from './components/Nav'
 import type { ConnStatus, TabId } from './tabs'
@@ -27,10 +28,12 @@ export function App({ initialTab = 'liturgy', conn = 'online', ip = '192.168.0.1
   return (
     <ApiProvider client={api}>
       <ServiceProvider>
-        <div className="app">
-          <Nav tab={tab} onTab={setTab} conn={conn} ip={ip} />
-          <Current />
-        </div>
+        <NavigationContext.Provider value={setTab}>
+          <div className="app">
+            <Nav tab={tab} onTab={setTab} conn={conn} ip={ip} />
+            <Current />
+          </div>
+        </NavigationContext.Provider>
       </ServiceProvider>
     </ApiProvider>
   )

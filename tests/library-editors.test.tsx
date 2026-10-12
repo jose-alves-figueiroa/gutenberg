@@ -18,7 +18,7 @@ const preview = () => screen.getByRole('region', { name: /Como fica na transmiss
 const cardHeaders = () => [...preview().querySelectorAll('.slide-card-head')].map((e) => e.textContent)
 
 describe('Leaf (US4.9) — Bible passage preview, read only', () => {
-  it('previews the selected passage; presenting waits for E5/E6; no save buttons', async () => {
+  it('previews the selected passage; can be presented; no save buttons', async () => {
     renderLibrary()
     await userEvent.click(await screen.findByRole('button', { name: 'Hebreus' }))
     await userEvent.click(screen.getByRole('button', { name: '12' }))
@@ -27,7 +27,7 @@ describe('Leaf (US4.9) — Bible passage preview, read only', () => {
     expect(cardHeaders()).toEqual(['Hebreus 12.14', 'Hebreus 12.15 (1/2)', 'Hebreus 12.15 (2/2)'])
     expect(within(preview()).getByText('Como fica na transmissão · 3 telas')).toBeInTheDocument()
     expect(within(preview()).getByText(/Quebra automática nas pausas · até 96 caracteres/)).toBeInTheDocument()
-    expect(within(preview()).getByRole('button', { name: 'Apresentar agora' })).toBeDisabled()
+    expect(within(preview()).getByRole('button', { name: 'Apresentar agora' })).toBeEnabled()
     expect(within(preview()).queryByRole('button', { name: 'Salvar' })).toBeNull()
   })
 })

@@ -1,5 +1,5 @@
-import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { t } from '@shared/i18n'
+import { QuickSearch } from './QuickSearch'
 import { CONN_VIEW, TABS, tabLabel, type ConnStatus, type TabId } from '../tabs'
 
 interface NavProps {
@@ -32,18 +32,7 @@ export function Nav({ tab, onTab, conn, ip }: NavProps) {
           </button>
         ))}
       </div>
-      <div className="quick-search">
-        {/* Quick search: field only in phase 1; the logic arrives in phase 6. */}
-        <label className="quick-search-box">
-          <MagnifyingGlassIcon size={17} weight="duotone" aria-hidden />
-          <input
-            className="quick-search-input"
-            type="search"
-            aria-label={t('nav.quickSearch')}
-            placeholder={t('nav.quickSearchPlaceholder')}
-          />
-        </label>
-      </div>
+      <QuickSearch />
       <button
         type="button"
         className="nav-status"

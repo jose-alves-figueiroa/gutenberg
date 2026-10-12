@@ -2,7 +2,7 @@
 
 Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 Fonte: `design_handoff_gutenberg/README.md` + protótipo `design/Gutenberg.dc.html` (classe `Component`).
-Concluídos: E0–E5. Próximo: **E6 (Apresentar e busca rápida)**.
+Concluídos: E0–E6. Próximo: **E7 (Conexão com o OBS por HTTP)**.
 
 ## Stack e protocolo (decisão)
 O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP** — o protocolo já em uso (substitui o JSON do Holyrics). Isso substitui o obs-websocket sugerido no README do handoff.
@@ -142,11 +142,24 @@ Especificação: README → "Liturgia" e protótipo (ramo `isLit`, `addToCulto`,
 - [x] Bíblia no picker: digitando um livro, lista os livros (clicar completa `Hb `); referência completa mostra "Adicionar Hebreus 12.14–15"
 - [x] "Adicionar à liturgia" na Biblioteca (E4) adiciona o item ao culto atual ("Adicionado a {culto}"); desabilitado sem culto ou com alterações não salvas
 
-### E6 — Apresentar e busca rápida (Fase 6)
-- [ ] Lista de itens, item "Avulso", cartões NO AR / A SEGUIR
-- [ ] Anterior/Próximo com passagem entre itens; Limpar tela / Mostrar texto
-- [ ] Busca rápida: livros, tag de livro, capítulo.versículo, prefixos `bc cm cfw sg hnc credo`
-- [ ] Estado de apresentação persistido em disco
+### E6 — Apresentar e busca rápida (Fase 6) ✓
+Especificação: README → "Apresentar" e "Busca rápida"; protótipo (`goLive`, `step`, `present`, `dropAdhoc`, `suggestions`).
+
+**US6.1** Como operador, quero que o estado da apresentação viva no processo principal, para sobreviver a um reinício e alimentar o OBS (E7).
+- [x] `src/shared/presentation.ts` (puro): estado `{ serviceId, adhoc, live, slide, blank, seq }` e comandos `service`, `go`, `step` (passa entre itens: próximo item tela 1, item anterior última tela), `blank`, `adhoc`, `dropAdhoc`; índices limitados quando a liturgia muda; `seq` sobe a cada comando
+- [x] Main: estado persistido em disco (`settings.presentation_state`), sequência = Avulso (no topo, se houver) + itens do culto resolvidos; sem culto escolhido, usa o primeiro
+- [x] Rotas locais `GET /api/v1/present` (culto, itens com telas, tela no ar) e `POST /api/v1/present/command` (zod)
+
+**US6.2** Como operador, quero a tela Apresentar, para conduzir o culto.
+- [x] Lista de itens (Momento, título, coleção, "no ar"; item vê-se clicando sem ir ao ar); item Avulso no topo com ✕ "Tirar item avulso"
+- [x] Cabeçalho "Momento · Coleção" + título; "Limpar tela" / "Mostrar texto"
+- [x] Cartões das telas (NO AR / A SEGUIR); clicar põe no ar
+- [x] Barra sticky: Anterior / Próximo (com a próxima linha ou o próximo item, "Fim da liturgia"); setas ← → do teclado
+- [x] "Apresentar este culto" (Liturgia) e "Apresentar agora" (Biblioteca, como Avulso, sem alterar a liturgia salva) habilitados
+
+**US6.3** Como operador, quero a busca rápida na barra, para apresentar algo fora da liturgia.
+- [x] Lógica pura (`src/shared/quick-search.ts`): referência bíblica completa, lista de livros (tag do livro + `capítulo.versículo`), prefixos das coleções (`bc cm cfw sg hnc credo`, vindos dos dados; um prefixo cadastrado vence a abreviação de livro igual)
+- [x] Sugestões com ↑↓/Enter/Esc/Backspace (volta ao livro); Bíblia primeiro; Enter apresenta como Avulso e abre Apresentar
 
 ### E7 — Conexão com o OBS por HTTP (Fase 7)
 **Payload**: as rotas públicas entregam o **mesmo formato do Holyrics** (`{ "map": { … } }`, mesmas chaves), para o overlay atual do OBS continuar funcionando, mas com os valores limpos — o que motivou o projeto (README → "Problemas"):

@@ -8,6 +8,7 @@ import { DEFAULT_MAX } from '@shared/autobreak'
 import { t } from '@shared/i18n'
 import type { Slide } from '@shared/slides'
 import { json, useApi } from '../../api'
+import { usePresentAndOpen } from '../../present'
 import { useServices } from '../../service'
 
 /** Draft over a stored record (or a blank template for a record not registered yet). */
@@ -54,6 +55,7 @@ export function Leaf({ slides, song, max, editable, dirty = false, status = 'idl
   const api = useApi()
   const qc = useQueryClient()
   const { current } = useServices()
+  const present = usePresentAndOpen()
   const [added, setAdded] = useState<string | null>(null)
   const add = useMutation({
     mutationFn: () =>
@@ -88,7 +90,12 @@ export function Leaf({ slides, song, max, editable, dirty = false, status = 'idl
         ))}
       </div>
       <div className="leaf-bar">
-        <button type="button" className="btn btn-primary" disabled title={t('leaf.notYet')}>
+        <button
+          type="button"
+          className="btn btn-primary"
+          disabled={!item || dirty || present.pending}
+          onClick={() => item && void present.run({ type: 'adhoc', ...item })}
+        >
           {t('leaf.present')}
         </button>
         <button

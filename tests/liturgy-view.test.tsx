@@ -29,7 +29,7 @@ describe('Liturgy (US5.2)', () => {
     const name = await screen.findByRole('textbox', { name: 'Nome do culto' })
     expect(name).toHaveValue('Novo culto')
     expect(screen.getByText('Nenhum item ainda — adicione abaixo.')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Apresentar este culto/ })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /Apresentar este culto/ })).toBeEnabled()
     await userEvent.clear(name)
     await userEvent.type(name, 'Domingo 12/10 · manhã{enter}')
     await waitFor(() => expect(within(aside()).getByRole('button', { name: /Domingo 12\/10 · manhã/ })).toHaveAttribute('aria-current', 'true'))

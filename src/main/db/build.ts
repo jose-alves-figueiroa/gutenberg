@@ -11,7 +11,9 @@ export const SETTINGS = {
   /** Characters per screen for autobreak (60–160). */
   screenCharLimit: 'screen_char_limit',
   /** Port of the HTTP server (UI and OBS). */
-  httpPort: 'http_port'
+  httpPort: 'http_port',
+  /** Presentation state (JSON, src/shared/presentation.ts), restored after a restart. */
+  presentationState: 'presentation_state'
 } as const
 
 const src = (s: SourceRef) => (s.id ? `${s.name}:${s.id}` : s.name)
