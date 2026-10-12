@@ -17,9 +17,16 @@ describe('git-crypt', () => {
   it('every file under data/canonical/ is encrypted in git (index)', () => {
     const files = git('ls-files', '-z', 'data/canonical').toString().split('\0').filter(Boolean)
     expect(files.length).toBeGreaterThan(0)
+    // One `git cat-file --batch` for all blobs: "<sha> blob <size>\n<content>\n" per file.
+    const out = execFileSync('git', ['cat-file', '--batch'], { cwd: root, input: files.map((f) => `:${f}`).join('\n') + '\n', maxBuffer: 1 << 30 })
+    let at = 0
     for (const f of files) {
-      const blob = git('cat-file', 'blob', `:${f}`)
+      const nl = out.indexOf(0x0a, at)
+      const [, type, size] = out.subarray(at, nl).toString().split(' ')
+      expect(type, f).toBe('blob')
+      const blob = out.subarray(nl + 1, nl + 1 + Number(size))
       expect(blob.subarray(0, GITCRYPT_HEADER.length).equals(GITCRYPT_HEADER), f).toBe(true)
+      at = nl + 1 + Number(size) + 1
     }
   })
 })

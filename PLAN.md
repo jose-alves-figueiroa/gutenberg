@@ -62,13 +62,13 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 - [x] Testes de cabeçalho para cada coleção, incluindo Hb 12.15 com `(1/n)…(n/n)`
 
 ## Backlog (fases futuras)
-### E3 — Dados (Fase 2)
+### E3 — Dados (Fase 2) ✓
 **Requisito funcional:** o app sai com a Bíblia ARA completa, o Saltério de Genebra e o Hinário Novo Cântico completos, os símbolos de fé de Westminster (CFW na edição da IP Aliança, Breve, Maior) e os 3 credos.
 Tasks detalhadas, schemas (em inglês) e fontes: **`docs/DATA.md` → Progresso**. Aqui só o status das user stories.
 - [x] US3.0 Dados versionados e cifrados (git-crypt + chave por senha, com backup)
 - [x] US3.1 Formato interno, validadores, limpeza (`clean.ts`), `data:build`, `data:check`, seed
 - [x] US3.2 Bíblia ARA (`translate:bible`): 66 livros, 31.104 versículos
-- [~] US3.3 Saltério de Genebra (pronto: 173 títulos) (`letras.docx`, CC0) e HNC (XML por hino de novocantico.com.br), com créditos e telas de 2 versos; API do Holyrics fica opcional para "Outros cânticos"
+- [x] US3.3 Saltério de Genebra (173 títulos, CC0) e HNC (404 hinos), com créditos e telas de 2 versos; API do Holyrics fica opcional para "Outros cânticos"
 - [x] US3.4 Símbolos de Westminster: CFW (35 caps., edição da IP Aliança), Breve (107), Maior (196, com complemento da IP Bom Pastor)
 - [x] US3.5 Credos Apostólico, Niceno e de Atanásio (`translate:creeds`)
 

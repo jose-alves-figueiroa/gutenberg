@@ -26,7 +26,9 @@
     "holyrics:dump": "tsx scripts/holyrics-dump.ts",
     "translate:songs": "tsx scripts/translate-songs.ts",
     "translate:creeds": "tsx scripts/translate-creeds.ts",
-    "translate:psalter": "tsx scripts/translate-psalter.ts"
+    "translate:psalter": "tsx scripts/translate-psalter.ts",
+    "hymnal:fetch": "tsx scripts/hymnal-fetch.ts",
+    "translate:hymnal": "tsx scripts/translate-hymnal.ts"
   },
   "dependencies": {
     "@fontsource/source-serif-4": "^5.3.1",
