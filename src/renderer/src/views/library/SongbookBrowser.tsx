@@ -212,7 +212,17 @@ function SongEditor({ info, songId, template, crumbs, initialStatus, onCreated }
         )}
         <TextArea label={t('field.lyrics')} value={draft.lyrics} rows={14} onChange={(lyrics) => edit({ lyrics })} />
       </div>
-      <Leaf slides={slidesOf({ kind: 'song', songbook: info, item: song }, max)} song max={max} editable dirty={dirty} status={status} onSave={() => save.mutate()} onDiscard={reset} />
+      <Leaf
+        slides={slidesOf({ kind: 'song', songbook: info, item: song }, max)}
+        song
+        max={max}
+        editable
+        dirty={dirty}
+        status={status}
+        onSave={() => save.mutate()}
+        onDiscard={reset}
+        item={songId ? { collection: `songbook:${info.id}`, itemRef: songId } : undefined}
+      />
     </>
   )
 }

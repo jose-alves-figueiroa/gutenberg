@@ -2,12 +2,13 @@
  * The chosen item ("folha"): editor draft state, the preview of the screens as OBS will show them
  * and the sticky action bar (README → Biblioteca → Folha).
  */
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { DEFAULT_MAX } from '@shared/autobreak'
 import { t } from '@shared/i18n'
 import type { Slide } from '@shared/slides'
 import { json, useApi } from '../../api'
+import { useServices } from '../../service'
 
 /** Draft over a stored record (or a blank template for a record not registered yet). */
 export function useDraft<T extends object>(original: T | null | undefined, key: string) {
@@ -45,10 +46,33 @@ interface LeafProps {
   status?: SaveStatus
   onSave?: () => void
   onDiscard?: () => void
+  /** The item as a liturgy reference; absent while it is not saved (cannot be added yet). */
+  item?: { collection: string; itemRef: string }
 }
 
-export function Leaf({ slides, song, max, editable, dirty = false, status = 'idle', onSave, onDiscard }: LeafProps) {
-  const note = dirty ? t('leaf.unsaved') : status === 'saved' ? t('leaf.saved') : status === 'error' ? t('leaf.saveError') : ''
+export function Leaf({ slides, song, max, editable, dirty = false, status = 'idle', onSave, onDiscard, item }: LeafProps) {
+  const api = useApi()
+  const qc = useQueryClient()
+  const { current } = useServices()
+  const [added, setAdded] = useState<string | null>(null)
+  const add = useMutation({
+    mutationFn: () =>
+      json(api.api.v1.liturgy.services[':id'].items.$post({ param: { id: String(current!.id) }, json: { ...item!, moment: '' } })),
+    onSuccess: async () => {
+      setAdded(current!.name)
+      await qc.invalidateQueries({ queryKey: ['services'] })
+      await qc.invalidateQueries({ queryKey: ['service', current!.id] })
+    }
+  })
+  const note = dirty
+    ? t('leaf.unsaved')
+    : status === 'saved'
+      ? t('leaf.saved')
+      : status === 'error'
+        ? t('leaf.saveError')
+        : added
+          ? t('liturgy.added', { name: added })
+          : ''
   return (
     <section className="leaf" aria-label={t(slides.length === 1 ? 'leaf.preview.one' : 'leaf.preview.other', { n: slides.length })}>
       <div className="leaf-head">
@@ -67,7 +91,13 @@ export function Leaf({ slides, song, max, editable, dirty = false, status = 'idl
         <button type="button" className="btn btn-primary" disabled title={t('leaf.notYet')}>
           {t('leaf.present')}
         </button>
-        <button type="button" className="btn btn-secondary" disabled title={t('leaf.notYet')}>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          disabled={!item || !current || dirty || add.isPending}
+          title={current ? undefined : t('liturgy.chooseService')}
+          onClick={() => add.mutate()}
+        >
           {t('leaf.addToLiturgy')}
         </button>
         <span className="leaf-status text-muted" role="status">

@@ -54,6 +54,7 @@ export function CreedsBrowser({ label, path, go }: { label: string; path: string
         status={status}
         onSave={() => save.mutate()}
         onDiscard={reset}
+        item={{ collection: 'creeds', itemRef: current.id }}
       />
     </>
   )

@@ -104,7 +104,16 @@ function SectionEditor({ confessionId, shortTitle, chapter, chapterTitle, sectio
       <div className="editor">
         <TextArea label={t('field.sectionText')} value={draft.text} rows={8} onChange={(text) => (set({ text }), setStatus('idle'))} />
       </div>
-      <Leaf slides={slides} max={max} editable dirty={dirty} status={status} onSave={() => save.mutate()} onDiscard={reset} />
+      <Leaf
+        slides={slides}
+        max={max}
+        editable
+        dirty={dirty}
+        status={status}
+        onSave={() => save.mutate()}
+        onDiscard={reset}
+        item={record.data || status === 'saved' ? { collection: `confession:${confessionId}`, itemRef: `${chapter}.${section}` } : undefined}
+      />
     </>
   )
 }

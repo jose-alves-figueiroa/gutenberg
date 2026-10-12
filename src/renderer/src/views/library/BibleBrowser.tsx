@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { t } from '@shared/i18n'
 import { slidesOf } from '@shared/slides'
+import { bibleItemRef } from '@shared/bible-ref'
 import { json, useApi } from '../../api'
 import { Leaf, useScreenLimit } from './leaf'
 import { Grid, LevelHeader, Loading, type Crumb } from './parts'
@@ -122,6 +123,7 @@ export function BibleBrowser({ version, label, path, go, onSelect }: Props) {
           )}
           max={max}
           editable={false}
+          item={{ collection: `bible:${version}`, itemRef: bibleItemRef({ book: info.book, chapter, from: sel.a, to: sel.b }) }}
         />
       )}
     </>

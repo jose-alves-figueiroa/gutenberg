@@ -83,7 +83,16 @@ function QuestionEditor({ catechismId, shortTitle, number }: { catechismId: stri
         <TextField label={t('field.question')} value={draft.question} onChange={(question) => edit({ question })} />
         <TextArea label={t('field.answer')} value={draft.answer} rows={6} onChange={(answer) => edit({ answer })} />
       </div>
-      <Leaf slides={slides} max={max} editable dirty={dirty} status={status} onSave={() => save.mutate()} onDiscard={reset} />
+      <Leaf
+        slides={slides}
+        max={max}
+        editable
+        dirty={dirty}
+        status={status}
+        onSave={() => save.mutate()}
+        onDiscard={reset}
+        item={record.data || status === 'saved' ? { collection: `catechism:${catechismId}`, itemRef: String(number) } : undefined}
+      />
     </>
   )
 }
