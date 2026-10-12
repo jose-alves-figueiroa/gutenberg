@@ -90,7 +90,9 @@ describe('canonical seed (prototype library)', () => {
   it('is reported as incomplete against the requirement', () => {
     const gaps = checkCompleteness(data)
     expect(gaps.filter((g) => g.area === 'bible')).toHaveLength(65)
-    expect(gaps).toContainEqual({ area: 'songs', problem: `7 of ${REQUIRED.songCount} songs` })
+    expect(gaps).toContainEqual({ area: 'songs', problem: 'psalter: 146 of 150 psalms missing (2–22, 24–99, 101–132, 134–150)' })
+    expect(gaps).toContainEqual({ area: 'songs', problem: 'psalter: 0 of 2 canticles' })
+    expect(gaps).toContainEqual({ area: 'songs', problem: 'hnc: 400 of 400 hymns missing (1–400)' })
     expect(gaps).toContainEqual({ area: 'catechisms', problem: 'wsc: 3 of 107 questions' })
     expect(gaps).toContainEqual({ area: 'creeds', problem: 'missing creed athanasian' })
   })

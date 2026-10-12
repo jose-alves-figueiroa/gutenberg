@@ -126,10 +126,15 @@ describe('slidesOf — headers per collection', () => {
     expect(new Set(slides.map((s) => s.header))).toEqual(new Set(['Credo Apostólico']))
   })
 
-  it('Psalter: "Salmo 133B", one stanza per screen, no autobreak', () => {
+  it('Psalter: "Salmo 133B", 2-line stanzas are one screen each, no autobreak', () => {
     const slides = slidesOf({ kind: 'song', songbook: psalter, item: psalm133B }, 60)
     expect(slides).toHaveLength(4)
     expect(slides[0]).toEqual({ header: 'Salmo 133B', lines: ['Oh! Como é bom e agradável,', 'bem suave, sim,'] })
+  })
+
+  it('songs: long stanzas become 2-line screens, never mixing stanzas', () => {
+    const hymn = { ...castleHymn, stanzas: [['a', 'b', 'c', 'd', 'e'], ['f', 'g']] }
+    expect(slidesOf({ kind: 'song', songbook: hnc, item: hymn }).map((s) => s.lines)).toEqual([['a', 'b'], ['c', 'd'], ['e'], ['f', 'g']])
   })
 
   it('Psalter: versions are kept apart (133B × 133C) and a lone psalm has no suffix', () => {

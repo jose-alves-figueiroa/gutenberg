@@ -2,7 +2,6 @@
 // Translates a Holyrics API dump (npm run holyrics:dump) into data/canonical/songbooks/.
 import { readFileSync, rmSync } from 'node:fs'
 import { join, resolve } from 'node:path'
-import { REQUIRED } from '../src/shared/requirements'
 import { validateSong, validateSongbook } from '../src/shared/validate'
 import { parseArgs } from './lib/args'
 import { DEFAULT_CANONICAL_DIR, isLocked, writeJson } from './lib/canonical'
@@ -40,7 +39,7 @@ for (const { songbook, songs } of songbooks) {
 }
 
 const total = songbooks.reduce((n, b) => n + b.songs.length, 0)
-console.log(`translate:songs: ${total} songs (requirement: ${REQUIRED.songCount}) from ${dump.source} (${dump.dumpedAt})`)
+console.log(`translate:songs: ${total} songs from ${dump.source} (${dump.dumpedAt})`)
 for (const { songbook, songs } of songbooks) console.log(`  ${songbook.id}: ${songs.length}`)
 const other = songbooks.find((b) => b.songbook.id === 'other')
 if (other) {

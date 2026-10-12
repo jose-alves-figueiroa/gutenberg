@@ -68,7 +68,7 @@ Tasks detalhadas, schemas (em inglês) e fontes: **`docs/DATA.md` → Progresso*
 - [x] US3.0 Dados versionados e cifrados (git-crypt + chave por senha, com backup)
 - [x] US3.1 Formato interno, validadores, limpeza (`clean.ts`), `data:build`, `data:check`, seed
 - [x] US3.2 Bíblia ARA (`translate:bible`): 66 livros, 31.104 versículos
-- [ ] US3.3 Saltério de Genebra (`letras.docx`, CC0) e HNC (XML por hino de novocantico.com.br), com créditos e telas de 2 versos; API do Holyrics fica opcional para "Outros cânticos"
+- [~] US3.3 Saltério de Genebra (pronto: 173 títulos) (`letras.docx`, CC0) e HNC (XML por hino de novocantico.com.br), com créditos e telas de 2 versos; API do Holyrics fica opcional para "Outros cânticos"
 - [x] US3.4 Símbolos de Westminster: CFW (35 caps., edição da IP Aliança), Breve (107), Maior (196, com complemento da IP Bom Pastor)
 - [x] US3.5 Credos Apostólico, Niceno e de Atanásio (`translate:creeds`)
 

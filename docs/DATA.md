@@ -47,19 +47,17 @@ Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 
 Fontes (as músicas cadastradas no Holyrics não puderam ser lidas: o `database.db` é cifrado e o Holyrics protege o código que o lê — ver "Músicas do Holyrics"):
 
-- [ ] **Saltério** — `translate:psalter`: `letras.docx` de salteriodegenebra.com.br (**licença CC0 / domínio público**) → `songbooks/psalter/`
-  - estrutura do docx: título `Salmo 1A` (número + versão), linha de autoria `(CBS - Saltério de Genebra)`, estrofes numeradas, versos
-  - limpeza: remover os números de versículo bíblico dentro dos versos (`1 Quão…`, `Dizendo:_3 “Os laços…`) e trocar `_` (marca de elisão) por espaço
-  - créditos: autoria da metrificação (CBS, Arthur Elohim Pires, Lucas Grassi Freire, Vítor Augusto Olivier…) e origem da melodia; os 2 cânticos entram sem número, pelo título
-  - conferir: os 150 salmos presentes; total de títulos igual ao do docx (173 na versão de 01/09/2026)
+- [x] **Saltério** — `translate:psalter`: `letras.docx` de salteriodegenebra.com.br (**licença CC0 / domínio público**) → `songbooks/psalter/`: **173 títulos** — os 150 salmos (o 119 em 22 partes, `Salmo 119.1-8A`…), todos na versão A, e os 2 cânticos (Os Dez Mandamentos — Êxodo 20.1-17; O Cântico de Simeão — Lucas 2.29-32)
+  - limpeza: números e faixas de versículo bíblico removidos dos versos (`1 Quão…`, `4-5 É vero…`, `Dizendo:_3 “Os…`); `_` (elisão) → espaço
+  - créditos: autoria da metrificação (`CBS` → Comissão Brasileira de Salmodia; Vítor Olivier, Lucas Freire, Arthur Pires…) e `copyright` "CC0 1.0 — salteriodegenebra.com.br"; a referência bíblica dos cânticos vai em `versification`
 - [ ] **HNC** — `translate:hymnal`: um XML por hino em novocantico.com.br (`hino/NNN/NNN.xml`, mais os apêndices `B`, `C`, `D`), baixados uma vez para `data/sources/hnc/` → `songbooks/hnc/`
   - estrutura do XML: `numero`, `titulo`, `texto/estrofe/verso`, `secao`, `assunto`, `origem_letra` (e demais campos de origem quando houver)
   - créditos: `origem_letra` → autor da letra; origem da música quando presente
   - o PDF `novo_cantico.pdf` (ePub da IPB convertido pelo calibre) fica como conferência: a extração dele perde espaços ("emseus", "teupovo") e não separa estrofes
   - conferir: 400 hinos numerados + apêndices; Hino 3 "A Igreja em Adoração" com 3 estrofes de 8 versos
-- [ ] **Telas de 2 linhas para cânticos**: as fontes trazem estrofes de até 8 versos e a faixa do OBS tem no máximo 2 linhas. O formato interno guarda a estrofe inteira (fiel à fonte); `slidesOf` divide cada estrofe em telas de 2 versos, sem juntar estrofes diferentes. Ajusta a regra do README ("cada estrofe é uma tela"), que valia para os slides do Holyrics, já divididos pelo operador
-- [ ] Requisito em `requirements.ts`: contagens do Saltério e do HNC no lugar das "246 músicas do Holyrics"
-- [ ] Testes com docx e XML sintéticos (versículos embutidos, elisões, apêndices, créditos)
+- [x] **Telas de 2 linhas para cânticos** (`SONG_LINES_PER_SCREEN` em `slides.ts`; cântico sem número usa o título como cabeçalho): as fontes trazem estrofes de até 8 versos e a faixa do OBS tem no máximo 2 linhas. O formato interno guarda a estrofe inteira (fiel à fonte); `slidesOf` divide cada estrofe em telas de 2 versos, sem juntar estrofes diferentes. Ajusta a regra do README ("cada estrofe é uma tela"), que valia para os slides do Holyrics, já divididos pelo operador
+- [x] Requisito em `requirements.ts`: salmos 1–150 + 2 cânticos no Saltério e hinos 1–400 no HNC, no lugar das "246 músicas do Holyrics"
+- [~] Testes com docx e XML sintéticos: Saltério feito (versículos e faixas, elisões, partes do 119, cânticos, créditos); HNC a fazer
 - [x] Ferramental da API do Holyrics (`holyrics:dump` + `translate:songs`) — **opcional**: serve para trazer, no futuro, as músicas da igreja que não estão no Saltério nem no HNC (hinário `other`, "Outros cânticos")
 
 **US3.4** Como operador, quero os símbolos de fé de Westminster completos, para apresentar doutrina.

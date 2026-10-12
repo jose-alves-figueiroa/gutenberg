@@ -29,12 +29,19 @@ export type LibraryEntry =
   | { kind: 'creed'; item: Creed }
   | { kind: 'song'; songbook: Pick<Songbook, 'itemLabel'>; item: Song }
 
+/** Lines per screen for songs: the OBS lower third shows at most 2. */
+export const SONG_LINES_PER_SCREEN = 2
+
 const toSlide = (header: string, text: string): Slide => ({ header, lines: text.split('\n') })
 
-/** Header for a song: `Salmo 133B` when the songbook has an item label, else `155 · Castelo forte`. */
+/**
+ * Header for a song: `Salmo 133B` when the songbook has an item label, `155 · Castelo forte` when
+ * it only has a number, and the title for unnumbered songs (`O cântico de Simeão`).
+ */
 export function songHeader(songbook: Pick<Songbook, 'itemLabel'>, song: Song): string {
+  if (!song.number) return song.title
   if (songbook.itemLabel) return t('slide.songLabeled', { label: songbook.itemLabel, number: song.number, version: song.version })
-  return song.number ? t('slide.songNumbered', { number: song.number, title: song.title }) : song.title
+  return t('slide.songNumbered', { number: song.number, title: song.title })
 }
 
 /** Splits a library item into screens. `max` is the per-screen character limit (60–160). */
@@ -64,9 +71,15 @@ export function slidesOf(entry: LibraryEntry, max: number = DEFAULT_MAX): Slide[
     case 'creed':
       return autobreak(entry.item.text, max).map((text) => toSlide(entry.item.title, text))
     case 'song': {
-      // Songs never use autobreak: each stanza is one screen.
+      // Songs never use autobreak: each stanza is split into screens of 2 lines (the lower third's
+      // maximum), never mixing lines of different stanzas.
       const header = songHeader(entry.songbook, entry.item)
-      return entry.item.stanzas.filter((s) => s.length > 0).map((lines) => ({ header, lines: [...lines] }))
+      return entry.item.stanzas.flatMap((stanza) => {
+        const screens: Slide[] = []
+        for (let i = 0; i < stanza.length; i += SONG_LINES_PER_SCREEN)
+          screens.push({ header, lines: stanza.slice(i, i + SONG_LINES_PER_SCREEN) })
+        return screens
+      })
     }
   }
 }
