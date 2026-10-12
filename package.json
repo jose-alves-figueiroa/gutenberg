@@ -20,7 +20,9 @@
     "data:build": "tsx scripts/data-build.ts",
     "data:check": "tsx scripts/data-check.ts",
     "data:seed": "tsx scripts/gen-seed.ts",
-    "translate:bible": "tsx scripts/translate-bible.ts"
+    "translate:bible": "tsx scripts/translate-bible.ts",
+    "translate:catechism": "tsx scripts/translate-catechism.ts",
+    "translate:confession": "tsx scripts/translate-confession.ts"
   },
   "dependencies": {
     "@fontsource/source-serif-4": "^5.3.1",

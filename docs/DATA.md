@@ -51,9 +51,9 @@ Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 - [ ] Plano B (só se a descriptografia não for viável): API local do Holyrics (`GetSongs`/`GetLyrics`)
 
 **US3.4** Como operador, quero os símbolos de fé de Westminster completos, para apresentar doutrina.
-- [ ] `translate:confession`: página da IP Aliança → `confessions/wcf.json`; valida 33 capítulos e seções
-- [ ] `translate:catechism -- --id wsc`: gist JSON → `catechisms/wsc.json`; numera pela posição (item 81 defeituoso); valida 1–107
-- [ ] `translate:catechism -- --id wlc`: PDF da IPB → `catechisms/wlc.json`; valida 1–196; revisão manual
+- [x] `translate:confession`: página da IP Aliança → `confessions/wcf.json`: 33 capítulos, 171 seções, todas com referências. Capítulo 31 com 4 seções (revisão americana adotada pela IPB; o protótipo contava 5, do texto de 1647). Os capítulos extras da página (34 "Do Espírito Santo", 35 "Do Amor de Deus e das Missões") ficam de fora por padrão (`--all-chapters` os inclui) — **decisão pendente do mantenedor**
+- [x] `translate:catechism -- --id wsc`: gist JSON → `catechisms/wsc.json`: 107 perguntas com referências; a 81 recuperada do campo `numero`
+- [~] `translate:catechism -- --id wlc`: PDF da IPB → `catechisms/wlc.json`. Parser pronto (`pdftotext -raw`, que preserva hífens); **o PDF não tem as perguntas 176, 177 e 192** — aguardando o texto delas em `data/sources/wlc-supplement.json` (`[{ number, question, answer, refs }]`). As referências impressas após a 191 parecem misturar as da 191 e da 192
 
 **US3.5** Como operador, quero os três credos, para a confissão de fé no culto.
 - [ ] Texto revisado à mão (tradução recitada no culto) em `data/sources/creeds.txt`
@@ -182,7 +182,7 @@ hinário, confissão ou catecismo é só uma linha nova.
 | `songbooks` | `id` (PK), `title`, `short_title`, `prefix`, `item_label`, `source` |
 | `songs` | `id` (PK), `songbook_id` → `songbooks`, `number`, `version`, `title`, `versification`, `author`, `artist`, `copyright`, `lyrics`, `source`; único (`songbook_id`, `number`, `version`, `title`) — o título entra porque músicas avulsas (`other`) não têm número |
 | `confessions` | `id` (PK), `title`, `short_title`, `prefix`, `source` |
-| `confession_sections` | `confession_id` → `confessions`, `position`, `chapter`, `chapter_title`, `section`, `section_title`, `text` |
+| `confession_sections` | `confession_id` → `confessions`, `position`, `chapter`, `chapter_title`, `section`, `section_title`, `text`, `refs` |
 | `catechisms` | `id` (PK), `title`, `short_title`, `prefix`, `source` |
 | `catechism_questions` | `catechism_id` → `catechisms`, `number`, `question`, `answer`, `refs` |
 | `creeds` | `id` (PK), `title`, `text`, `source` |
@@ -204,7 +204,7 @@ hinário, confissão ou catecismo é só uma linha nova.
 | `translate:catechism -- --id wlc --file data/sources/wlc.pdf` | https://www.ipb.org.br/content/Arquivos/Catecismo_Maior_de_Westminster.pdf | Extrai texto do PDF, separa perguntas, remove cabeçalhos/rodapés, guarda refs; valida 1–196; revisão manual do que quebrar |
 | `translate:creeds -- --file data/sources/creeds.txt` | Texto revisado à mão (`## Credo Apostólico` + texto) — fonte: seção "Símbolos de fé" da IP Aliança ou a tradução recitada no culto | Exatamente os 3 credos |
 
-As fontes só são baixadas quando a user story correspondente for executada.
+As fontes só são baixadas quando a user story correspondente for executada. O tradutor do PDF usa `pdftotext` (poppler: `brew install poppler`); só o mantenedor roda tradutores, e o resultado é versionado.
 
 ### Músicas do Holyrics — descriptografia
 Escopo: **somente** a tabela `music` de `files/database.db` (conteúdo cadastrado pela igreja).

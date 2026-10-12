@@ -22,8 +22,10 @@ describe('requirements', () => {
     expect(Object.keys(BOOK_CHAPTERS)).toEqual(BOOKS.map(([abbrev]) => abbrev))
   })
 
-  it('WCF section counts and catechism sizes match the prototype', () => {
-    expect([0, ...WCF_SECTIONS]).toEqual(proto.CFW_S)
+  it('WCF section counts match the prototype except chapter 31 (American revision), catechism sizes match', () => {
+    const expected = [...proto.CFW_S]
+    expected[31] = 4 // 1647 text has 5 sections; the American revision adopted by the IPB has 4
+    expect([0, ...WCF_SECTIONS]).toEqual(expected)
     expect(WCF_SECTIONS).toHaveLength(33)
     expect(REQUIRED.catechisms).toEqual({ wsc: proto.CAT_N.breve, wlc: proto.CAT_N.maior })
   })

@@ -81,6 +81,8 @@ export interface ConfessionSection {
   id: string
   title?: string
   text: string
+  /** Scripture references, as printed by the source. */
+  refs?: string
 }
 
 /** A chapter / head of doctrine. `id` is a label (`1`, `3/4` in the Canons of Dort). */

@@ -69,7 +69,7 @@ Tasks detalhadas, schemas (em inglês) e fontes: **`docs/DATA.md` → Progresso*
 - [x] US3.1 Formato interno, validadores, limpeza (`clean.ts`), `data:build`, `data:check`, seed
 - [x] US3.2 Bíblia ARA (`translate:bible`): 66 livros, 31.104 versículos
 - [ ] US3.3 Músicas do Holyrics por hinário (HNC, Saltério…) com créditos (`translate:songs`)
-- [ ] US3.4 Símbolos de Westminster (`translate:confession`, `translate:catechism`)
+- [~] US3.4 Símbolos de Westminster: CFW (33 caps.) e Breve (107) prontos; Maior aguarda as perguntas 176, 177 e 192, ausentes do PDF
 - [ ] US3.5 Credos Apostólico, Niceno e Atanasiano (`translate:creeds`)
 
 ### E4 — Biblioteca (Fase 4)

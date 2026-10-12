@@ -63,15 +63,15 @@ export function fillDatabase(db: SqlDatabase, data: CanonicalData): BuildCounts 
 
     const confession = db.prepare('INSERT INTO confessions (id, title, short_title, prefix, source) VALUES (?, ?, ?, ?, ?)')
     const section = db.prepare(
-      `INSERT INTO confession_sections (confession_id, position, chapter, chapter_title, section, section_title, text)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO confession_sections (confession_id, position, chapter, chapter_title, section, section_title, text, refs)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     )
     for (const c of data.confessions) {
       confession.run(c.id, c.title, c.shortTitle, c.prefix, src(c.source))
       let position = 0
       for (const ch of c.chapters)
         for (const s of ch.sections) {
-          section.run(c.id, ++position, ch.id, ch.title, s.id, s.title ?? '', s.text)
+          section.run(c.id, ++position, ch.id, ch.title, s.id, s.title ?? '', s.text, s.refs ?? '')
           counts.confessionSections++
         }
     }

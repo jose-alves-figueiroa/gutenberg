@@ -68,6 +68,7 @@ export const MIGRATIONS: readonly string[] = [
     section TEXT NOT NULL,
     section_title TEXT NOT NULL,
     text TEXT NOT NULL,
+    refs TEXT NOT NULL,
     PRIMARY KEY (confession_id, position),
     UNIQUE (confession_id, chapter, section)
   );
