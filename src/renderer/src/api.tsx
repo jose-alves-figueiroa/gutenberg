@@ -3,7 +3,7 @@
  * plus TanStack Query for caching, loading states and invalidation after saves.
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { hc } from 'hono/client'
+import { hc, parseResponse } from 'hono/client'
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import type { AppType } from '../../main/server/app'
 
@@ -38,9 +38,5 @@ export function useApi(): ApiClient {
   return api
 }
 
-/** Unwraps a Hono client response, throwing on HTTP errors (TanStack Query shows them as errors). */
-export async function json<T>(res: Promise<{ ok: boolean; status: number; json(): Promise<T> }>): Promise<T> {
-  const r = await res
-  if (!r.ok) throw new Error(`HTTP ${r.status}`)
-  return r.json()
-}
+/** Unwraps a Hono client response: typed success body, or a thrown error (TanStack Query shows it). */
+export const json = parseResponse

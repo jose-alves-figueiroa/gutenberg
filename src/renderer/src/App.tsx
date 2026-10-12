@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ApiProvider, type ApiClient } from './api'
 import { Nav } from './components/Nav'
 import type { ConnStatus, TabId } from './tabs'
 import { ConnectionView, LibraryView, LiturgyView, PresentView } from './views/Views'
@@ -15,15 +16,19 @@ interface AppProps {
   /** Static until phase 7 (obs-websocket). */
   conn?: ConnStatus
   ip?: string
+  /** API client (tests inject one over the in-process server). */
+  api?: ApiClient
 }
 
-export function App({ initialTab = 'liturgy', conn = 'online', ip = '192.168.0.12' }: AppProps) {
+export function App({ initialTab = 'liturgy', conn = 'online', ip = '192.168.0.12', api }: AppProps) {
   const [tab, setTab] = useState<TabId>(initialTab)
   const Current = VIEWS[tab]
   return (
-    <div className="app">
-      <Nav tab={tab} onTab={setTab} conn={conn} ip={ip} />
-      <Current />
-    </div>
+    <ApiProvider client={api}>
+      <div className="app">
+        <Nav tab={tab} onTab={setTab} conn={conn} ip={ip} />
+        <Current />
+      </div>
+    </ApiProvider>
   )
 }

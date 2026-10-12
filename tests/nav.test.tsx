@@ -25,7 +25,7 @@ describe('Nav', () => {
     await userEvent.click(screen.getByRole('tab', { name: 'Biblioteca' }))
     expect(screen.getByRole('tab', { name: 'Biblioteca' })).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByRole('tab', { name: 'Liturgia' })).toHaveAttribute('aria-selected', 'false')
-    expect(screen.getByRole('heading', { level: 2, name: 'Biblioteca' })).toBeInTheDocument()
+    expect(screen.getByRole('tabpanel')).toHaveAttribute('id', 'view-library')
   })
 
   it('clicking the connection status opens the Connection tab', async () => {

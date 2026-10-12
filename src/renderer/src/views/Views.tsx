@@ -2,6 +2,8 @@ import type { ReactNode } from 'react'
 import { t } from '@shared/i18n'
 import { tabLabel, type TabId } from '../tabs'
 
+export { LibraryView } from './library/LibraryView'
+
 function View({ id, children }: { id: TabId; children: ReactNode }) {
   return (
     <main className="view" role="tabpanel" id={`view-${id}`} aria-labelledby={`tab-${id}`}>
@@ -29,19 +31,6 @@ export function LiturgyView() {
       </aside>
       <section className="view-main">
         <Heading id="liturgy" note={t('liturgy.empty')} />
-      </section>
-    </View>
-  )
-}
-
-export function LibraryView() {
-  return (
-    <View id="library">
-      <aside>
-        <h6 className="text-muted">{t('library.aside')}</h6>
-      </aside>
-      <section className="view-main">
-        <Heading id="library" note={t('library.empty')} />
       </section>
     </View>
   )

@@ -59,6 +59,54 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .view h2 { font-size: 34px; }
 .empty-note { color: var(--color-neutral-700); font-size: 14px; }
 
+/* — library — */
+.lib-aside { display: flex; flex-direction: column; gap: var(--space-4); }
+.lib-group { display: flex; flex-direction: column; gap: 2px; }
+.lib-group h6 { margin: 0 0 var(--space-1); }
+.lib-col {
+  all: unset; cursor: pointer; display: flex; justify-content: space-between; gap: var(--space-2);
+  padding: 6px var(--space-2); border-radius: var(--radius-md); font-size: 14px;
+}
+.lib-col:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
+.lib-col[aria-current='true'] { background: var(--color-accent); color: var(--color-bg); }
+.lib-col .count { opacity: 0.6; font-size: 12px; }
+.lib-main { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; max-width: 980px; }
+.crumbs { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-1); font-size: 14px; }
+.crumb-wrap { display: flex; align-items: center; gap: var(--space-1); }
+.crumb { all: unset; cursor: pointer; padding: 2px 6px; border-radius: var(--radius-md); color: var(--color-accent-700); }
+.crumb:hover { background: var(--color-accent-100); }
+.crumb[aria-current='page'] { color: var(--color-text); }
+.lib-head { display: flex; align-items: flex-end; gap: var(--space-4); flex-wrap: wrap; }
+.lib-head-text { margin-right: auto; min-width: 0; }
+.view .lib-head h2 { margin: 0; font-size: 32px; }
+.lib-hint { font-size: 14px; margin-top: 4px; }
+.lib-grids { display: flex; flex-direction: column; gap: var(--space-6); }
+.lib-grid-group { display: flex; flex-direction: column; gap: var(--space-2); }
+.lib-grid-title { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--cell-min), 1fr)); gap: var(--space-1); }
+.lib-grid--num { --cell-min: 52px; }
+.lib-grid--name { --cell-min: 150px; }
+.cell {
+  all: unset; cursor: pointer; border-radius: var(--radius-md); font-size: 14px; font-feature-settings: 'tnum' 1;
+  background: var(--color-surface); color: var(--color-text);
+}
+.lib-grid--num .cell { padding: 8px 0; text-align: center; }
+.lib-grid--name .cell { padding: 7px 10px; text-align: left; }
+.cell--empty { background: transparent; color: var(--color-neutral-600); }
+.cell:hover { background: var(--color-accent-100); color: var(--color-accent-800); }
+.verses { display: flex; flex-direction: column; max-width: 720px; }
+.verse {
+  all: unset; cursor: pointer; display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: var(--space-2);
+  padding: 6px var(--space-2); border-radius: var(--radius-md);
+}
+.verse:hover { background: var(--color-accent-100); }
+.verse[aria-pressed='true'] { background: var(--color-accent-200); }
+.verse-n { font-size: 13px; font-weight: 600; color: var(--color-accent-700); font-feature-settings: 'tnum' 1; padding-top: 2px; }
+.verse-t { font-size: 16px; line-height: 1.5; }
+.lib-col:focus-visible, .crumb:focus-visible, .cell:focus-visible, .verse:focus-visible {
+  outline: 2px solid var(--color-accent); outline-offset: 2px;
+}
+
 /* Desktop window: below 1100px the columns stack. */
 @media (max-width: 1099px) {
   .view-grid--liturgy, .view-grid--library, .view-grid--present { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }

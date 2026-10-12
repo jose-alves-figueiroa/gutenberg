@@ -98,12 +98,12 @@ Especificação: README → "Biblioteca" e protótipo (`Component.render`, ramo 
 - [x] Testes: rotas via `app.request()` sobre o banco do seed; recusa de chamadas da LAN e sem origem conhecida
 
 **US4.3** Como operador, quero navegar pelas coleções, para achar qualquer texto.
-- [ ] Coluna esquerda: coleções nos 3 grupos (Bíblia no topo) com contagem; selecionada em tint de accent; rótulos do menu do protótipo para os documentos conhecidos ("Confissão de Westminster", "Breve Catecismo"), título do banco para os demais
-- [ ] Breadcrumb clicável, título h2 32px e dica 14px
+- [x] Coluna esquerda: coleções nos 3 grupos (Bíblia no topo) com contagem; selecionada em accent (como no protótipo); rótulos do menu do protótipo para os documentos conhecidos ("Confissão de Westminster", "Breve Catecismo"), título do banco para os demais
+- [x] Breadcrumb clicável, título h2 32px e dica 14px (`views/library/parts.tsx`)
 
 **US4.4** Bíblia (somente leitura)
-- [ ] Livros em grade (AT/NT) → capítulos (grade de números) → versículos (lista)
-- [ ] Seleção de trecho: 1º clique e último versículo; destaque `--color-accent-200`; dicas do protótipo
+- [x] Livros em grade (AT/NT) → capítulos (grade de números) → versículos (lista) — conferido no app com a ARA completa
+- [x] Seleção de trecho: 1º clique e último versículo; destaque `--color-accent-200`; dicas do protótipo; cliques rápidos consistentes (atualização funcional)
 
 **US4.5** Confissões
 - [ ] Capítulos (lista com título e "k de N seções") → seções (grade) → editor (texto corrido)
