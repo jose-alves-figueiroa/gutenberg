@@ -6,7 +6,7 @@ Plano detalhado da E3 (resumo em `PLAN.md`). **Requisito funcional:** o Gutenber
 |---|---|
 | **Bíblia ARA** | 66 livros, todos os capítulos e versículos |
 | **Músicas do Holyrics** (salmos genebrinos, HNC e demais) | as 246 músicas cadastradas pela igreja, com letra e créditos |
-| **Símbolos de fé de Westminster** | CFW (33 capítulos, todas as seções), Breve Catecismo (107), Catecismo Maior (196) |
+| **Símbolos de fé de Westminster** | CFW na edição da IP Aliança (35 capítulos, 179 seções), Breve Catecismo (107), Catecismo Maior (196) |
 | **Credos** | Apostólico, Niceno e Atanasiano |
 
 Convenção: **código, formato, chaves, nomes de arquivo, comandos e tabelas em inglês**; o **conteúdo**
@@ -51,13 +51,13 @@ Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 - [ ] Rodar `translate:songs`, revisar a lista `other` e conferir: 246 músicas; Salmo 133B igual ao payload de exemplo
 
 **US3.4** Como operador, quero os símbolos de fé de Westminster completos, para apresentar doutrina.
-- [x] `translate:confession`: página da IP Aliança → `confessions/wcf.json`: 33 capítulos, 171 seções, todas com referências. Capítulo 31 com 4 seções (revisão americana adotada pela IPB; o protótipo contava 5, do texto de 1647). Os capítulos extras da página (34 "Do Espírito Santo", 35 "Do Amor de Deus e das Missões") ficam de fora por padrão (`--all-chapters` os inclui) — **decisão pendente do mantenedor**
+- [x] `translate:confession`: página da IP Aliança → `confessions/wcf.json`: **35 capítulos, 179 seções**, todas com referências — a edição da IP Aliança: revisão americana (cap. 31 com 4 seções; o protótipo contava 5, do texto de 1647) e os capítulos 34 "Do Espírito Santo" e 35 "Do Amor de Deus e das Missões"
 - [x] `translate:catechism -- --id wsc`: gist JSON → `catechisms/wsc.json`: 107 perguntas com referências; a 81 recuperada do campo `numero`
-- [~] `translate:catechism -- --id wlc`: PDF da IPB → `catechisms/wlc.json`. Parser pronto (`pdftotext -raw`, que preserva hífens); **o PDF não tem as perguntas 176, 177 e 192** — aguardando o texto delas em `data/sources/wlc-supplement.json` (`[{ number, question, answer, refs }]`). As referências impressas após a 191 parecem misturar as da 191 e da 192
+- [x] `translate:catechism -- --id wlc`: PDF da IPB → `catechisms/wlc.json`: **196 perguntas**. O PDF não tem as 176, 177 e 192, e imprime após a 191 as referências da 192: o complemento `data/sources/wlc-supplement.json` (gerado da página da IP Bom Pastor, ipbompastor.org.br/simbolos-de-fe/catecismos/catecismo-maior-de-westminster) traz as três perguntas e as referências corretas da 191. Na 176, "Mc 28:19" está assim na fonte (provável erro tipográfico)
 
 **US3.5** Como operador, quero os três credos, para a confissão de fé no culto.
-- [ ] Texto revisado à mão (tradução recitada no culto) em `data/sources/creeds.txt`
-- [ ] `translate:creeds` → `creeds.json` com Apostólico, Niceno e Atanasiano
+- [x] Fonte: PDFs da IPB Boa Vista (texto de Paulo Anglada, *Sola Scriptura*, Os Puritanos, via Monergismo) → `data/sources/creeds.txt` revisado: só a seção "TEXTO", sem marcas de nota; o de Atanásio com um parágrafo por artigo (40), sem numeração
+- [x] `translate:creeds` → `creeds.json`: Credo Apostólico, Credo Niceno, Credo de Atanásio
 
 ## Arquitetura
 
@@ -163,7 +163,7 @@ Cânones de Dort) ou `R1` (rejeição de erros). A ordem é a do array.
 { "format": 1,
   "creeds": [ { "id": "apostles", "title": "Credo Apostólico", "text": "…" },
               { "id": "nicene", "title": "Credo Niceno", "text": "…" },
-              { "id": "athanasian", "title": "Credo Atanasiano", "text": "…" } ],
+              { "id": "athanasian", "title": "Credo de Atanásio", "text": "…" } ],
   "source": { "name": "manual" } }
 ```
 
@@ -199,10 +199,10 @@ hinário, confissão ou catecismo é só uma linha nova.
 |---|---|---|
 | `translate:bible -- --file data/sources/ARA.sqlite` | OpenLP SQLite (ex.: `ARA.sqlite` de github.com/damarals/biblias) | `book.book_reference_id` 1–66 → `BOOKS`; `verse(chapter, verse, text)` → `chapters`; limpa o texto |
 | `holyrics:dump` + `translate:songs -- --file data/sources/holyrics-songs.json` | API local do Holyrics da igreja (246 músicas) | `GetSongs`/`GetLyrics` → dump bruto → atribui hinário (`hnc`, `psalter`, `other`), número e `version` → estrofes na ordem do Holyrics + créditos |
-| `translate:confession -- --id wcf --file data/sources/wcf.html` | https://www.ipalianca.org/simbolos-de-fe/confiss%C3%A3o-de-f%C3%A9-de-westminster | Capítulos/seções; valida 33 capítulos e a contagem de seções (`CFW_S` do protótipo) |
+| `translate:confession -- --id wcf --file data/sources/wcf.html` | https://www.ipalianca.org/simbolos-de-fe/confiss%C3%A3o-de-f%C3%A9-de-westminster | Capítulos/seções/referências; valida os 35 capítulos e a contagem de seções da edição da IP Aliança |
 | `translate:catechism -- --id wsc --file data/sources/wsc.json` | https://gist.github.com/joaolucasl/2084125f96a1275be2de55e4fed89f0c | `{numero, pergunta, resposta, refs}` → `questions`; **numera pela posição** (o item 81 tem a pergunta no campo `numero`); valida 1–107 |
-| `translate:catechism -- --id wlc --file data/sources/wlc.pdf` | https://www.ipb.org.br/content/Arquivos/Catecismo_Maior_de_Westminster.pdf | Extrai texto do PDF, separa perguntas, remove cabeçalhos/rodapés, guarda refs; valida 1–196; revisão manual do que quebrar |
-| `translate:creeds -- --file data/sources/creeds.txt` | Texto revisado à mão (`## Credo Apostólico` + texto) — fonte: seção "Símbolos de fé" da IP Aliança ou a tradução recitada no culto | Exatamente os 3 credos |
+| `translate:catechism -- --id wlc --file data/sources/wlc.pdf` | https://www.ipb.org.br/content/Arquivos/Catecismo_Maior_de_Westminster.pdf + complemento da IP Bom Pastor | `pdftotext -raw`; separa perguntas, junta hifenização, guarda refs; aplica `wlc-supplement.json` (perguntas ausentes ou correções parciais); valida 1–196 |
+| `translate:creeds -- --file data/sources/creeds.txt` | PDFs da IPB Boa Vista (unyigreja.sfo2.digitaloceanspaces.com/ipbboavista.com.br/pdf/documentos/…), revisados em `creeds.txt` (`## Credo …` + parágrafos) | Exatamente os 3 credos |
 
 As fontes só são baixadas quando a user story correspondente for executada. O tradutor do PDF usa `pdftotext` (poppler: `brew install poppler`); só o mantenedor roda tradutores, e o resultado é versionado.
 

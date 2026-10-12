@@ -87,6 +87,13 @@ describe('Larger Catechism PDF text', () => {
     expect(merged.notes).toContain('Q4: taken from the supplement')
   })
 
+  it('applies partial corrections (only refs) to a question the PDF has', () => {
+    const merged = applySupplement(parsed, [{ number: 4, question: 'P?', answer: 'R.' }, { number: 5, refs: 'Ex 20.1.', note: 'wrong refs in the PDF' }], 5)
+    expect(merged.questions[4]).toEqual({ number: 5, question: 'Quinta?', answer: 'Resposta cinco.', refs: 'Ex 20.1.' })
+    expect(merged.notes).toContain('Q5: refs corrected from the supplement')
+    expect(() => applySupplement(parsed, [{ number: 4, refs: 'x' }], 5)).toThrow(/Q4: needs question and answer/)
+  })
+
   it('joinWrapped keeps spaced dashes as separate words', () => {
     expect(joinWrapped(['pecado e de Satanás -', 'pedimos'])).toBe('pecado e de Satanás - pedimos')
     expect(joinWrapped(['co-', 'herdeiros'])).toBe('co-herdeiros')

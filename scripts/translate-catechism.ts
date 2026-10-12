@@ -1,6 +1,7 @@
 // npm run translate:catechism -- --id wsc --file data/sources/wsc.json [--out data/canonical]
 // npm run translate:catechism -- --id wlc --file data/sources/wlc.pdf [--supplement data/sources/wlc-supplement.json]
-//   (questions missing from the PDF come from the supplement: [{ number, question, answer, refs? }])
+//   (questions missing from the PDF, or corrections, come from the supplement:
+//    [{ number, question?, answer?, refs?, note? }] — see docs/DATA.md)
 // Translates a catechism source into data/canonical/catechisms/<id>.json.
 import { existsSync, readFileSync } from 'node:fs'
 import { basename, join, resolve } from 'node:path'
@@ -10,7 +11,7 @@ import { validateCatechism } from '../src/shared/validate'
 import { parseArgs } from './lib/args'
 import { DEFAULT_CANONICAL_DIR, isLocked, writeJson } from './lib/canonical'
 import { catechismDocument, translateGistCatechism, type GistItem } from './lib/translate/catechism'
-import { applySupplement, parseLargerCatechismText, pdfToText } from './lib/translate/catechism-pdf'
+import { applySupplement, parseLargerCatechismText, pdfToText, type SupplementItem } from './lib/translate/catechism-pdf'
 
 const args = parseArgs()
 if (typeof args.id !== 'string' || typeof args.file !== 'string') {
@@ -35,7 +36,7 @@ if (file.endsWith('.json')) {
   const expected = REQUIRED.catechisms[id] ?? 0
   const parsed = parseLargerCatechismText(pdfToText(file), expected)
   const supplementFile = typeof args.supplement === 'string' ? resolve(args.supplement) : file.replace(/\.pdf$/, '-supplement.json')
-  const supplement = existsSync(supplementFile) ? (JSON.parse(readFileSync(supplementFile, 'utf8')) as CatechismQuestion[]) : []
+  const supplement = existsSync(supplementFile) ? (JSON.parse(readFileSync(supplementFile, 'utf8')) as SupplementItem[]) : []
   const merged = applySupplement(parsed, supplement, expected)
   questions = merged.questions
   notes = merged.notes

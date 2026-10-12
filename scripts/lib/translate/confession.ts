@@ -8,7 +8,7 @@
 import { decodeEntities, toLine, toProse } from '../../../src/shared/clean'
 import type { ConfessionChapter } from '../../../src/shared/data-model'
 
-/** Chapter titles as the app shows them (prototype `CFW_T`, chapters 1–33). */
+/** Chapter titles as the app shows them (prototype `CFW_T` for 1–33; 34–35 from the IP Aliança edition). */
 export const WCF_TITLES: readonly string[] = [
   'Da Escritura Sagrada', 'De Deus e da Santíssima Trindade', 'Dos Eternos Decretos de Deus', 'Da Criação',
   'Da Providência', 'Da Queda do Homem, do Pecado e do seu Castigo', 'Do Pacto de Deus com o Homem',
@@ -18,7 +18,9 @@ export const WCF_TITLES: readonly string[] = [
   'Da Liberdade Cristã e da Liberdade de Consciência', 'Do Culto Religioso e do Domingo',
   'Dos Juramentos Legais e dos Votos', 'Do Magistrado Civil', 'Do Matrimônio e do Divórcio', 'Da Igreja',
   'Da Comunhão dos Santos', 'Dos Sacramentos', 'Do Batismo', 'Da Ceia do Senhor', 'Das Censuras Eclesiásticas',
-  'Dos Sínodos e Concílios', 'Do Estado do Homem depois da Morte e da Ressurreição dos Mortos', 'Do Juízo Final'
+  'Dos Sínodos e Concílios', 'Do Estado do Homem depois da Morte e da Ressurreição dos Mortos', 'Do Juízo Final',
+  // Chapters of the IP Aliança edition beyond the original 33.
+  'Do Espírito Santo', 'Do Amor de Deus e das Missões'
 ]
 
 const ROMAN: Record<string, number> = { I: 1, V: 5, X: 10, L: 50, C: 100 }

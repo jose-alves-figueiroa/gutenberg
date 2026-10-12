@@ -68,7 +68,8 @@ describe('Westminster Confession page', () => {
     expect(isRefsLine('Os sacramentos são santos sinais.')).toBe(false)
   })
 
-  it('app chapter titles match the prototype', () => {
-    expect(WCF_TITLES).toEqual(loadPrototype().CFW_T.slice(1))
+  it('app chapter titles match the prototype for 1–33 and add 34–35', () => {
+    expect(WCF_TITLES.slice(0, 33)).toEqual(loadPrototype().CFW_T.slice(1))
+    expect(WCF_TITLES.slice(33)).toEqual(['Do Espírito Santo', 'Do Amor de Deus e das Missões'])
   })
 })

@@ -24,7 +24,8 @@
     "translate:catechism": "tsx scripts/translate-catechism.ts",
     "translate:confession": "tsx scripts/translate-confession.ts",
     "holyrics:dump": "tsx scripts/holyrics-dump.ts",
-    "translate:songs": "tsx scripts/translate-songs.ts"
+    "translate:songs": "tsx scripts/translate-songs.ts",
+    "translate:creeds": "tsx scripts/translate-creeds.ts"
   },
   "dependencies": {
     "@fontsource/source-serif-4": "^5.3.1",

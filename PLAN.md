@@ -63,14 +63,14 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 
 ## Backlog (fases futuras)
 ### E3 — Dados (Fase 2)
-**Requisito funcional:** o app sai com a Bíblia ARA completa, as 246 músicas do Holyrics, os símbolos de fé de Westminster (CFW, Breve, Maior) e os 3 credos.
+**Requisito funcional:** o app sai com a Bíblia ARA completa, as 246 músicas do Holyrics, os símbolos de fé de Westminster (CFW na edição da IP Aliança, Breve, Maior) e os 3 credos.
 Tasks detalhadas, schemas (em inglês) e fontes: **`docs/DATA.md` → Progresso**. Aqui só o status das user stories.
 - [x] US3.0 Dados versionados e cifrados (git-crypt + chave por senha, com backup)
 - [x] US3.1 Formato interno, validadores, limpeza (`clean.ts`), `data:build`, `data:check`, seed
 - [x] US3.2 Bíblia ARA (`translate:bible`): 66 livros, 31.104 versículos
 - [~] US3.3 Músicas do Holyrics por hinário com créditos: `holyrics:dump` + `translate:songs` prontos; aguarda a API do Holyrics habilitada no PC da igreja
-- [~] US3.4 Símbolos de Westminster: CFW (33 caps.) e Breve (107) prontos; Maior aguarda as perguntas 176, 177 e 192, ausentes do PDF
-- [ ] US3.5 Credos Apostólico, Niceno e Atanasiano (`translate:creeds`)
+- [x] US3.4 Símbolos de Westminster: CFW (35 caps., edição da IP Aliança), Breve (107), Maior (196, com complemento da IP Bom Pastor)
+- [x] US3.5 Credos Apostólico, Niceno e de Atanásio (`translate:creeds`)
 
 ### E4 — Biblioteca (Fase 4)
 - [ ] Coleções em 3 grupos (Bíblia no topo) + breadcrumb

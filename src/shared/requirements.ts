@@ -16,12 +16,13 @@ export const BOOK_CHAPTERS: Readonly<Record<string, number>> = {
 }
 
 /**
- * Sections in each chapter of the Westminster Confession (`WCF_SECTIONS[c - 1]`), in the American
- * revision adopted by the IPB. It differs from the prototype's counts (1647 text) only in chapter 31,
- * "Dos Sínodos e Concílios": 4 sections instead of 5.
+ * Sections in each chapter of the Westminster Confession (`WCF_SECTIONS[c - 1]`), as published by
+ * the Igreja Presbiteriana da Aliança (the church's edition): the American revision (chapter 31,
+ * "Dos Sínodos e Concílios", has 4 sections — the 1647 text used by the prototype has 5) plus
+ * chapters 34 "Do Espírito Santo" and 35 "Do Amor de Deus e das Missões" (4 sections each).
  */
 export const WCF_SECTIONS: readonly number[] = [
-  10, 3, 8, 2, 7, 6, 6, 8, 5, 4, 6, 1, 3, 3, 6, 7, 3, 4, 7, 4, 8, 7, 4, 6, 6, 3, 5, 7, 8, 4, 4, 3, 3
+  10, 3, 8, 2, 7, 6, 6, 8, 5, 4, 6, 1, 3, 3, 6, 7, 3, 4, 7, 4, 8, 7, 4, 6, 6, 3, 5, 7, 8, 4, 4, 3, 3, 4, 4
 ]
 
 export const REQUIRED = {

@@ -89,18 +89,35 @@ export function parseLargerCatechismText(text: string, expected: number): Parsed
   return { questions, missing, notes }
 }
 
-/** Fills missing questions (and optionally overrides existing ones) from a supplement list. */
+/**
+ * A supplement entry: a whole question (missing from the PDF), or only the fields to correct on a
+ * question the PDF has (e.g. `{ number: 191, refs: "…" }`). `note` documents why; it is not stored.
+ */
+export interface SupplementItem {
+  number: number
+  question?: string
+  answer?: string
+  refs?: string
+  note?: string
+}
+
+/** Fills missing questions and applies corrections from a supplement list. */
 export function applySupplement(
   parsed: ParsedCatechism,
-  supplement: CatechismQuestion[],
+  supplement: SupplementItem[],
   expected: number
 ): { questions: CatechismQuestion[]; missing: number[]; notes: string[] } {
   const byNumber = new Map(parsed.questions.map((q) => [q.number, q]))
   const notes = [...parsed.notes]
   for (const s of supplement) {
-    const refs = s.refs ? toLine(s.refs) : ''
-    byNumber.set(s.number, { number: s.number, question: toProse(s.question), answer: toProse(s.answer), ...(refs ? { refs } : {}) })
-    notes.push(`Q${s.number}: taken from the supplement`)
+    const base = byNumber.get(s.number)
+    const question = s.question ?? base?.question
+    const answer = s.answer ?? base?.answer
+    if (!question || !answer) throw new Error(`supplement Q${s.number}: needs question and answer (not in the source)`)
+    const refs = s.refs !== undefined ? toLine(s.refs) : (base?.refs ?? '')
+    byNumber.set(s.number, { number: s.number, question: toProse(question), answer: toProse(answer), ...(refs ? { refs } : {}) })
+    const fields = (['question', 'answer', 'refs'] as const).filter((f) => s[f] !== undefined)
+    notes.push(`Q${s.number}: ${base ? `${fields.join(', ')} corrected` : 'taken'} from the supplement`)
   }
   const questions: CatechismQuestion[] = []
   const missing: number[] = []

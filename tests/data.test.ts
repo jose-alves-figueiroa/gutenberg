@@ -22,11 +22,11 @@ describe('requirements', () => {
     expect(Object.keys(BOOK_CHAPTERS)).toEqual(BOOKS.map(([abbrev]) => abbrev))
   })
 
-  it('WCF section counts match the prototype except chapter 31 (American revision), catechism sizes match', () => {
-    const expected = [...proto.CFW_S]
-    expected[31] = 4 // 1647 text has 5 sections; the American revision adopted by the IPB has 4
+  it('WCF follows the IP Aliança edition: prototype counts except ch. 31, plus chapters 34–35', () => {
+    const expected = [...proto.CFW_S, 4, 4] // + "Do Espírito Santo", "Do Amor de Deus e das Missões"
+    expected[31] = 4 // 1647 text has 5 sections; the American revision has 4
     expect([0, ...WCF_SECTIONS]).toEqual(expected)
-    expect(WCF_SECTIONS).toHaveLength(33)
+    expect(WCF_SECTIONS).toHaveLength(35)
     expect(REQUIRED.catechisms).toEqual({ wsc: proto.CAT_N.breve, wlc: proto.CAT_N.maior })
   })
 })
