@@ -1,0 +1,4 @@
+# Dados de conteúdo (ARA, músicas, símbolos de fé, credos) — cifrados no repositório (docs/DADOS.md)
+data/canonical/** filter=git-crypt diff=git-crypt
+# Os próprios atributos nunca são cifrados
+.gitattributes !filter !diff

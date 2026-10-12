@@ -65,14 +65,14 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 **Requisito funcional:** o app sai com a Bíblia ARA completa, as 246 músicas do Holyrics, os símbolos de fé de Westminster (CFW, Breve, Maior) e os 3 credos. Arquitetura, formato interno e fontes: `docs/DADOS.md`.
 
 **US3.0** Como mantenedor, quero os dados versionados e cifrados, para o repositório público não expor os textos.
-- [ ] git-crypt: `init`, `.gitattributes` (`data/canonical/**`), chave exportada, cifrada com a senha do mantenedor (`gpg --symmetric`) e guardada fora do repo
-- [ ] Verificação: `git-crypt status` antes de commitar dados; `data:check` avisa quando o repo está trancado
+- [x] git-crypt: `init`, `.gitattributes` (`data/canonical/**`), chave exportada, cifrada com a senha do mantenedor (`gpg --symmetric`) e guardada fora do repo
+- [x] Verificação: teste `tests/gitcrypt.test.ts` falha se algum arquivo de `data/canonical/` estiver em claro no git (o aviso de repo trancado fica no `data:check`, US3.1)
 
 **US3.1** Como desenvolvedor, quero um formato interno próprio, para não depender do esquema de nenhuma fonte.
 - [ ] `src/shared/data-model.ts`: tipos + validadores (livro da Bíblia, música, CFW, catecismo, credos), `formato: 1`
 - [ ] `src/shared/clean.ts`: remove `<ctt>`, `<desc>`, `<span>`, `&nbsp;`, `(RA)`; junta quebras simples de texto corrido; testes com o payload real do Holyrics
 - [ ] `npm run data:build`: `data/canonical/` → SQLite do app (schema do README + `refs`, créditos, `origem`); migrações
-- [ ] `npm run data:check`: completude (66 livros, 246 músicas, 33 caps. da CFW, 107 + 196 perguntas, 3 credos)
+- [ ] `npm run data:check`: completude (66 livros, 246 músicas, 33 caps. da CFW, 107 + 196 perguntas, 3 credos); avisa quando o repo está trancado (`\0GITCRYPT`)
 - [ ] Seed do protótipo para desenvolvimento/testes
 - [ ] Limite de caracteres por tela persistido como configuração
 
