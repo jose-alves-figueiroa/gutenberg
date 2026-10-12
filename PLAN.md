@@ -62,38 +62,14 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 
 ## Backlog (fases futuras)
 ### E3 — Dados (Fase 2)
-**Requisito funcional:** o app sai com a Bíblia ARA completa, as 246 músicas do Holyrics, os símbolos de fé de Westminster (CFW, Breve, Maior) e os 3 credos. Arquitetura, formato interno e fontes: `docs/DADOS.md`.
-
-**US3.0** Como mantenedor, quero os dados versionados e cifrados, para o repositório público não expor os textos.
-- [x] git-crypt: `init`, `.gitattributes` (`data/canonical/**`), chave exportada, cifrada com `GUTENBERG_DATA_PASSWORD` em `.secrets/` (ignorado); `npm run data:key` / `data:unlock` (também no `prebuild`)
-- [x] Verificação: teste `tests/gitcrypt.test.ts` falha se algum arquivo de `data/canonical/` estiver em claro no git (o aviso de repo trancado fica no `data:check`, US3.1)
-
-**US3.1** Como desenvolvedor, quero um formato interno próprio, para não depender do esquema de nenhuma fonte.
-- [ ] `src/shared/data-model.ts`: tipos + validadores (livro da Bíblia, música, CFW, catecismo, credos), `formato: 1`
-- [ ] `src/shared/clean.ts`: remove `<ctt>`, `<desc>`, `<span>`, `&nbsp;`, `(RA)`; junta quebras simples de texto corrido; testes com o payload real do Holyrics
-- [ ] `npm run data:build`: `data/canonical/` → SQLite do app (schema do README + `refs`, créditos, `origem`); migrações
-- [ ] `npm run data:check`: completude (66 livros, 246 músicas, 33 caps. da CFW, 107 + 196 perguntas, 3 credos); avisa quando o repo está trancado (`\0GITCRYPT`)
-- [ ] Seed do protótipo para desenvolvimento/testes
-- [ ] Limite de caracteres por tela persistido como configuração
-
-**US3.2** Bíblia ARA
-- [ ] `translate:biblia`: OpenLP SQLite → `data/canonical/biblia/ara/` (testes com fixture OpenLP sintética)
-- [ ] Traduzir o `ARA.sqlite` e conferir (Hb 12.14–15 igual ao protótipo)
-
-**US3.3** Músicas do Holyrics (salmos, HNC e demais) com créditos
-- [ ] Investigar (só leitura) o formato da tabela `music` de `database.db`
-- [ ] `translate:musicas`: decifra só `music` (chave em `HOLYRICS_DB_KEY`, fora do git) → `data/canonical/musicas/`
-- [ ] Classificar salmo × hino; estrofes limpas; créditos (autor, artista, copyright)
-- [ ] Testes com registro sintético cifrado com chave de teste
-- [ ] Plano B (se necessário): API local do Holyrics (`GetSongs`/`GetLyrics`)
-
-**US3.4** Símbolos de fé de Westminster
-- [ ] `translate:cfw`: página da IP Aliança → `westminster/cfw.json`; valida 33 capítulos e seções
-- [ ] `translate:breve`: gist JSON → `westminster/breve.json`; numera pela posição (item 81 defeituoso); valida 1–107
-- [ ] `translate:maior`: PDF da IPB → `westminster/maior.json`; valida 1–196; revisão manual
-
-**US3.5** Credos
-- [ ] `translate:credos`: texto revisado à mão → `credos.json` com Apostólico, Niceno e Atanasiano
+**Requisito funcional:** o app sai com a Bíblia ARA completa, as 246 músicas do Holyrics, os símbolos de fé de Westminster (CFW, Breve, Maior) e os 3 credos.
+Tasks detalhadas, schemas (em inglês) e fontes: **`docs/DADOS.md` → Progresso**. Aqui só o status das user stories.
+- [~] US3.0 Dados versionados e cifrados (git-crypt + chave por senha) — falta o backup da chave
+- [ ] US3.1 Formato interno (`data-model.ts`), limpeza (`clean.ts`), `data:build`, `data:check`
+- [ ] US3.2 Bíblia ARA (`translate:bible`)
+- [ ] US3.3 Músicas do Holyrics com créditos (`translate:songs`)
+- [ ] US3.4 Símbolos de Westminster (`translate:confession`, `translate:shorter`, `translate:larger`)
+- [ ] US3.5 Credos Apostólico, Niceno e Atanasiano (`translate:creeds`)
 
 ### E4 — Biblioteca (Fase 4)
 - [ ] Coleções em 3 grupos (Bíblia no topo) + breadcrumb

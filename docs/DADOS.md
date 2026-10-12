@@ -1,6 +1,6 @@
 # Dados — Gutenberg
 
-Plano da E3 (ver `PLAN.md`). **Requisito funcional:** o Gutenberg sai com estes dados completos:
+Plano detalhado da E3 (resumo em `PLAN.md`). **Requisito funcional:** o Gutenberg sai com estes dados completos:
 
 | Conteúdo | Completo quando |
 |---|---|
@@ -9,103 +9,174 @@ Plano da E3 (ver `PLAN.md`). **Requisito funcional:** o Gutenberg sai com estes 
 | **Símbolos de fé de Westminster** | CFW (33 capítulos, todas as seções), Breve Catecismo (107), Catecismo Maior (196) |
 | **Credos** | Apostólico, Niceno e Atanasiano |
 
+Convenção: **formato, chaves, nomes de arquivo, comandos e tabelas em inglês**; o **conteúdo** (títulos,
+textos, nomes dos livros) em português.
+
+## Progresso
+
+Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
+
+### E3 — Dados
+
+**US3.0** Como mantenedor, quero os dados versionados e cifrados, para o repositório público não expor os textos.
+- [x] git-crypt: `init`, `.gitattributes` (`data/canonical/**`)
+- [x] Chave exportada, cifrada com `GUTENBERG_DATA_PASSWORD` em `.secrets/` (ignorado); `npm run data:key` / `data:unlock` (também no `prebuild`)
+- [x] Teste `tests/gitcrypt.test.ts`: falha se algum arquivo de `data/canonical/` estiver em claro no git
+- [x] Renomear `data/canonical/.verificacao.json` → `.gitcrypt-check.json` com o schema em inglês
+- [ ] Backup de `.secrets/gutenberg-data.key.gpg` e da senha fora deste computador (mantenedor)
+
+**US3.1** Como desenvolvedor, quero um formato interno próprio, para não depender do esquema de nenhuma fonte.
+- [ ] `src/shared/data-model.ts`: tipos + validadores de `BibleBook`, `Song`, `Confession`, `Catechism`, `Creeds` (`format: 1`)
+- [ ] Alinhar os tipos de `src/shared/slides.ts` ao data-model (hoje `pergunta`/`resposta`/`cap`/`sec`)
+- [ ] `src/shared/clean.ts`: remove `<ctt>`, `<desc>`, `<span>`, `text-force-update`, `&nbsp;`, `(RA)`; junta quebras simples de texto corrido; testes com o payload real do Holyrics
+- [ ] `npm run data:build`: `data/canonical/` → SQLite do app (schema abaixo); migrações
+- [ ] `npm run data:check`: completude (tabela do requisito); avisa quando o repo está trancado (`\0GITCRYPT`)
+- [ ] Seed do protótipo (`LIB0`) no formato interno, para desenvolvimento e testes
+- [ ] Limite de caracteres por tela persistido como configuração
+
+**US3.2** Como operador, quero a Bíblia ARA completa, para apresentar qualquer leitura.
+- [ ] `translate:bible`: OpenLP SQLite → `data/canonical/bible/ara/` (testes com fixture OpenLP sintética)
+- [ ] Obter o `ARA.sqlite` (github.com/damarals/biblias) em `data/sources/`
+- [ ] Traduzir e conferir: 66 livros; Hb 12.14–15 igual ao protótipo
+
+**US3.3** Como operador, quero as músicas que a igreja cadastrou no Holyrics, com os créditos.
+- [ ] Investigar (só leitura) o formato da tabela `music` de `database.db`
+- [ ] `translate:songs`: decifra só `music` (chave em `HOLYRICS_DB_KEY`, fora do git) → `data/canonical/songs/`
+- [ ] Classificar salmo × hino; estrofes limpas; créditos (autor, artista, copyright)
+- [ ] Testes com registro sintético cifrado com chave de teste
+- [ ] Conferir: 246 músicas; Salmo 133B igual ao payload de exemplo
+- [ ] Plano B (só se a descriptografia não for viável): API local do Holyrics (`GetSongs`/`GetLyrics`)
+
+**US3.4** Como operador, quero os símbolos de fé de Westminster completos, para apresentar doutrina.
+- [ ] `translate:confession`: página da IP Aliança → `westminster/confession.json`; valida 33 capítulos e seções
+- [ ] `translate:shorter`: gist JSON → `westminster/shorter-catechism.json`; numera pela posição (item 81 defeituoso); valida 1–107
+- [ ] `translate:larger`: PDF da IPB → `westminster/larger-catechism.json`; valida 1–196; revisão manual
+
+**US3.5** Como operador, quero os três credos, para a confissão de fé no culto.
+- [ ] Texto revisado à mão (tradução recitada no culto) em `data/sources/creeds.txt`
+- [ ] `translate:creeds` → `creeds.json` com Apostólico, Niceno e Atanasiano
+
 ## Arquitetura
 
 ```
-fontes externas            tradutores                  formato interno (versionado, cifrado)        app
-────────────────           ─────────────               ──────────────────────────────────────      ───────────────
-ARA.sqlite (OpenLP)   ──▶  translate:biblia    ──┐
-database.db Holyrics  ──▶  translate:musicas   ──┤
-página IP Aliança     ──▶  translate:cfw       ──┼──▶  data/canonical/**  (git-crypt)  ──▶ data:build ──▶ SQLite
-gist (JSON)           ──▶  translate:breve     ──┤                                           (empacotado no
-PDF IPB               ──▶  translate:maior     ──┤                                            instalador)
-texto revisado à mão  ──▶  translate:credos    ──┘
+fontes externas            tradutores                   formato interno (versionado, cifrado)        app
+────────────────           ─────────────                ──────────────────────────────────────      ───────────────
+ARA.sqlite (OpenLP)   ──▶  translate:bible      ──┐
+database.db Holyrics  ──▶  translate:songs      ──┤
+página IP Aliança     ──▶  translate:confession ──┼──▶  data/canonical/**  (git-crypt)  ──▶ data:build ──▶ SQLite
+gist (JSON)           ──▶  translate:shorter    ──┤                                           (empacotado no
+PDF IPB               ──▶  translate:larger     ──┤                                            instalador)
+texto revisado à mão  ──▶  translate:creeds     ──┘
 ```
 
 1. **Formato interno próprio.** Não replicamos o esquema de nenhuma fonte (nem OpenLP, nem Holyrics):
    cada fonte é **traduzida** para o nosso modelo, definido em `src/shared/data-model.ts`.
 2. **Versionado e cifrado.** `data/canonical/**` vai para o git cifrado com **git-crypt**: no GitHub
-   (repositório público) só aparecem bytes cifrados; em claro após `git-crypt unlock`.
+   (repositório público) só aparecem bytes cifrados; em claro após `npm run data:unlock`.
 3. **Fontes brutas fora do git.** O que é baixado ou copiado (`tmp/Holyrics`, `data/sources/`) fica
    ignorado; só a tradução canônica é versionada.
 4. **Build gera o banco.** `npm run data:build` lê `data/canonical/` e gera o SQLite do app;
-   `npm run data:check` valida a completude da tabela acima.
-5. **Créditos e origem.** Todo registro guarda `origem` (`fonte` + id original) e, nas músicas,
+   `npm run data:check` valida a completude.
+5. **Créditos e origem.** Todo registro guarda `source` (`name` + id original) e, nas músicas,
    autor, artista e copyright.
 
 ## Formato interno (`data/canonical/`)
 
-Todos os arquivos são JSON UTF-8, com `"formato": 1` no topo, texto já limpo (sem HTML).
+JSON UTF-8, com `"format": 1` no topo, texto já limpo (sem HTML). Texto corrido (versículo, seção,
+resposta, credo) usa linha em branco entre parágrafos e **nenhuma** quebra simples — o `autobreak`
+cuida das telas.
 
 ```
 data/canonical/
-  biblia/ara/
-    meta.json              { formato, sigla: "ARA", nome, origem }
+  .gitcrypt-check.json
+  bible/ara/
+    meta.json                     { format, code: "ARA", name, source }
     01-Gn.json … 66-Ap.json
-  musicas/
-    salmos/133B.json …
-    hinos/<slug>.json …
+  songs/
+    psalms/133B.json …
+    hymns/<slug>.json …
   westminster/
-    cfw.json
-    breve.json
-    maior.json
-  credos.json
+    confession.json
+    shorter-catechism.json
+    larger-catechism.json
+  creeds.json
 ```
 
-**Livro da Bíblia** (`biblia/ara/58-Hb.json`):
+**Bible book** (`bible/ara/58-Hb.json`):
 ```json
-{ "formato": 1, "livro": "Hb", "nome": "Hebreus", "ordem": 58, "testamento": "NT",
-  "capitulos": [ ["v1", "v2", "…"], ["…"] ] }
+{ "format": 1, "book": "Hb", "name": "Hebreus", "order": 58, "testament": "NT",
+  "chapters": [ ["v1", "v2", "…"], ["…"] ] }
 ```
-`capitulos[c-1][v-1]` é o texto do versículo `c.v`. As abreviações e nomes vêm de `BOOKS`
+`chapters[c-1][v-1]` é o texto do versículo `c.v`. Abreviações e nomes vêm de `BOOKS`
 (`src/shared/collections.ts`).
 
-**Música** (`musicas/salmos/133B.json`, `musicas/hinos/castelo-forte.json`):
+**Song** (`songs/psalms/133B.json`, `songs/hymns/castelo-forte.json`):
 ```json
-{ "formato": 1, "id": "salmo-133B", "tipo": "salmo", "num": "133", "versao": "B",
-  "titulo": "Salmo 133B", "versificacao": "",
-  "creditos": { "autor": "", "artista": "Comissão Brasileira de Salmodia", "copyright": "" },
-  "estrofes": [ ["Oh! Como é bom e agradável,", "bem suave, sim,"], ["…"] ],
-  "origem": { "fonte": "holyrics-db", "id": "1674772445640" } }
+{ "format": 1, "id": "psalm-133B", "kind": "psalm", "number": "133", "version": "B",
+  "title": "Salmo 133B", "versification": "",
+  "credits": { "author": "", "artist": "Comissão Brasileira de Salmodia", "copyright": "" },
+  "stanzas": [ ["Oh! Como é bom e agradável,", "bem suave, sim,"], ["…"] ],
+  "source": { "name": "holyrics-db", "id": "1674772445640" } }
 ```
-Hinos usam `"tipo": "hino"`, `num` = número do HNC quando houver.
+Hinos usam `"kind": "hymn"`; `number` = número do HNC quando houver.
 
-**CFW** (`westminster/cfw.json`):
+**Confession** (`westminster/confession.json`):
 ```json
-{ "formato": 1, "capitulos": [ { "cap": 1, "titulo": "Da Escritura Sagrada",
-  "secoes": [ { "sec": 1, "texto": "Ainda que a luz da natureza…" } ] } ],
-  "origem": { "fonte": "ipalianca" } }
+{ "format": 1,
+  "chapters": [ { "chapter": 1, "title": "Da Escritura Sagrada",
+                  "sections": [ { "section": 1, "text": "Ainda que a luz da natureza…" } ] } ],
+  "source": { "name": "ipalianca" } }
 ```
 
-**Catecismos** (`westminster/breve.json`, `maior.json`):
+**Catechism** (`westminster/shorter-catechism.json`, `larger-catechism.json`):
 ```json
-{ "formato": 1, "tipo": "breve",
-  "perguntas": [ { "q": 1, "pergunta": "Qual é o fim principal do homem?",
-                   "resposta": "O fim principal do homem é glorificar a Deus, e gozá-lo para sempre.",
+{ "format": 1, "kind": "shorter",
+  "questions": [ { "number": 1, "question": "Qual é o fim principal do homem?",
+                   "answer": "O fim principal do homem é glorificar a Deus, e gozá-lo para sempre.",
                    "refs": "Rm 11.36; 1Co 10.31; …" } ],
-  "origem": { "fonte": "gist" } }
+  "source": { "name": "gist" } }
 ```
+`kind`: `shorter` (Breve) ou `larger` (Maior).
 
-**Credos** (`credos.json`):
+**Creeds** (`creeds.json`):
 ```json
-{ "formato": 1, "credos": [ { "id": "apostolico", "titulo": "Credo Apostólico", "texto": "…" },
-                            { "id": "niceno", "titulo": "Credo Niceno", "texto": "…" },
-                            { "id": "atanasiano", "titulo": "Credo Atanasiano", "texto": "…" } ] }
+{ "format": 1,
+  "creeds": [ { "id": "apostles", "title": "Credo Apostólico", "text": "…" },
+              { "id": "nicene", "title": "Credo Niceno", "text": "…" },
+              { "id": "athanasian", "title": "Credo Atanasiano", "text": "…" } ],
+  "source": { "name": "manual" } }
 ```
 
-Texto corrido (versículo, seção, resposta, credo) usa linha em branco entre parágrafos e **nenhuma**
-quebra simples — o `autobreak` cuida das telas.
+**Verificação do git-crypt** (`.gitcrypt-check.json`): `{ "format": 1, "check": "git-crypt ok" }`.
+
+## Schema SQLite do app (`data:build`)
+
+Gerado a partir do formato interno; nomes em inglês (substituem os nomes em português sugeridos no
+README do handoff).
+
+| Tabela | Colunas |
+|---|---|
+| `bible_verses` | `version`, `book`, `chapter`, `verse`, `text` (somente leitura) |
+| `songs` | `id`, `kind` (`psalm`/`hymn`), `number`, `version`, `title`, `versification`, `author`, `artist`, `copyright`, `lyrics`, `source` |
+| `confession_sections` | `chapter`, `section`, `chapter_title`, `text`, `source` |
+| `catechism_questions` | `kind` (`shorter`/`larger`), `number`, `question`, `answer`, `refs`, `source` |
+| `creeds` | `id`, `title`, `text`, `source` |
+| `services` | `id`, `name` (cultos — E5) |
+| `liturgy_items` | `service_id`, `position`, `moment`, `collection`, `item_ref` (E5) |
+| `settings` | `key`, `value` (ex.: limite de caracteres por tela) |
+
+`songs.lyrics` guarda as estrofes separadas por linha em branco (o formato que `slidesOf` já usa).
 
 ## Tradutores (fonte → formato interno)
 
 | Comando | Fonte | Tradução |
 |---|---|---|
-| `translate:biblia -- --file <ARA.sqlite>` | OpenLP SQLite (ex.: `ARA.sqlite` de github.com/damarals/biblias) | `book.book_reference_id` 1–66 → `BOOKS`; `verse(chapter, verse, text)` → `capitulos`; limpa o texto |
-| `translate:musicas -- --db tmp/Holyrics/Holyrics/files/database.db` | Banco do Holyrics da igreja, tabela `music` (246 registros cifrados) | Decifra localmente (ver abaixo) → classifica salmo × hino → estrofes limpas + créditos |
-| `translate:cfw -- --file data/sources/cfw.html` | https://www.ipalianca.org/simbolos-de-fe/confiss%C3%A3o-de-f%C3%A9-de-westminster | Capítulos/seções; valida 33 capítulos e a contagem de seções (`CFW_S` do protótipo) |
-| `translate:breve -- --file <json>` | https://gist.github.com/joaolucasl/2084125f96a1275be2de55e4fed89f0c | `{numero, pergunta, resposta, refs}` → `perguntas`; **numera pela posição** (o item 81 tem a pergunta no campo `numero`); valida 1–107 |
-| `translate:maior -- --file data/sources/maior.pdf` | https://www.ipb.org.br/content/Arquivos/Catecismo_Maior_de_Westminster.pdf | Extrai texto do PDF, separa perguntas, remove cabeçalhos/rodapés, guarda refs; valida 1–196; revisão manual do que quebrar |
-| `translate:credos -- --file data/sources/credos.txt` | Texto revisado à mão (`## Credo Apostólico` + texto) — fonte: seção "Símbolos de fé" da IP Aliança ou a tradução recitada no culto | Exatamente os 3 credos |
+| `translate:bible -- --file data/sources/ARA.sqlite` | OpenLP SQLite (ex.: `ARA.sqlite` de github.com/damarals/biblias) | `book.book_reference_id` 1–66 → `BOOKS`; `verse(chapter, verse, text)` → `chapters`; limpa o texto |
+| `translate:songs -- --db tmp/Holyrics/Holyrics/files/database.db` | Banco do Holyrics da igreja, tabela `music` (246 registros cifrados) | Decifra localmente (ver abaixo) → classifica psalm × hymn → estrofes limpas + créditos |
+| `translate:confession -- --file data/sources/confession.html` | https://www.ipalianca.org/simbolos-de-fe/confiss%C3%A3o-de-f%C3%A9-de-westminster | Capítulos/seções; valida 33 capítulos e a contagem de seções (`CFW_S` do protótipo) |
+| `translate:shorter -- --file data/sources/shorter-catechism.json` | https://gist.github.com/joaolucasl/2084125f96a1275be2de55e4fed89f0c | `{numero, pergunta, resposta, refs}` → `questions`; **numera pela posição** (o item 81 tem a pergunta no campo `numero`); valida 1–107 |
+| `translate:larger -- --file data/sources/larger-catechism.pdf` | https://www.ipb.org.br/content/Arquivos/Catecismo_Maior_de_Westminster.pdf | Extrai texto do PDF, separa perguntas, remove cabeçalhos/rodapés, guarda refs; valida 1–196; revisão manual do que quebrar |
+| `translate:creeds -- --file data/sources/creeds.txt` | Texto revisado à mão (`## Credo Apostólico` + texto) — fonte: seção "Símbolos de fé" da IP Aliança ou a tradução recitada no culto | Exatamente os 3 credos |
 
 As fontes só são baixadas quando a user story correspondente for executada.
 
@@ -114,7 +185,7 @@ Escopo: **somente** a tabela `music` de `files/database.db` (conteúdo cadastrad
 1. Investigar, só leitura, a classe do Holyrics que lê/grava `database.db` (decompilação local com
    CFR/jadx): algoritmo, modo, IV, origem da chave, formato do conteúdo decifrado. Validar contra o
    Salmo 133B do payload de exemplo.
-2. O tradutor lê o banco em modo somente leitura, decifra e gera `data/canonical/musicas/**`.
+2. O tradutor lê o banco em modo somente leitura, decifra e gera `data/canonical/songs/**`.
 3. A chave do Holyrics fica em `.env` local (`HOLYRICS_DB_KEY`), fora do git.
 4. Testes com registro sintético cifrado com chave de teste.
 5. Plano B: API local do Holyrics (`GetSongs` / `GetLyrics` devolvem `slides[].text`, `artist`,
@@ -142,12 +213,11 @@ Escopo: **somente** a tabela `music` de `files/database.db` (conteúdo cadastrad
 2. Clonar; copiar `.secrets/gutenberg-data.key.gpg` e criar o `.env` com a senha.
 3. `npm run data:unlock` (ou direto `npm run build`).
 
-**Configuração inicial (já feita):** `git-crypt init`, `.gitattributes` com `data/canonical/** filter=git-crypt diff=git-crypt`, `npm run data:key`.
-
 **Backup:** guardar uma cópia do `.secrets/gutenberg-data.key.gpg` e da senha fora deste computador. Sem os dois, os dados são irrecuperáveis.
 
 **Regras:**
-- Antes de cada commit que toque `data/`: `git-crypt status -e` precisa listar os arquivos de dados.
+- Antes de cada commit que toque `data/`: `git-crypt status -e` precisa listar os arquivos de dados
+  (o teste `tests/gitcrypt.test.ts` também verifica).
 - Testes (`npm test`) **não** dependem dos dados reais: usam fixtures e o seed do protótipo. O
   `data:check` detecta repositório trancado (cabeçalho `\0GITCRYPT`) e avisa, em vez de falhar.
 - O SQLite gerado (`data:build`) é artefato de build: não é versionado.
@@ -156,10 +226,3 @@ Escopo: **somente** a tabela `music` de `files/database.db` (conteúdo cadastrad
 ARA (© SBB), HNC e as traduções dos símbolos de fé têm direitos. A igreja é responsável por usar
 os textos dentro das licenças que possui. Os dados ficam cifrados no repositório público e só
 são decifrados no build do instalador da igreja.
-
-## Checklist
-- [x] git-crypt inicializado; chave em `.secrets/` cifrada com a senha do `.env`
-- [ ] Backup de `.secrets/gutenberg-data.key.gpg` e da senha fora deste computador
-- [ ] `ARA.sqlite` (OpenLP) disponível localmente
-- [ ] Cópia atualizada da pasta do Holyrics em `tmp/Holyrics`
-- [ ] Texto dos 3 credos revisado (tradução recitada no culto)

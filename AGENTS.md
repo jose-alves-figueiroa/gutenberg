@@ -7,7 +7,7 @@ e envia telas limpas para o OBS via obs-websocket.
 ## Fontes de verdade
 - **Especificação:** `design_handoff_gutenberg/README.md`. O protótipo `design/Gutenberg.dc.html`
   (classe `Component`) é a referência de comportamento — **não é código de produção**.
-- **Plano e progresso:** `PLAN.md`. Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito.
+- **Plano e progresso:** `PLAN.md` (épicos) e `docs/DADOS.md` → Progresso (tasks da E3). Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito.
   - Marque `[~]` ao começar uma task e `[x]` só quando ela estiver pronta **e** com testes passando.
   - Não crie épicos/tasks novos sem registrar no `PLAN.md`.
 - **Design:** tokens Broadsheet em `src/renderer/src/styles/tokens.css`. Alta fidelidade: não invente
@@ -29,7 +29,7 @@ scripts/           scripts de apoio (ex.: gerar fixtures golden)
 - `npm run typecheck` — TypeScript sem emitir
 - `npm run lint` — ESLint
 - `npm run golden` — regenera `tests/fixtures/autobreak.golden.json` a partir do protótipo
-- `npm run translate:<fonte>` / `data:build` / `data:check` — dados (E3, ver `docs/DADOS.md`)
+- `npm run translate:<source>` / `data:build` / `data:check` / `data:unlock` / `data:key` — dados (E3, ver `docs/DADOS.md`)
 
 Antes de marcar qualquer task como `[x]` ou commitar: `npm test && npm run typecheck && npm run lint` verdes.
 
@@ -42,7 +42,7 @@ Antes de marcar qualquer task como `[x]` ou commitar: `npm test && npm run typec
 - Textos da UI em português (pt-BR). Código e identificadores podem ser em inglês ou português,
   seguindo o que já existe no arquivo.
 - Dados de conteúdo (ARA, músicas, símbolos de fé, credos) só em `data/canonical/`, no formato interno
-  (`docs/DADOS.md`) e **cifrados com git-crypt**. Nunca commitar esses textos em claro em outro lugar
+  (`docs/DADOS.md`; schema, chaves e nomes de arquivo em inglês) e **cifrados com git-crypt**. Nunca commitar esses textos em claro em outro lugar
   (fontes brutas ficam em `tmp/` e `data/sources/`, ignorados). Antes de commitar `data/`, conferir
   `git-crypt status`. Bancos `.sqlite` gerados não são versionados.
 - Testes não dependem dos dados reais: usam fixtures sintéticas e o seed do protótipo.
