@@ -1,0 +1,363 @@
+{
+  "source": "design_handoff_gutenberg/design/Gutenberg.dc.html#autobreak",
+  "texts": {
+    "cfw-1.1": "Ainda que a luz da natureza e as obras da criação e da providência manifestem de tal modo a bondade, a sabedoria e o poder de Deus, que os homens ficam inescusáveis, contudo não são suficientes para dar aquele conhecimento de Deus e da sua vontade, necessário para a salvação.",
+    "hb-12.14": "Segui a paz com todos e a santificação, sem a qual ninguém verá o Senhor,",
+    "hb-12.15": "atentando, diligentemente, por que ninguém seja faltoso, separando-se da graça de Deus; nem haja alguma raiz de amargura que, brotando, vos perturbe, e, por meio dela, muitos sejam contaminados;",
+    "bc-1-pergunta": "Qual é o fim principal do homem?",
+    "bc-1-resposta": "O fim principal do homem é glorificar a Deus, e gozá-lo para sempre.",
+    "bc-2-pergunta": "Que regra deu Deus para nos dirigir na maneira de glorificá-lo e gozá-lo?",
+    "bc-2-resposta": "A palavra de Deus, que se acha nas Escrituras do Velho e do Novo Testamento, é a única regra para nos dirigir na maneira de glorificá-lo e gozá-lo.",
+    "bc-3-resposta": "As Escrituras ensinam principalmente o que o homem deve crer acerca de Deus, e o dever que Deus requer do homem.",
+    "credo-apostolico": "Creio em Deus Pai, todo-poderoso, Criador do céu e da terra. Creio em Jesus Cristo, seu único Filho, nosso Senhor, o qual foi concebido pelo Espírito Santo, nasceu da virgem Maria, padeceu sob Pôncio Pilatos, foi crucificado, morto e sepultado; ressuscitou ao terceiro dia, subiu ao céu, e está sentado à direita de Deus Pai, donde há de vir para julgar os vivos e os mortos. Creio no Espírito Santo, na santa Igreja universal, na comunhão dos santos, na remissão dos pecados, na ressurreição do corpo e na vida eterna. Amém.",
+    "linha-em-branco": "Primeiro parágrafo curto.\n\nSegundo parágrafo, também curto.\n\n\n   \n\nTerceiro.",
+    "quebras-simples": "Uma linha\nque continua na outra linha e segue por bastante tempo, com vírgulas, pausas; e pontos.\nE mais uma linha que deixa o segmento comprido demais para caber numa tela só.",
+    "frase-sem-pausa": "Esta frase muito longa não tem nenhuma pausa de pontuação no meio e por isso precisa ser cortada em pedaços equilibrados por palavras para caber nas telas da transmissão sem ficar desigual",
+    "sobra-curta": "Bendize, ó minha alma, ao Senhor, e tudo o que há em mim bendiga o seu santo nome, e não te esqueças de nenhum de seus benefícios. Amém.",
+    "vazio": "",
+    "so-espacos": "  \n\n  "
+  },
+  "cases": {
+    "cfw-1.1": {
+      "60": [
+        "Ainda que a luz da natureza\ne as obras da criação",
+        "e da providência manifestem\nde tal modo a bondade,",
+        "a sabedoria e o poder de Deus,",
+        "que os homens ficam inescusáveis,",
+        "contudo não são\nsuficientes para dar",
+        "aquele conhecimento de\nDeus e da sua vontade,",
+        "necessário para a salvação."
+      ],
+      "72": [
+        "Ainda que a luz da natureza\ne as obras da criação",
+        "e da providência manifestem\nde tal modo a bondade,",
+        "a sabedoria e o poder de Deus,\nque os homens ficam inescusáveis,",
+        "contudo não são suficientes para dar",
+        "aquele conhecimento de\nDeus e da sua vontade,",
+        "necessário para a salvação."
+      ],
+      "96": [
+        "Ainda que a luz da natureza e as obras da criação",
+        "e da providência manifestem de tal modo a bondade,\na sabedoria e o poder de Deus,",
+        "que os homens ficam inescusáveis,",
+        "contudo não são suficientes para dar aquele conhecimento\nde Deus e da sua vontade, necessário para a salvação."
+      ],
+      "128": [
+        "Ainda que a luz da natureza e as obras da criação\ne da providência manifestem de tal modo a bondade,",
+        "a sabedoria e o poder de Deus, que os homens ficam inescusáveis,",
+        "contudo não são suficientes para dar aquele conhecimento\nde Deus e da sua vontade, necessário para a salvação."
+      ],
+      "160": [
+        "Ainda que a luz da natureza e as obras da criação e da providência\nmanifestem de tal modo a bondade, a sabedoria e o poder de Deus,",
+        "que os homens ficam inescusáveis, contudo não são suficientes para dar\naquele conhecimento de Deus e da sua vontade, necessário para a salvação."
+      ]
+    },
+    "hb-12.14": {
+      "60": [
+        "Segui a paz com todos\ne a santificação,",
+        "sem a qual ninguém verá o Senhor,"
+      ],
+      "72": [
+        "Segui a paz com todos e a santificação,",
+        "sem a qual ninguém verá o Senhor,"
+      ],
+      "96": [
+        "Segui a paz com todos e a santificação,\nsem a qual ninguém verá o Senhor,"
+      ],
+      "128": [
+        "Segui a paz com todos e a santificação,\nsem a qual ninguém verá o Senhor,"
+      ],
+      "160": [
+        "Segui a paz com todos e a santificação, sem a qual ninguém verá o Senhor,"
+      ]
+    },
+    "hb-12.15": {
+      "60": [
+        "atentando, diligentemente,\npor que ninguém seja faltoso,",
+        "separando-se da graça de Deus;",
+        "nem haja alguma raiz de\namargura que, brotando,",
+        "vos perturbe, e, por meio dela,\nmuitos sejam contaminados;"
+      ],
+      "72": [
+        "atentando, diligentemente,\npor que ninguém seja faltoso,",
+        "separando-se da graça de Deus;\nnem haja alguma raiz de amargura que,",
+        "brotando, vos perturbe, e, por meio dela,\nmuitos sejam contaminados;"
+      ],
+      "96": [
+        "atentando, diligentemente, por que ninguém\nseja faltoso, separando-se da graça de Deus;",
+        "nem haja alguma raiz de amargura que, brotando,\nvos perturbe, e, por meio dela, muitos sejam contaminados;"
+      ],
+      "128": [
+        "atentando, diligentemente, por que ninguém seja faltoso,\nseparando-se da graça de Deus; nem haja alguma raiz de amargura que,",
+        "brotando, vos perturbe, e, por meio dela, muitos sejam contaminados;"
+      ],
+      "160": [
+        "atentando, diligentemente, por que ninguém seja faltoso, separando-se da graça de Deus;\nnem haja alguma raiz de amargura que, brotando, vos perturbe, e,",
+        "por meio dela, muitos sejam contaminados;"
+      ]
+    },
+    "bc-1-pergunta": {
+      "60": [
+        "Qual é o fim principal do homem?"
+      ],
+      "72": [
+        "Qual é o fim principal do homem?"
+      ],
+      "96": [
+        "Qual é o fim principal do homem?"
+      ],
+      "128": [
+        "Qual é o fim principal do homem?"
+      ],
+      "160": [
+        "Qual é o fim principal do homem?"
+      ]
+    },
+    "bc-1-resposta": {
+      "60": [
+        "O fim principal do homem\né glorificar a Deus,",
+        "e gozá-lo para sempre."
+      ],
+      "72": [
+        "O fim principal do homem é glorificar a Deus,\ne gozá-lo para sempre."
+      ],
+      "96": [
+        "O fim principal do homem é glorificar a Deus,\ne gozá-lo para sempre."
+      ],
+      "128": [
+        "O fim principal do homem é glorificar a Deus, e gozá-lo para sempre."
+      ],
+      "160": [
+        "O fim principal do homem é glorificar a Deus, e gozá-lo para sempre."
+      ]
+    },
+    "bc-2-pergunta": {
+      "60": [
+        "Que regra deu Deus\npara nos dirigir",
+        "na maneira de\nglorificá-lo e gozá-lo?"
+      ],
+      "72": [
+        "Que regra deu Deus para nos dirigir",
+        "na maneira de glorificá-lo e gozá-lo?"
+      ],
+      "96": [
+        "Que regra deu Deus para nos dirigir\nna maneira de glorificá-lo e gozá-lo?"
+      ],
+      "128": [
+        "Que regra deu Deus para nos dirigir\nna maneira de glorificá-lo e gozá-lo?"
+      ],
+      "160": [
+        "Que regra deu Deus para nos dirigir na maneira de glorificá-lo e gozá-lo?"
+      ]
+    },
+    "bc-2-resposta": {
+      "60": [
+        "A palavra de Deus,",
+        "que se acha nas Escrituras do\nVelho e do Novo Testamento,",
+        "é a única regra\npara nos dirigir na",
+        "maneira de glorificá-lo\ne gozá-lo."
+      ],
+      "72": [
+        "A palavra de Deus,",
+        "que se acha nas Escrituras do\nVelho e do Novo Testamento,",
+        "é a única regra para nos dirigir na\nmaneira de glorificá-lo e gozá-lo."
+      ],
+      "96": [
+        "A palavra de Deus, que se acha nas\nEscrituras do Velho e do Novo Testamento,",
+        "é a única regra para nos dirigir na\nmaneira de glorificá-lo e gozá-lo."
+      ],
+      "128": [
+        "A palavra de Deus, que se acha nas\nEscrituras do Velho e do Novo Testamento,",
+        "é a única regra para nos dirigir na maneira de glorificá-lo e gozá-lo."
+      ],
+      "160": [
+        "A palavra de Deus, que se acha nas Escrituras do Velho e do Novo Testamento,\né a única regra para nos dirigir na maneira de glorificá-lo e gozá-lo."
+      ]
+    },
+    "bc-3-resposta": {
+      "60": [
+        "As Escrituras ensinam\nprincipalmente o",
+        "que o homem deve\ncrer acerca de Deus,",
+        "e o dever que Deus\nrequer do homem."
+      ],
+      "72": [
+        "As Escrituras ensinam principalmente o",
+        "que o homem deve crer acerca de Deus,",
+        "e o dever que Deus requer do homem."
+      ],
+      "96": [
+        "As Escrituras ensinam principalmente o\nque o homem deve crer acerca de Deus,",
+        "e o dever que Deus requer do homem."
+      ],
+      "128": [
+        "As Escrituras ensinam principalmente o que o homem deve\ncrer acerca de Deus, e o dever que Deus requer do homem."
+      ],
+      "160": [
+        "As Escrituras ensinam principalmente o que o homem deve\ncrer acerca de Deus, e o dever que Deus requer do homem."
+      ]
+    },
+    "credo-apostolico": {
+      "60": [
+        "Creio em Deus Pai, todo-poderoso,\nCriador do céu e da terra.",
+        "Creio em Jesus Cristo,\nseu único Filho, nosso Senhor,",
+        "o qual foi concebido\npelo Espírito Santo,",
+        "nasceu da virgem Maria,\npadeceu sob Pôncio Pilatos,",
+        "foi crucificado,\nmorto e sepultado;",
+        "ressuscitou ao terceiro dia,\nsubiu ao céu,",
+        "e está sentado à\ndireita de Deus Pai,",
+        "donde há de vir para julgar\nos vivos e os mortos.",
+        "Creio no Espírito Santo,\nna santa Igreja universal,",
+        "na comunhão dos santos,\nna remissão dos pecados,",
+        "na ressurreição do corpo\ne na vida eterna. Amém."
+      ],
+      "72": [
+        "Creio em Deus Pai, todo-poderoso,\nCriador do céu e da terra.",
+        "Creio em Jesus Cristo,\nseu único Filho, nosso Senhor,",
+        "o qual foi concebido pelo Espírito Santo,\nnasceu da virgem Maria,",
+        "padeceu sob Pôncio Pilatos,\nfoi crucificado, morto e sepultado;",
+        "ressuscitou ao terceiro dia,\nsubiu ao céu,",
+        "e está sentado à direita de Deus Pai,",
+        "donde há de vir para julgar\nos vivos e os mortos.",
+        "Creio no Espírito Santo,\nna santa Igreja universal,",
+        "na comunhão dos santos,\nna remissão dos pecados,",
+        "na ressurreição do corpo\ne na vida eterna. Amém."
+      ],
+      "96": [
+        "Creio em Deus Pai, todo-poderoso,\nCriador do céu e da terra. Creio em Jesus Cristo,",
+        "seu único Filho, nosso Senhor, o qual foi concebido\npelo Espírito Santo, nasceu da virgem Maria,",
+        "padeceu sob Pôncio Pilatos, foi crucificado,\nmorto e sepultado; ressuscitou ao terceiro dia,",
+        "subiu ao céu, e está sentado à direita de Deus Pai,",
+        "donde há de vir para julgar os vivos\ne os mortos. Creio no Espírito Santo,",
+        "na santa Igreja universal, na comunhão\ndos santos, na remissão dos pecados,",
+        "na ressurreição do corpo e na vida eterna. Amém."
+      ],
+      "128": [
+        "Creio em Deus Pai, todo-poderoso, Criador do céu e da terra.\nCreio em Jesus Cristo, seu único Filho, nosso Senhor,",
+        "o qual foi concebido pelo Espírito Santo, nasceu da virgem Maria,\npadeceu sob Pôncio Pilatos, foi crucificado,",
+        "morto e sepultado; ressuscitou ao terceiro dia,\nsubiu ao céu, e está sentado à direita de Deus Pai,",
+        "donde há de vir para julgar os vivos e os mortos. Creio no Espírito Santo,\nna santa Igreja universal, na comunhão dos santos,",
+        "na remissão dos pecados,\nna ressurreição do corpo e na vida eterna. Amém."
+      ],
+      "160": [
+        "Creio em Deus Pai, todo-poderoso, Criador do céu e da terra. Creio em Jesus Cristo,\nseu único Filho, nosso Senhor, o qual foi concebido pelo Espírito Santo,",
+        "nasceu da virgem Maria, padeceu sob Pôncio Pilatos, foi crucificado,\nmorto e sepultado; ressuscitou ao terceiro dia, subiu ao céu,",
+        "e está sentado à direita de Deus Pai, donde há de vir para julgar os\nvivos e os mortos. Creio no Espírito Santo, na santa Igreja universal,",
+        "na comunhão dos santos, na remissão dos pecados,\nna ressurreição do corpo e na vida eterna. Amém."
+      ]
+    },
+    "linha-em-branco": {
+      "60": [
+        "Primeiro parágrafo curto.",
+        "Segundo parágrafo, também curto.",
+        "Terceiro."
+      ],
+      "72": [
+        "Primeiro parágrafo curto.",
+        "Segundo parágrafo, também curto.",
+        "Terceiro."
+      ],
+      "96": [
+        "Primeiro parágrafo curto.",
+        "Segundo parágrafo, também curto.",
+        "Terceiro."
+      ],
+      "128": [
+        "Primeiro parágrafo curto.",
+        "Segundo parágrafo, também curto.",
+        "Terceiro."
+      ],
+      "160": [
+        "Primeiro parágrafo curto.",
+        "Segundo parágrafo, também curto.",
+        "Terceiro."
+      ]
+    },
+    "quebras-simples": {
+      "60": [
+        "Uma linha que continua na outra",
+        "linha e segue por bastante tempo,\ncom vírgulas, pausas;",
+        "e pontos. E mais uma linha\nque deixa o segmento",
+        "comprido demais para\ncaber numa tela só."
+      ],
+      "72": [
+        "Uma linha que continua na outra\nlinha e segue por bastante tempo,",
+        "com vírgulas, pausas; e pontos. E\nmais uma linha que deixa o segmento",
+        "comprido demais para caber numa tela só."
+      ],
+      "96": [
+        "Uma linha que continua na outra linha e segue\npor bastante tempo, com vírgulas, pausas;",
+        "e pontos. E mais uma linha que deixa o segmento\ncomprido demais para caber numa tela só."
+      ],
+      "128": [
+        "Uma linha que continua na outra linha e segue por\nbastante tempo, com vírgulas, pausas; e pontos.",
+        "E mais uma linha que deixa o segmento\ncomprido demais para caber numa tela só."
+      ],
+      "160": [
+        "Uma linha que continua na outra linha e segue por\nbastante tempo, com vírgulas, pausas; e pontos.",
+        "E mais uma linha que deixa o segmento comprido demais para caber numa tela só."
+      ]
+    },
+    "frase-sem-pausa": {
+      "60": [
+        "Esta frase muito longa\nnão tem nenhuma pausa de",
+        "pontuação no meio e\npor isso precisa ser",
+        "cortada em pedaços\nequilibrados por palavras",
+        "para caber nas telas da\ntransmissão sem ficar desigual"
+      ],
+      "72": [
+        "Esta frase muito longa não tem\nnenhuma pausa de pontuação no",
+        "meio e por isso precisa ser\ncortada em pedaços equilibrados",
+        "por palavras para caber nas telas\nda transmissão sem ficar desigual"
+      ],
+      "96": [
+        "Esta frase muito longa não tem nenhuma pausa\nde pontuação no meio e por isso precisa ser",
+        "cortada em pedaços equilibrados por palavras para\ncaber nas telas da transmissão sem ficar desigual"
+      ],
+      "128": [
+        "Esta frase muito longa não tem nenhuma pausa\nde pontuação no meio e por isso precisa ser",
+        "cortada em pedaços equilibrados por palavras para\ncaber nas telas da transmissão sem ficar desigual"
+      ],
+      "160": [
+        "Esta frase muito longa não tem nenhuma pausa de pontuação no meio e por isso precisa ser",
+        "cortada em pedaços equilibrados por palavras para\ncaber nas telas da transmissão sem ficar desigual"
+      ]
+    },
+    "sobra-curta": {
+      "60": [
+        "Bendize, ó minha alma, ao Senhor,",
+        "e tudo o que há em mim\nbendiga o seu santo nome,",
+        "e não te esqueças de nenhum\nde seus benefícios. Amém."
+      ],
+      "72": [
+        "Bendize, ó minha alma, ao Senhor,",
+        "e tudo o que há em mim\nbendiga o seu santo nome,",
+        "e não te esqueças de nenhum\nde seus benefícios. Amém."
+      ],
+      "96": [
+        "Bendize, ó minha alma, ao Senhor,\ne tudo o que há em mim bendiga o seu santo nome,",
+        "e não te esqueças de nenhum de seus benefícios. Amém."
+      ],
+      "128": [
+        "Bendize, ó minha alma, ao Senhor,\ne tudo o que há em mim bendiga o seu santo nome,",
+        "e não te esqueças de nenhum de seus benefícios. Amém."
+      ],
+      "160": [
+        "Bendize, ó minha alma, ao Senhor, e tudo o que há em mim bendiga o\nseu santo nome, e não te esqueças de nenhum de seus benefícios. Amém."
+      ]
+    },
+    "vazio": {
+      "60": [],
+      "72": [],
+      "96": [],
+      "128": [],
+      "160": []
+    },
+    "so-espacos": {
+      "60": [],
+      "72": [],
+      "96": [],
+      "128": [],
+      "160": []
+    }
+  }
+}

@@ -36,29 +36,29 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 
 ## E2 — Quebra de telas (Fase 3)
 **US3.1** Como operador, quero que textos longos sejam divididos em telas de 2 linhas legíveis, para a CFW e os catecismos não quebrarem mal no OBS.
-- [ ] `src/shared/autobreak.ts`: porte fiel de `split`, `wordChunks`, `twoLines`, `autobreak` do protótipo (linhas 431–457)
-- [ ] Limite padrão 96, validado/clampado em 60–160 (`DEFAULT_MAX`, `MIN_MAX`, `MAX_MAX`), exposto como configuração
-- [ ] Fixtures "golden": rodar o `autobreak` original do protótipo em Node para gerar a saída esperada de CFW 1.1, Hb 12.14, Hb 12.15 e BC P.1 nos limites 60, 96, 128, 160 → `tests/fixtures/autobreak.golden.json`
-- [ ] Testes de paridade: saída do TS === golden
-- [ ] Testes por regra:
-  - [ ] linha em branco força quebra
-  - [ ] segmento ≤ limite vira 1 tela
-  - [ ] segmento > limite divide em frases nas pausas `, ; : . ! ?`
-  - [ ] frase > limite vira pedaços equilibrados por palavra
-  - [ ] frases agrupadas em ordem até o limite
-  - [ ] última tela < 30% junta com a anterior se couber em 120%
-  - [ ] 2 linhas equilibradas, preferindo após `, ; :`; sem quebra se ≤ 55% do limite
-  - [ ] nenhuma tela tem mais de 2 linhas; nenhuma linha contém HTML
-  - [ ] texto vazio/nulo → `[]`
+- [x] `src/shared/autobreak.ts`: porte fiel de `split`, `wordChunks`, `twoLines`, `autobreak` do protótipo (linhas 431–457)
+- [x] Limite padrão 96, validado/clampado em 60–160 (`DEFAULT_MAX`, `MIN_MAX`, `MAX_MAX`), exposto como configuração
+- [x] Fixtures "golden": rodar o `autobreak` original do protótipo em Node para gerar a saída esperada de CFW 1.1, Hb 12.14, Hb 12.15 e BC P.1 nos limites 60, 72, 96, 128, 160 (+ casos sintéticos de borda) → `tests/fixtures/autobreak.golden.json`
+- [x] Testes de paridade: saída do TS === golden, e fuzz de 500 textos contra o `autobreak` do protótipo
+- [x] Testes por regra:
+  - [x] linha em branco força quebra
+  - [x] segmento ≤ limite vira 1 tela
+  - [x] segmento > limite divide em frases nas pausas `, ; : . ! ?`
+  - [x] frase > limite vira pedaços equilibrados por palavra
+  - [x] frases agrupadas em ordem até o limite
+  - [x] última tela < 30% junta com a anterior se couber em 120%
+  - [x] 2 linhas equilibradas, preferindo após `, ; :`; sem quebra se ≤ 55% do limite
+  - [x] nenhuma tela tem mais de 2 linhas; nenhuma linha contém HTML
+  - [x] texto vazio/nulo → `[]`
 
 **US3.2** Como operador, quero cabeçalhos corretos em cada tela, para o OBS mostrar a referência certa.
-- [ ] `src/shared/slides.ts`: `slidesOf(collection, item, max)` → `{ header, lines[] }` (porte de `slidesOf` do protótipo)
-- [ ] Bíblia: `Hebreus 12.15` + ` (i/n)` quando o versículo ocupa várias telas
-- [ ] CFW: `CFW 1.1`
-- [ ] Catecismo: `Breve Catecismo · P. 1 · pergunta` / `Breve Catecismo · P. 1` na resposta
-- [ ] Credo: nome do credo
-- [ ] Salmos/HNC: sem autobreak, 1 estrofe = 1 tela; cabeçalho `Salmo 133B`
-- [ ] Testes de cabeçalho para cada coleção, incluindo Hb 12.15 com `(1/n)…(n/n)`
+- [x] `src/shared/slides.ts`: `slidesOf(collection, item, max)` → `{ header, lines[] }` (porte de `slidesOf` do protótipo)
+- [x] Bíblia: `Hebreus 12.15` + ` (i/n)` quando o versículo ocupa várias telas
+- [x] CFW: `CFW 1.1`
+- [x] Catecismo: `Breve Catecismo · P. 1 · pergunta` / `Breve Catecismo · P. 1` na resposta
+- [x] Credo: nome do credo
+- [x] Salmos/HNC: sem autobreak, 1 estrofe = 1 tela; cabeçalho `Salmo 133B`
+- [x] Testes de cabeçalho para cada coleção, incluindo Hb 12.15 com `(1/n)…(n/n)`
 
 ## Backlog (fases futuras)
 ### E3 — Dados (Fase 2)
@@ -67,6 +67,7 @@ Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases 
 - [ ] Importação da ARA (licença da igreja; tabela somente leitura)
 - [ ] Script de importação do Holyrics com limpeza de HTML (`<ctt>`, `<desc>`, `&nbsp;`, `<span>`)
 - [ ] Limite de caracteres por tela persistido como configuração
+- [ ] Normalizar quebras de linha simples (`\n`) de textos corridos na importação — o `autobreak` (como o protótipo) preserva `\n` em segmentos curtos, o que pode gerar telas com 3+ linhas
 
 ### E4 — Biblioteca (Fase 4)
 - [ ] Coleções em 3 grupos (Bíblia no topo) + breadcrumb
