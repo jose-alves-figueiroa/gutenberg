@@ -1,0 +1,54 @@
+{
+    "map": {
+        "alert_velocity": "160",
+        "key_ok": "true",
+        "alert_bold": false,
+        "color": "#FAFAFA",
+        "alert_height": "15%",
+        "max_html_types": "3",
+        "valign": "bottom",
+        "bold": false,
+        "key_error": "",
+        "type": "BIBLE",
+        "alert_background": "#000000",
+        "background": "#FFFFFF",
+        "header": "\u003cdesc\u003eHebreus 12.15\u003c/desc\u003e",
+        "attention": false,
+        "font_max_rows": "15",
+        "text": "\u003cctt\u003e...por meio dela, muitos sejam contaminados;\u003c/ctt\u003e\u0026nbsp; \u0026nbsp; \u0026nbsp; \u0026nbsp;\u003cspan style\u003d\u0027font-size:50%; white-space: nowrap\u0027\u003e(RA)\u003c/span\u003e\u003cspan style\u003d\u0027visibility:hidden;display:none\u0027 id\u003d\u0027text-force-update_0\u0027\u003e\u003c/span\u003e",
+        "halign": "center",
+        "alert_font": "Arial",
+        "font": "Open Sans",
+        "alert_color": "#FAFAFA",
+        "display_errors": "_true"
+    }
+}
+
+{
+    "map": {
+        "alert_velocity": "160",
+        "$system_var_music_copyright": "",
+        "key_ok": "true",
+        "alert_bold": false,
+        "$system_var_music_title": "Salmo 133B",
+        "color": "#FAFAFA",
+        "alert_height": "15%",
+        "$system_var_music_author": "",
+        "$system_var_music_artist": "Comissão Brasileira de Salmodia",
+        "max_html_types": "3",
+        "valign": "middle",
+        "bold": false,
+        "key_error": "",
+        "type": "MUSIC",
+        "alert_background": "#000000",
+        "background": "#FFFFFF",
+        "attention": false,
+        "font_max_rows": "24",
+        "text": "Oh! Como é bom e agradável, \nbem suave, sim,\u003cspan style\u003d\u0027visibility:hidden;display:none\u0027 id\u003d\u0027text-force-update_0\u0027\u003e\u003c/span\u003e",
+        "halign": "center",
+        "alert_font": "Arial",
+        "font": "Open Sans",
+        "alert_color": "#FAFAFA",
+        "display_errors": "_true"
+    }
+}

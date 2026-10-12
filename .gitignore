@@ -1,0 +1,34 @@
+# Dependências e build
+node_modules/
+out/
+dist/
+release/
+*.tsbuildinfo
+
+# Testes / cobertura
+coverage/
+
+# Banco local e dados do usuário (Fase 2) — a ARA é licenciada, nunca versionar
+*.sqlite
+*.sqlite3
+*.db
+data/ara*
+
+# Config local da máquina (IP do OBS etc.)
+.env
+.env.*
+!.env.example
+gutenberg.config.local.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE / SO
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Pacote original do handoff (conteúdo já está em design_handoff_gutenberg/)
+*.zip

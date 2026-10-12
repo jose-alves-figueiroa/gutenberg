@@ -1,0 +1,101 @@
+# Gutenberg — Plano de implementação
+
+Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
+Fonte: `design_handoff_gutenberg/README.md` + protótipo `design/Gutenberg.dc.html` (classe `Component`).
+Escopo atual: **Fase 1 (Base)** e **Fase 3 (Quebra de telas)**. As demais fases ficam no backlog.
+
+## E0 — Planejamento
+- [x] Ler o handoff (README, protótipo, styles.css, payload do Holyrics)
+- [x] Criar este PLAN.md
+- [x] `AGENTS.md` (regras para agentes + estrutura de commits) e `CLAUDE.md`
+- [x] `.gitignore`
+- [x] Repositório git com remoto `git@github.com:jose-alves-figueiroa/gutenberg.git`
+
+## E1 — Base do app (Fase 1)
+**US1.1** Como desenvolvedor, quero um projeto Electron + Vite + React + TS rodando, para ter onde construir o app.
+- [~] Scaffold com `electron-vite` (main / preload / renderer) em `app/` ou na raiz
+- [ ] Scripts `dev`, `build`, `test`, `typecheck`, `lint`
+- [ ] Vitest configurado (ambiente `node` para lógica, `jsdom` para componentes) + Testing Library
+- [ ] Janela com `minWidth` 1100 recomendado; `contextIsolation` ligado, sem `nodeIntegration`
+
+**US1.2** Como operador, quero o visual Broadsheet funcionando offline, para o app ficar igual ao design sem internet.
+- [ ] Portar tokens de `design/_ds/.../styles.css` para `src/renderer/styles/tokens.css` (cores, espaçamento, raio, sombra, tipografia)
+- [ ] Portar classes de componente (`.btn` primário/secundário/ghost/ícone, `.input`, `.field`, `.tag`, `.seg`, `.nav`)
+- [ ] Remover o `@import` do Google Fonts; empacotar Source Serif 4 (400, 600, 400 itálico) via `@fontsource/source-serif-4`
+- [ ] Estados globais: hover `--color-accent-100`, foco `outline 2px accent / offset 2px`, desabilitado 45% opacidade
+- [ ] Teste: CSS não referencia URLs externas (fontes/ícones locais)
+
+**US1.3** Como operador, quero a nav sempre visível com as 4 abas, para navegar entre as rotinas.
+- [ ] Componente `Nav`: marca "Gutenberg" (22px/600, tracking −0.02em)
+- [ ] Abas Liturgia · Biblioteca · Apresentar · Conexão, ícone Phosphor duotone 18px + texto 15px, padding 8×12; ativa com `color-mix(accent 12%)` e texto `--color-accent-700`
+- [ ] Campo de busca rápida (placeholder, sem lógica): flex `1 1 280px`, máx. 440px, fundo surface, borda divider
+- [ ] Indicador de conexão (bolinha 9px + rótulo + "192.168.0.12 · 18 ms", estado estático); clique abre a aba Conexão
+- [ ] 4 views vazias (`LiturgiaView`, `BibliotecaView`, `ApresentarView`, `ConexaoView`) com kicker/título
+- [ ] Layout empilha colunas abaixo de 1100px
+- [ ] Testes (RTL): renderiza as 4 abas; clicar troca a view e marca a aba ativa (`aria-current`/`aria-selected`); clicar no status abre Conexão
+
+## E2 — Quebra de telas (Fase 3)
+**US3.1** Como operador, quero que textos longos sejam divididos em telas de 2 linhas legíveis, para a CFW e os catecismos não quebrarem mal no OBS.
+- [ ] `src/shared/autobreak.ts`: porte fiel de `split`, `wordChunks`, `twoLines`, `autobreak` do protótipo (linhas 431–457)
+- [ ] Limite padrão 96, validado/clampado em 60–160 (`DEFAULT_MAX`, `MIN_MAX`, `MAX_MAX`), exposto como configuração
+- [ ] Fixtures "golden": rodar o `autobreak` original do protótipo em Node para gerar a saída esperada de CFW 1.1, Hb 12.14, Hb 12.15 e BC P.1 nos limites 60, 96, 128, 160 → `tests/fixtures/autobreak.golden.json`
+- [ ] Testes de paridade: saída do TS === golden
+- [ ] Testes por regra:
+  - [ ] linha em branco força quebra
+  - [ ] segmento ≤ limite vira 1 tela
+  - [ ] segmento > limite divide em frases nas pausas `, ; : . ! ?`
+  - [ ] frase > limite vira pedaços equilibrados por palavra
+  - [ ] frases agrupadas em ordem até o limite
+  - [ ] última tela < 30% junta com a anterior se couber em 120%
+  - [ ] 2 linhas equilibradas, preferindo após `, ; :`; sem quebra se ≤ 55% do limite
+  - [ ] nenhuma tela tem mais de 2 linhas; nenhuma linha contém HTML
+  - [ ] texto vazio/nulo → `[]`
+
+**US3.2** Como operador, quero cabeçalhos corretos em cada tela, para o OBS mostrar a referência certa.
+- [ ] `src/shared/slides.ts`: `slidesOf(collection, item, max)` → `{ header, lines[] }` (porte de `slidesOf` do protótipo)
+- [ ] Bíblia: `Hebreus 12.15` + ` (i/n)` quando o versículo ocupa várias telas
+- [ ] CFW: `CFW 1.1`
+- [ ] Catecismo: `Breve Catecismo · P. 1 · pergunta` / `Breve Catecismo · P. 1` na resposta
+- [ ] Credo: nome do credo
+- [ ] Salmos/HNC: sem autobreak, 1 estrofe = 1 tela; cabeçalho `Salmo 133B`
+- [ ] Testes de cabeçalho para cada coleção, incluindo Hb 12.15 com `(1/n)…(n/n)`
+
+## Backlog (fases futuras)
+### E3 — Dados (Fase 2)
+- [ ] SQLite (`better-sqlite3`) com o schema do README; migrações
+- [ ] Seed com os dados do protótipo
+- [ ] Importação da ARA (licença da igreja; tabela somente leitura)
+- [ ] Script de importação do Holyrics com limpeza de HTML (`<ctt>`, `<desc>`, `&nbsp;`, `<span>`)
+- [ ] Limite de caracteres por tela persistido como configuração
+
+### E4 — Biblioteca (Fase 4)
+- [ ] Coleções em 3 grupos (Bíblia no topo) + breadcrumb
+- [ ] Bíblia: Livro (AT/NT) → Capítulo → Versículos, seleção de trecho, somente leitura
+- [ ] CFW: Capítulo → Seção → Editor
+- [ ] Catecismos: grid de perguntas → Editor
+- [ ] Salmos: grid 1–150 → Versões → Editor
+- [ ] HNC e Credos: lista → Editor
+- [ ] Estados cadastrado/não cadastrado; clicar em não cadastrado cria registro
+- [ ] Prévia "Como fica na transmissão" + barra sticky (Apresentar agora, Adicionar, Descartar/Salvar)
+
+### E5 — Liturgia (Fase 5)
+- [ ] CRUD de cultos
+- [ ] Linhas com Momento editável, ↑ ↓ ✕
+- [ ] Picker agrupado por coleção + busca + atalho de referência bíblica
+
+### E6 — Apresentar e busca rápida (Fase 6)
+- [ ] Lista de itens, item "Avulso", cartões NO AR / A SEGUIR
+- [ ] Anterior/Próximo com passagem entre itens; Limpar tela / Mostrar texto
+- [ ] Busca rápida: livros, tag de livro, capítulo.versículo, prefixos `bc cm cfw sg hnc credo`
+- [ ] Estado de apresentação persistido em disco
+
+### E7 — Conexão (Fase 7)
+- [ ] Cliente `obs-websocket-js` v5, `BroadcastCustomEvent` com payload v1
+- [ ] Ping 2 s, estados ok/instável/sem resposta, backoff 1/2/4/8 s, reenvio do último `seq`
+- [ ] `overlay.html` para o OBS (ignora `seq` menor)
+- [ ] Aba Conexão (IP só exibido, porta editável, Reconectar/Testar, registro de eventos)
+- [ ] Descoberta do IP (mDNS/UDP ou arquivo de config)
+
+### E8 — Empacotamento (Fase 8)
+- [ ] `electron-builder` para Windows
+- [ ] Instalação do overlay no PC do OBS

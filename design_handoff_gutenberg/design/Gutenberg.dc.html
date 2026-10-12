@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-ad3333d4-6458-49dd-850f-83cc08eb6c11/styles.css">
+<script src="_ds/broadsheet-ad3333d4-6458-49dd-850f-83cc08eb6c11/_ds_bundle.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+<style>html,body{margin:0;background:var(--color-bg)}a{color:var(--color-accent)}a:hover{color:var(--color-accent-600)}</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column;font-family:var(--font-body);color:var(--color-text);background:var(--color-bg)">
+
+  <nav class="nav" style="padding:var(--space-3) var(--space-6);flex-wrap:wrap;gap:var(--space-2) var(--space-4);position:relative;z-index:20">
+    <span class="nav-brand" style="margin-right:var(--space-2);font-size:22px;letter-spacing:-0.02em;flex:none">Gutenberg</span>
+    <div style="display:flex;gap:var(--space-1);flex-wrap:wrap">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+        <button onClick="{{ t.go }}" style="all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:var(--radius-md);font-size:15px;background:{{ t.bg }};color:{{ t.fg }}" style-hover="color:var(--color-accent)"><i class="ph-duotone {{ t.icon }}" style="font-size:18px"></i>{{ t.label }}</button>
+      </sc-for>
+    </div>
+    <div style="position:relative;flex:1 1 280px;max-width:440px;margin-left:auto">
+      <div style="display:flex;align-items:center;gap:var(--space-2);background:var(--color-surface);border-radius:var(--radius-md);padding:0 var(--space-2);border:1px solid var(--color-divider)">
+        <i class="ph-duotone ph-magnifying-glass" style="font-size:17px;color:var(--color-neutral-700)"></i>
+        <sc-if value="{{ cmdHasBook }}" hint-placeholder-val="{{ false }}">
+          <span class="tag tag-accent" style="flex:none">{{ cmdBookName }}</span>
+        </sc-if>
+        <input value="{{ cmd }}" onChange="{{ setCmd }}" onKeyDown="{{ cmdKey }}" onFocus="{{ cmdFocus }}" onBlur="{{ cmdBlur }}" placeholder="{{ cmdPh }}" style="all:unset;flex:1;min-width:0;font-size:14px;padding:9px 0;font-family:var(--font-body)">
+      </div>
+      <sc-if value="{{ cmdOpen }}" hint-placeholder-val="{{ false }}">
+        <div class="elev-md" style="position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--color-neutral-100);border-radius:var(--radius-md);padding:var(--space-1);display:flex;flex-direction:column;max-height:360px;overflow:auto">
+          <sc-for list="{{ sugg }}" as="g" hint-placeholder-count="3">
+            <button onMouseDown="{{ g.run }}" style="all:unset;cursor:pointer;display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3);padding:7px var(--space-2);border-radius:var(--radius-md);background:{{ g.bg }}" style-hover="background:var(--color-accent-100)">
+              <span style="display:flex;align-items:baseline;gap:var(--space-2);min-width:0">
+                <span style="font-size:14px;font-weight:600;min-width:34px">{{ g.label }}</span>
+                <span style="font-size:13px;color:var(--color-neutral-700);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ g.sub }}</span>
+              </span>
+              <span class="text-muted" style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;flex:none">{{ g.group }}</span>
+            </button>
+          </sc-for>
+          <span class="text-muted" style="font-size:11px;padding:6px var(--space-2) 2px">{{ cmdFoot }}</span>
+        </div>
+      </sc-if>
+    </div>
+    <button onClick="{{ goCon }}" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:var(--space-2);font-size:13px;padding:6px 10px;border-radius:var(--radius-md);flex:none" style-hover="background:color-mix(in srgb, var(--color-text) 6%, transparent)">
+      <span style="width:9px;height:9px;border-radius:50%;background:{{ conn.dot }}"></span>
+      <span style="color:{{ conn.fg }}">{{ conn.label }}</span>
+      <span class="text-muted">{{ conn.short }}</span>
+    </button>
+  </nav>
+
+  <sc-if value="{{ isApr }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;display:grid;grid-template-columns:minmax(200px,260px) minmax(0,1fr);gap:var(--space-8);padding:var(--space-4) var(--space-6) 0">
+      <aside style="display:flex;flex-direction:column;gap:var(--space-1)">
+        <h6 class="text-muted" style="margin:0 0 var(--space-1)">{{ cultoName }}</h6>
+        <sc-for list="{{ aprItems }}" as="it" hint-placeholder-count="6">
+          <div style="display:flex;align-items:flex-start;gap:2px;border-radius:var(--radius-md);background:{{ it.bg }}">
+            <button onClick="{{ it.pick }}" style="all:unset;cursor:pointer;flex:1;min-width:0;display:flex;flex-direction:column;padding:var(--space-2);border-radius:var(--radius-md)" style-hover="background:color-mix(in srgb, var(--color-text) 6%, transparent)">
+              <span style="display:flex;justify-content:space-between;gap:var(--space-2);font-size:11px;letter-spacing:0.08em;text-transform:uppercase">
+                <span style="color:{{ it.momColor }}">{{ it.mom }}</span>
+                <span style="color:var(--color-accent-2-700)">{{ it.live }}</span>
+              </span>
+              <span style="font-size:16px;font-weight:600;line-height:1.3">{{ it.title }}</span>
+              <span class="text-muted" style="font-size:12px">{{ it.col }}</span>
+            </button>
+            <sc-if value="{{ it.isAd }}" hint-placeholder-val="{{ false }}">
+              <button class="btn btn-ghost btn-icon" title="Tirar item avulso" onClick="{{ dropAdhoc }}" style="width:30px;height:30px;margin-top:6px;color:var(--color-neutral-700)"><i class="ph-duotone ph-x"></i></button>
+            </sc-if>
+          </div>
+        </sc-for>
+      </aside>
+      <section style="display:flex;flex-direction:column;min-width:0">
+        <div style="display:flex;align-items:flex-end;gap:var(--space-4);flex-wrap:wrap;padding-bottom:var(--space-4)">
+          <div style="margin-right:auto;min-width:0">
+            <div class="text-muted" style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase">{{ view.mom }} · {{ view.col }}</div>
+            <h2 style="margin:4px 0 0;font-size:34px">{{ view.title }}</h2>
+          </div>
+          <button class="btn btn-secondary" onClick="{{ toggleBlank }}"><i class="ph-duotone ph-eye-slash" style="font-size:17px"></i>{{ blankLabel }}</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:var(--space-3);align-content:start;padding-bottom:var(--space-4)">
+          <sc-for list="{{ slides }}" as="s" hint-placeholder-count="4">
+            <button onClick="{{ s.go }}" style="all:unset;cursor:pointer;display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border-radius:var(--radius-md);background:{{ s.bg }};min-height:96px" style-hover="background:var(--color-accent-100)">
+              <span style="display:flex;justify-content:space-between;gap:var(--space-2);font-size:11px;letter-spacing:0.08em;text-transform:uppercase">
+                <span class="text-muted">{{ s.label }}</span>
+                <span style="color:{{ s.stateColor }}">{{ s.state }}</span>
+              </span>
+              <span style="font-size:18px;line-height:1.4;white-space:pre-line">{{ s.text }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="position:sticky;bottom:0;background:var(--color-bg);display:flex;gap:var(--space-2);padding:var(--space-3) 0 var(--space-6);margin-top:auto;flex-wrap:wrap">
+          <button class="btn btn-secondary" onClick="{{ prev }}" style="min-height:56px;padding-inline:var(--space-6)"><i class="ph-duotone ph-arrow-left" style="font-size:20px"></i>Anterior</button>
+          <button class="btn btn-primary" onClick="{{ next }}" style="min-height:56px;flex:1;font-size:16px;flex-direction:column;gap:2px;min-width:0">
+            <span style="display:flex;align-items:center;gap:8px">Próximo<i class="ph-duotone ph-arrow-right" style="font-size:20px"></i></span>
+            <span style="font-size:12px;font-weight:400;opacity:0.85;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ nextHint }}</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isLit }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;display:grid;grid-template-columns:minmax(190px,240px) minmax(0,1fr);gap:var(--space-8);padding:var(--space-4) var(--space-6) var(--space-8)">
+      <aside style="display:flex;flex-direction:column;gap:var(--space-1)">
+        <h6 class="text-muted" style="margin:0 0 var(--space-1)">Cultos</h6>
+        <sc-for list="{{ cultos }}" as="c" hint-placeholder-count="3">
+          <button onClick="{{ c.pick }}" style="all:unset;cursor:pointer;display:flex;flex-direction:column;padding:var(--space-2);border-radius:var(--radius-md);background:{{ c.bg }}" style-hover="background:color-mix(in srgb, var(--color-text) 6%, transparent)">
+            <span style="font-size:16px;font-weight:600">{{ c.name }}</span>
+            <span class="text-muted" style="font-size:12px">{{ c.count }}</span>
+          </button>
+        </sc-for>
+        <button class="btn btn-ghost" onClick="{{ newCulto }}" style="justify-content:flex-start;margin-top:var(--space-2)"><i class="ph-duotone ph-plus"></i>Novo culto</button>
+      </aside>
+      <section style="display:flex;flex-direction:column;gap:var(--space-6);min-width:0;max-width:880px">
+        <div style="display:flex;align-items:flex-end;gap:var(--space-4);flex-wrap:wrap">
+          <div style="margin-right:auto">
+            <div class="text-muted" style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase">Liturgia</div>
+            <h2 style="margin:4px 0 0;font-size:34px">{{ cultoName }}</h2>
+          </div>
+          <button class="btn btn-primary" onClick="{{ presentCulto }}"><i class="ph-duotone ph-presentation"></i>Apresentar este culto</button>
+        </div>
+        <div style="display:flex;flex-direction:column">
+          <sc-for list="{{ litRows }}" as="r" hint-placeholder-count="6">
+            <div style="display:grid;grid-template-columns:28px minmax(110px,180px) minmax(0,1fr) auto;align-items:center;gap:var(--space-3);padding:var(--space-2) 0">
+              <span class="text-muted" style="font-size:13px;font-feature-settings:'tnum' 1">{{ r.n }}</span>
+              <input class="input" value="{{ r.mom }}" onChange="{{ r.setMom }}" placeholder="Momento" style="min-height:32px;font-size:13px;background:transparent;border-color:transparent" style-hover="border-color:var(--color-divider)">
+              <span style="display:flex;flex-direction:column;min-width:0">
+                <span style="font-size:17px;font-weight:600;line-height:1.3">{{ r.title }}</span>
+                <span class="text-muted" style="font-size:12px">{{ r.col }} · {{ r.count }}</span>
+              </span>
+              <span style="display:flex;gap:2px">
+                <button class="btn btn-ghost btn-icon" title="Subir" onClick="{{ r.up }}" style="width:32px;height:32px"><i class="ph-duotone ph-caret-up" style="font-size:17px"></i></button>
+                <button class="btn btn-ghost btn-icon" title="Descer" onClick="{{ r.down }}" style="width:32px;height:32px"><i class="ph-duotone ph-caret-down" style="font-size:17px"></i></button>
+                <button class="btn btn-ghost btn-icon" title="Remover" onClick="{{ r.del }}" style="width:32px;height:32px;color:var(--color-neutral-700)"><i class="ph-duotone ph-x" style="font-size:17px"></i></button>
+              </span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+          <h4 style="margin:0">Adicionar à liturgia</h4>
+          <div style="display:flex;flex-wrap:wrap;gap:var(--space-3) var(--space-6)">
+            <sc-for list="{{ pickGroups }}" as="pg" hint-placeholder-count="3">
+              <div style="display:flex;flex-direction:column;gap:var(--space-1)">
+                <span class="text-muted" style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase">{{ pg.label }}</span>
+                <div style="display:flex;flex-wrap:wrap;gap:var(--space-1)">
+                  <sc-for list="{{ pg.cols }}" as="p" hint-placeholder-count="2">
+                    <button onClick="{{ p.pick }}" style="all:unset;cursor:pointer;font-size:13px;padding:5px 11px;border-radius:var(--radius-md);background:{{ p.bg }};color:{{ p.fg }}">{{ p.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <input class="input" placeholder="{{ pickPh }}" value="{{ pickQ }}" onChange="{{ setPickQ }}" style="max-width:420px">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0 var(--space-6)">
+            <sc-for list="{{ pickList }}" as="e" hint-placeholder-count="6">
+              <button onClick="{{ e.add }}" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:var(--space-2);padding:7px var(--space-2);border-radius:var(--radius-md)" style-hover="background:var(--color-accent-100)">
+                <i class="ph-duotone {{ e.icon }}" style="font-size:18px;color:var(--color-accent)"></i>
+                <span style="font-size:14px;min-width:0">{{ e.title }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </section>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isLib }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;display:grid;grid-template-columns:minmax(170px,210px) minmax(0,1fr);gap:var(--space-8);padding:var(--space-4) var(--space-6) var(--space-8)">
+      <aside style="display:flex;flex-direction:column;gap:var(--space-4)">
+        <sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <h6 class="text-muted" style="margin:0 0 var(--space-1)">{{ g.label }}</h6>
+            <sc-for list="{{ g.cols }}" as="c" hint-placeholder-count="2">
+              <button onClick="{{ c.pick }}" style="all:unset;cursor:pointer;display:flex;justify-content:space-between;gap:var(--space-2);padding:6px var(--space-2);border-radius:var(--radius-md);font-size:14px;background:{{ c.bg }};color:{{ c.fg }}" style-hover="background:color-mix(in srgb, var(--color-text) 6%, transparent)">
+                <span>{{ c.label }}</span><span style="opacity:0.6;font-size:12px">{{ c.n }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-for>
+      </aside>
+      <section style="display:flex;flex-direction:column;gap:var(--space-4);min-width:0;max-width:980px">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1);font-size:14px">
+          <sc-for list="{{ crumbs }}" as="c" hint-placeholder-count="2">
+            <span style="display:flex;align-items:center;gap:var(--space-1)">
+              <span class="text-muted">{{ c.sep }}</span>
+              <button onClick="{{ c.go }}" style="all:unset;cursor:pointer;padding:2px 6px;border-radius:var(--radius-md);color:{{ c.fg }}" style-hover="background:var(--color-accent-100)">{{ c.label }}</button>
+            </span>
+          </sc-for>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:var(--space-4);flex-wrap:wrap">
+          <div style="margin-right:auto;min-width:0">
+            <h2 style="margin:0;font-size:32px">{{ levelTitle }}</h2>
+            <div class="text-muted" style="font-size:14px;margin-top:4px">{{ levelHint }}</div>
+          </div>
+          <sc-if value="{{ canNew }}" hint-placeholder-val="{{ false }}">
+            <button class="btn btn-secondary" onClick="{{ doNew }}"><i class="ph-duotone ph-plus"></i>{{ newLabel }}</button>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ mGrid }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:var(--space-6)">
+            <sc-for list="{{ gridGroups }}" as="g" hint-placeholder-count="1">
+              <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+                <span class="text-muted" style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase">{{ g.title }}</span>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax({{ g.min }},1fr));gap:var(--space-1)">
+                  <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="12">
+                    <button onClick="{{ it.go }}" title="{{ it.tip }}" style="all:unset;cursor:pointer;padding:{{ g.pad }};border-radius:var(--radius-md);font-size:14px;text-align:{{ g.align }};background:{{ it.bg }};color:{{ it.fg }};font-feature-settings:'tnum' 1" style-hover="background:var(--color-accent-100);color:var(--color-accent-800)">{{ it.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ mList }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column">
+            <sc-for list="{{ listItems }}" as="it" hint-placeholder-count="6">
+              <button onClick="{{ it.go }}" style="all:unset;cursor:pointer;display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:baseline;gap:var(--space-3);padding:var(--space-2);border-radius:var(--radius-md)" style-hover="background:var(--color-accent-100)">
+                <span style="font-size:15px;font-weight:600;font-feature-settings:'tnum' 1;color:{{ it.fg }}">{{ it.label }}</span>
+                <span style="font-size:15px;min-width:0;color:{{ it.fg }}">{{ it.sub }}</span>
+                <span class="text-muted" style="font-size:12px">{{ it.meta }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ mVerses }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;max-width:720px">
+            <sc-for list="{{ verses }}" as="v" hint-placeholder-count="8">
+              <button onClick="{{ v.go }}" style="all:unset;cursor:pointer;display:grid;grid-template-columns:32px minmax(0,1fr);gap:var(--space-2);padding:6px var(--space-2);border-radius:var(--radius-md);background:{{ v.bg }}" style-hover="background:var(--color-accent-100)">
+                <span style="font-size:13px;font-weight:600;color:var(--color-accent-700);font-feature-settings:'tnum' 1;padding-top:2px">{{ v.n }}</span>
+                <span style="font-size:16px;line-height:1.5;color:{{ v.fg }}">{{ v.t }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ mEditor }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:var(--space-3);max-width:760px">
+            <sc-if value="{{ kSalmo }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+                <div style="display:grid;grid-template-columns:minmax(80px,110px) minmax(80px,110px) minmax(0,1fr);gap:var(--space-3)">
+                  <div class="field"><label>Salmo</label><input class="input" value="{{ d.num }}" onChange="{{ f.num }}"></div>
+                  <div class="field"><label>Versão</label><input class="input" value="{{ d.ver }}" onChange="{{ f.ver }}"></div>
+                  <div class="field"><label>Versificação</label><input class="input" value="{{ d.meta }}" onChange="{{ f.meta }}"></div>
+                </div>
+                <div class="field"><label>Letra — cada estrofe vira uma tela (separe com linha em branco)</label><textarea class="input" value="{{ d.text }}" onChange="{{ f.text }}" style="min-height:240px;font-size:15px;line-height:1.5"></textarea></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ kHnc }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+                <div style="display:grid;grid-template-columns:minmax(80px,110px) minmax(0,1fr);gap:var(--space-3)">
+                  <div class="field"><label>Número</label><input class="input" value="{{ d.num }}" onChange="{{ f.num }}"></div>
+                  <div class="field"><label>Título</label><input class="input" value="{{ d.title }}" onChange="{{ f.title }}"></div>
+                </div>
+                <div class="field"><label>Autoria</label><input class="input" value="{{ d.meta }}" onChange="{{ f.meta }}"></div>
+                <div class="field"><label>Letra — cada estrofe vira uma tela (separe com linha em branco)</label><textarea class="input" value="{{ d.text }}" onChange="{{ f.text }}" style="min-height:240px;font-size:15px;line-height:1.5"></textarea></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ kCredo }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+                <div class="field"><label>Título</label><input class="input" value="{{ d.title }}" onChange="{{ f.title }}"></div>
+                <div class="field"><label>Texto corrido</label><textarea class="input" value="{{ d.text }}" onChange="{{ f.text }}" style="min-height:240px;font-size:15px;line-height:1.5"></textarea></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ kCfw }}" hint-placeholder-val="{{ false }}">
+              <div class="field"><label>Texto corrido da seção</label><textarea class="input" value="{{ d.text }}" onChange="{{ f.text }}" style="min-height:200px;font-size:15px;line-height:1.5"></textarea></div>
+            </sc-if>
+            <sc-if value="{{ kCat }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+                <div class="field"><label>Pergunta</label><input class="input" value="{{ d.pergunta }}" onChange="{{ f.pergunta }}"></div>
+                <div class="field"><label>Resposta</label><textarea class="input" value="{{ d.resposta }}" onChange="{{ f.resposta }}" style="min-height:150px;font-size:15px;line-height:1.5"></textarea></div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasLeaf }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+            <div style="display:flex;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;align-items:baseline">
+              <span class="text-muted" style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase">{{ previewLabel }}</span>
+              <span class="text-muted" style="font-size:12px;font-style:italic">{{ breakNote }}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:var(--space-2)">
+              <sc-for list="{{ draftSlides }}" as="s" hint-placeholder-count="3">
+                <div style="display:flex;flex-direction:column;gap:4px;padding:var(--space-2) var(--space-3);background:var(--color-surface);border-radius:var(--radius-md)">
+                  <span class="text-muted" style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase">{{ s.h }}</span>
+                  <span style="font-size:13px;line-height:1.45;white-space:pre-line">{{ s.t }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="position:sticky;bottom:0;background:var(--color-bg);display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap;padding:var(--space-3) 0">
+              <button class="btn btn-primary" onClick="{{ leafPresent }}"><i class="ph-duotone ph-presentation"></i>Apresentar agora</button>
+              <button class="btn btn-secondary" onClick="{{ leafAdd }}"><i class="ph-duotone ph-list-plus"></i>Adicionar à liturgia</button>
+              <span class="text-muted" style="font-size:13px">{{ savedNote }}</span>
+              <sc-if value="{{ editable }}" hint-placeholder-val="{{ false }}">
+                <span style="display:flex;gap:var(--space-2);margin-left:auto">
+                  <button class="btn btn-secondary" onClick="{{ resetDraft }}" disabled="{{ notDirty }}">Descartar</button>
+                  <button class="btn btn-primary" onClick="{{ saveDraft }}" disabled="{{ notDirty }}">Salvar</button>
+                </span>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+      </section>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isCon }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--space-8);padding:var(--space-4) var(--space-6) var(--space-8);max-width:1100px;align-content:start">
+      <section style="display:flex;flex-direction:column;gap:var(--space-4)">
+        <div>
+          <div class="text-muted" style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase">Computador do OBS</div>
+          <h2 style="margin:4px 0 0;font-size:34px;color:{{ conn.fg }}">{{ conn.title }}</h2>
+          <p style="margin:var(--space-2) 0 0;font-size:15px;max-width:44ch;color:var(--color-neutral-800)">{{ conn.note }}</p>
+        </div>
+        <dl style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--space-2) var(--space-6);margin:0;font-size:15px">
+          <dt class="text-muted">Endereço IP</dt><dd style="margin:0;font-feature-settings:'tnum' 1">{{ ip }}</dd>
+          <dt class="text-muted">Porta</dt><dd style="margin:0;font-feature-settings:'tnum' 1">{{ port }}</dd>
+          <dt class="text-muted">Latência</dt><dd style="margin:0">{{ conn.lat }}</dd>
+          <dt class="text-muted">Último envio</dt><dd style="margin:0">{{ lastSent }}</dd>
+        </dl>
+      </section>
+      <section style="display:flex;flex-direction:column;gap:var(--space-4)">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(80px,110px);gap:var(--space-3);align-items:end">
+          <div class="field"><label>IP do computador do OBS</label><div style="font-size:20px;font-weight:600;font-feature-settings:'tnum' 1;padding:4px 0">{{ ip }}</div></div>
+          <div class="field"><label>Porta</label><input class="input" value="{{ port }}" onChange="{{ setPort }}" inputMode="numeric"></div>
+        </div>
+        <div style="display:flex;gap:var(--space-2);flex-wrap:wrap">
+          <button class="btn btn-primary" onClick="{{ reconnect }}"><i class="ph-duotone ph-arrows-clockwise"></i>Reconectar</button>
+          <button class="btn btn-secondary" onClick="{{ test }}"><i class="ph-duotone ph-pulse"></i>Testar</button>
+        </div>
+        <p class="text-muted" style="margin:0;font-size:13px;max-width:46ch">O IP é detectado automaticamente na rede da igreja. Se a conexão cair, o OBS continua com o último texto até reconectar.</p>
+        <div style="display:flex;flex-direction:column;gap:var(--space-1)">
+          <h6 class="text-muted" style="margin:var(--space-4) 0 var(--space-1)">Registro</h6>
+          <sc-for list="{{ log }}" as="l" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:52px minmax(0,1fr);gap:var(--space-3);font-size:14px">
+              <span class="text-muted" style="font-feature-settings:'tnum' 1">{{ l.t }}</span><span>{{ l.m }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;telaInicial&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;liturgia&quot;,&quot;biblioteca&quot;,&quot;apresentar&quot;,&quot;conexao&quot;],&quot;default&quot;:&quot;biblioteca&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;limiteTela&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:60,&quot;max&quot;:160,&quot;step&quot;:4,&quot;default&quot;:96,&quot;unit&quot;:&quot; car.&quot;,&quot;tsType&quot;:&quot;number&quot;},&quot;conexao&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;online&quot;,&quot;instavel&quot;,&quot;offline&quot;],&quot;default&quot;:&quot;online&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const BOOKS = [['Gn','Gênesis'],['Êx','Êxodo'],['Lv','Levítico'],['Nm','Números'],['Dt','Deuteronômio'],['Js','Josué'],['Jz','Juízes'],['Rt','Rute'],['1Sm','1 Samuel'],['2Sm','2 Samuel'],['1Rs','1 Reis'],['2Rs','2 Reis'],['1Cr','1 Crônicas'],['2Cr','2 Crônicas'],['Ed','Esdras'],['Ne','Neemias'],['Et','Ester'],['Jó','Jó'],['Sl','Salmos'],['Pv','Provérbios'],['Ec','Eclesiastes'],['Ct','Cantares'],['Is','Isaías'],['Jr','Jeremias'],['Lm','Lamentações'],['Ez','Ezequiel'],['Dn','Daniel'],['Os','Oseias'],['Jl','Joel'],['Am','Amós'],['Ob','Obadias'],['Jn','Jonas'],['Mq','Miqueias'],['Na','Naum'],['Hc','Habacuque'],['Sf','Sofonias'],['Ag','Ageu'],['Zc','Zacarias'],['Ml','Malaquias'],['Mt','Mateus'],['Mc','Marcos'],['Lc','Lucas'],['Jo','João'],['At','Atos'],['Rm','Romanos'],['1Co','1 Coríntios'],['2Co','2 Coríntios'],['Gl','Gálatas'],['Ef','Efésios'],['Fp','Filipenses'],['Cl','Colossenses'],['1Ts','1 Tessalonicenses'],['2Ts','2 Tessalonicenses'],['1Tm','1 Timóteo'],['2Tm','2 Timóteo'],['Tt','Tito'],['Fm','Filemom'],['Hb','Hebreus'],['Tg','Tiago'],['1Pe','1 Pedro'],['2Pe','2 Pedro'],['1Jo','1 João'],['2Jo','2 João'],['3Jo','3 João'],['Jd','Judas'],['Ap','Apocalipse']];
+const norm = s => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, '');
+const BNAME = Object.fromEntries(BOOKS);
+const TX = {
+  'Hb 12.14': 'Segui a paz com todos e a santificação, sem a qual ninguém verá o Senhor,',
+  'Hb 12.15': 'atentando, diligentemente, por que ninguém seja faltoso, separando-se da graça de Deus; nem haja alguma raiz de amargura que, brotando, vos perturbe, e, por meio dela, muitos sejam contaminados;',
+};
+function makeBible(ab, ch, v1, v2) {
+  v1 = v1 || 1; v2 = Math.max(v2 || (v1 === 1 && !v2 ? 6 : v1), v1);
+  const verses = []; for (let v = v1; v <= v2; v++) verses.push({ n: String(v), t: TX[`${ab} ${ch}.${v}`] || `[texto ARA de ${BNAME[ab]} ${ch}.${v}]` });
+  return { id: `bib-${ab}-${ch}-${v1}-${v2}`, ab, book: BNAME[ab], ch: String(ch), title: `${BNAME[ab]} ${ch}.${v1}${v2 > v1 ? '–' + v2 : ''}`, verses };
+}
+function booksFor(q) {
+  const n = norm(q); if (!n) return [];
+  const exact = BOOKS.filter(([a, nm]) => norm(a) === n);
+  const pre = BOOKS.filter(([a, nm]) => !exact.includes(BOOKS.find(b => b[0] === a)) && (norm(a).startsWith(n) || norm(nm).startsWith(n)));
+  return [...exact, ...pre];
+}
+function parseBible(raw) {
+  const m = (raw || '').trim().match(/^(\d?\s*[a-zà-úç]+)\s*(\d+)(?:\s*[.:]\s*(\d+)(?:\s*-\s*(\d+))?)?$/i);
+  if (!m) return null;
+  const b = booksFor(m[1])[0]; if (!b) return null;
+  return { ab: b[0], ch: +m[2], v1: m[3] ? +m[3] : 0, v2: m[4] ? +m[4] : 0 };
+}
+const CH = {Gn:50,'Êx':40,Lv:27,Nm:36,Dt:34,Js:24,Jz:21,Rt:4,'1Sm':31,'2Sm':24,'1Rs':22,'2Rs':25,'1Cr':29,'2Cr':36,Ed:10,Ne:13,Et:10,'Jó':42,Sl:150,Pv:31,Ec:12,Ct:8,Is:66,Jr:52,Lm:5,Ez:48,Dn:12,Os:14,Jl:3,Am:9,Ob:1,Jn:4,Mq:7,Na:3,Hc:3,Sf:3,Ag:2,Zc:14,Ml:4,Mt:28,Mc:16,Lc:24,Jo:21,At:28,Rm:16,'1Co':16,'2Co':13,Gl:6,Ef:6,Fp:4,Cl:4,'1Ts':5,'2Ts':3,'1Tm':6,'2Tm':4,Tt:3,Fm:1,Hb:13,Tg:5,'1Pe':5,'2Pe':3,'1Jo':5,'2Jo':1,'3Jo':1,Jd:1,Ap:22};
+const VC = { 'Hb 12': 29, 'Sl 133': 3 };
+const CFW_T = ['', 'Da Escritura Sagrada', 'De Deus e da Santíssima Trindade', 'Dos Eternos Decretos de Deus', 'Da Criação', 'Da Providência', 'Da Queda do Homem, do Pecado e do seu Castigo', 'Do Pacto de Deus com o Homem', 'De Cristo, o Mediador', 'Do Livre-Arbítrio', 'Da Vocação Eficaz', 'Da Justificação', 'Da Adoção', 'Da Santificação', 'Da Fé Salvadora', 'Do Arrependimento para a Vida', 'Das Boas Obras', 'Da Perseverança dos Santos', 'Da Certeza da Graça e da Salvação', 'Da Lei de Deus', 'Da Liberdade Cristã e da Liberdade de Consciência', 'Do Culto Religioso e do Domingo', 'Dos Juramentos Legais e dos Votos', 'Do Magistrado Civil', 'Do Matrimônio e do Divórcio', 'Da Igreja', 'Da Comunhão dos Santos', 'Dos Sacramentos', 'Do Batismo', 'Da Ceia do Senhor', 'Das Censuras Eclesiásticas', 'Dos Sínodos e Concílios', 'Do Estado do Homem depois da Morte e da Ressurreição dos Mortos', 'Do Juízo Final'];
+const CFW_S = [0,10,3,8,2,7,6,6,8,5,4,6,1,3,3,6,7,3,4,7,4,8,7,4,6,6,3,5,7,8,4,5,3,3];
+const CAT_N = { breve: 107, maior: 196 };
+const GROUPS = ['Bíblia', 'Hinário e salmos', 'Doutrina'];
+const COLS = [
+  { k: 'biblia', label: 'Bíblia ARA', kind: 'biblia', short: 'ARA', g: 'Bíblia' },
+  { k: 'hnc', label: 'Hinário Novo Cântico', kind: 'musica', short: 'HNC', g: 'Hinário e salmos', key: 'hnc' },
+  { k: 'salmos', label: 'Salmos genebrinos', kind: 'musica', short: 'Salmo', g: 'Hinário e salmos', key: 'sg' },
+  { k: 'credos', label: 'Credos', kind: 'credo', short: 'Credo', g: 'Doutrina', key: 'credo' },
+  { k: 'cfw', label: 'Confissão de Westminster', kind: 'cfw', short: 'CFW', g: 'Doutrina', key: 'cfw' },
+  { k: 'breve', label: 'Breve Catecismo', kind: 'catecismo', short: 'Breve Catecismo', g: 'Doutrina', key: 'bc' },
+  { k: 'maior', label: 'Catecismo Maior', kind: 'catecismo', short: 'Catecismo Maior', g: 'Doutrina', key: 'cm' },
+];
+const COL = Object.fromEntries(COLS.map(c => [c.k, c]));
+const HB = makeBible('Hb', 12, 14, 15);
+const LIB0 = {
+  biblia: [HB],
+  salmos: [
+    { id: 's133a', num: '133', ver: 'A', meta: 'Comissão Brasileira de Salmodia', text: '[estrofe 1]\n\n[estrofe 2]' },
+    { id: 's133b', num: '133', ver: 'B', meta: 'Comissão Brasileira de Salmodia', text: 'Oh! Como é bom e agradável,\nbem suave, sim,\n\nquando os irmãos em harmonia\nvivem juntos, assim:\n\né como o óleo precioso\nsobre a fronte a correr,\n\né como o orvalho do Hermom\nque desce ao amanhecer.' },
+    { id: 's1', num: '1', ver: '', meta: 'Comissão Brasileira de Salmodia', text: '[estrofe 1]\n\n[estrofe 2]' },
+    { id: 's23', num: '23', ver: '', meta: 'Comissão Brasileira de Salmodia', text: '[estrofe 1]\n\n[estrofe 2]' },
+    { id: 's100', num: '100', ver: '', meta: 'Comissão Brasileira de Salmodia', text: '[estrofe 1]\n\n[estrofe 2]' },
+  ],
+  hnc: [
+    { id: 'h1', num: '', title: 'Castelo forte', meta: 'Martinho Lutero', text: 'Castelo forte é nosso Deus,\nespada e bom escudo;\n\ncom seu poder defende os seus\nem todo transe agudo.' },
+    { id: 'h2', num: '', title: 'Santo! Santo! Santo!', meta: 'Reginald Heber', text: '[estrofe 1]\n\n[estrofe 2]' },
+  ],
+  credos: [
+    { id: 'ca', title: 'Credo Apostólico', text: 'Creio em Deus Pai, todo-poderoso, Criador do céu e da terra. Creio em Jesus Cristo, seu único Filho, nosso Senhor, o qual foi concebido pelo Espírito Santo, nasceu da virgem Maria, padeceu sob Pôncio Pilatos, foi crucificado, morto e sepultado; ressuscitou ao terceiro dia, subiu ao céu, e está sentado à direita de Deus Pai, donde há de vir para julgar os vivos e os mortos. Creio no Espírito Santo, na santa Igreja universal, na comunhão dos santos, na remissão dos pecados, na ressurreição do corpo e na vida eterna. Amém.' },
+    { id: 'cn', title: 'Credo Niceno', text: '[texto]' },
+  ],
+  cfw: [
+    { id: 'w11', cap: '1', sec: '1', title: 'Da Escritura Sagrada', text: 'Ainda que a luz da natureza e as obras da criação e da providência manifestem de tal modo a bondade, a sabedoria e o poder de Deus, que os homens ficam inescusáveis, contudo não são suficientes para dar aquele conhecimento de Deus e da sua vontade, necessário para a salvação.' },
+    { id: 'w12', cap: '1', sec: '2', title: 'Da Escritura Sagrada', text: '[texto da seção]' },
+  ],
+  breve: [
+    { id: 'b1', q: '1', pergunta: 'Qual é o fim principal do homem?', resposta: 'O fim principal do homem é glorificar a Deus, e gozá-lo para sempre.' },
+    { id: 'b2', q: '2', pergunta: 'Que regra deu Deus para nos dirigir na maneira de glorificá-lo e gozá-lo?', resposta: 'A palavra de Deus, que se acha nas Escrituras do Velho e do Novo Testamento, é a única regra para nos dirigir na maneira de glorificá-lo e gozá-lo.' },
+    { id: 'b3', q: '3', pergunta: 'Qual é a principal coisa que as Escrituras nos ensinam?', resposta: 'As Escrituras ensinam principalmente o que o homem deve crer acerca de Deus, e o dever que Deus requer do homem.' },
+  ],
+  maior: [
+    { id: 'm1', q: '1', pergunta: 'Qual é o fim supremo e principal do homem?', resposta: 'O fim supremo e principal do homem é glorificar a Deus e gozá-lo inteiramente para sempre.' },
+  ],
+};
+const CULTOS0 = [
+  { id: 'c1', name: 'Domingo 12/10 · manhã', items: [
+    { mom: 'Adoração', col: 'salmos', id: 's133b' }, { mom: 'Leitura', col: 'biblia', id: HB.id },
+    { mom: 'Confissão de fé', col: 'credos', id: 'ca' }, { mom: 'Catecismo', col: 'breve', id: 'b1' },
+    { mom: 'Doutrina', col: 'cfw', id: 'w11' }, { mom: 'Cântico final', col: 'hnc', id: 'h1' }] },
+  { id: 'c2', name: 'Domingo 12/10 · noite', items: [{ mom: 'Adoração', col: 'salmos', id: 's100' }] },
+  { id: 'c3', name: 'Domingo 19/10 · manhã', items: [] },
+];
+
+const split = t => (t || '').split(/\n\s*\n/).map(s => s.trim()).filter(Boolean);
+function wordChunks(s, max) {
+  const n = Math.ceil(s.length / max), target = s.length / n, w = s.split(' '), out = [];
+  let cur = '';
+  for (const x of w) { if (cur && (cur + ' ' + x).length > target && out.length < n - 1) { out.push(cur); cur = x; } else cur = cur ? cur + ' ' + x : x; }
+  if (cur) out.push(cur); return out;
+}
+function twoLines(s, max) {
+  if (s.includes('\n') || s.length <= Math.round(max * 0.55)) return s;
+  const mid = s.length / 2; let best = -1, score = 1e9;
+  for (let i = 1; i < s.length - 1; i++) if (s[i] === ' ') { const sc = Math.abs(i - mid) - (/[,;:]/.test(s[i - 1]) ? 10 : 0); if (sc < score) { score = sc; best = i; } }
+  return best < 0 ? s : s.slice(0, best) + '\n' + s.slice(best + 1);
+}
+function autobreak(text, max) {
+  const out = [];
+  for (const seg of split(text)) {
+    if (seg.length <= max) { out.push(twoLines(seg, max)); continue; }
+    const flat = seg.replace(/\s*\n\s*/g, ' ');
+    const phrases = flat.split(/(?<=[,;:.!?])\s+/).flatMap(p => p.length > max ? wordChunks(p, max) : [p]);
+    const scr = []; let cur = '';
+    for (const p of phrases) { if (cur && (cur + ' ' + p).length > max) { scr.push(cur); cur = p; } else cur = cur ? cur + ' ' + p : p; }
+    if (cur) scr.push(cur);
+    if (scr.length > 1 && scr[scr.length - 1].length < max * 0.3 && (scr[scr.length - 2] + ' ' + scr[scr.length - 1]).length <= max * 1.2) scr.splice(-2, 2, scr[scr.length - 2] + ' ' + scr[scr.length - 1]);
+    scr.forEach(s => out.push(twoLines(s, max)));
+  }
+  return out;
+}
+function titleOf(col, e) {
+  if (!e) return '—';
+  const k = COL[col].kind;
+  if (k === 'cfw') return `CFW ${e.cap}.${e.sec} — ${CFW_T[e.cap] || ''}`;
+  if (col === 'salmos') return `Salmo ${e.num}${e.ver || ''}`;
+  if (col === 'hnc') return (e.num ? e.num + ' · ' : '') + e.title;
+  if (k === 'catecismo') return `${COL[col].short} · P. ${e.q}`;
+  return e.title;
+}
+function subOf(col, e) {
+  const k = COL[col].kind;
+  if (k === 'catecismo') return e.pergunta;
+  if (k === 'musica') return e.meta;
+  return e.verses ? e.verses[0].t : (e.text || '').slice(0, 80);
+}
+
+class Component extends DCLogic {
+  state = { tab: null, lib: LIB0, cultos: CULTOS0, cultoId: 'c1', pickCol: 'biblia', pickQ: '',
+    libCol: 'biblia', path: [], selA: null, selB: null, draft: null, saved: '',
+    adhoc: null, viewIdx: 0, liveIdx: 0, slideIdx: 0, blank: false,
+    cmd: '', cmdStage: 'book', cmdBook: null, cmdSel: 0, cmdFocus: false,
+    conn: null, port: '4455',
+    log: [{ t: '18:41', m: 'Conectado a 192.168.0.12' }, { t: '18:57', m: 'Sem resposta por 6 s — último texto reenviado' }, { t: '18:57', m: 'Conectado a 192.168.0.12' }] };
+
+  max() { return this.props.limiteTela ?? 96; }
+  slidesOf(col, e) {
+    if (!e) return [];
+    const k = COL[col].kind, max = this.max();
+    if (k === 'biblia') return e.verses.flatMap(v => { const p = autobreak(v.t, max); return p.map((t, i) => ({ h: `${e.book} ${e.ch}.${v.n}` + (p.length > 1 ? ` (${i + 1}/${p.length})` : ''), t })); });
+    if (k === 'catecismo') { const h = `${COL[col].short} · P. ${e.q}`; return [...autobreak(e.pergunta, max).map(t => ({ h: h + ' · pergunta', t })), ...autobreak(e.resposta, max).map(t => ({ h, t }))]; }
+    if (k === 'cfw') return autobreak(e.text, max).map(t => ({ h: `CFW ${e.cap}.${e.sec}`, t }));
+    if (k === 'credo') return autobreak(e.text, max).map(t => ({ h: e.title, t }));
+    return split(e.text).map(t => ({ h: titleOf(col, e), t }));
+  }
+  tab() { return this.state.tab ?? this.props.telaInicial ?? 'liturgia'; }
+  connState() { return this.state.conn ?? this.props.conexao ?? 'online'; }
+  culto() { return this.state.cultos.find(c => c.id === this.state.cultoId); }
+  seq() { const it = this.culto().items; return this.state.adhoc ? [this.state.adhoc, ...it] : it; }
+  entry(col, id) { return this.state.lib[col].find(e => e.id === id); }
+  updCulto(fn) { this.setState(s => ({ cultos: s.cultos.map(c => c.id === s.cultoId ? { ...c, items: fn(c.items) } : c) })); }
+  move(i, d) { this.updCulto(it => { const a = [...it], j = i + d; if (j < 0 || j >= a.length) return a; [a[i], a[j]] = [a[j], a[i]]; return a; }); }
+  stamp() { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  pushLog(m) { this.setState(s => ({ log: [{ t: this.stamp(), m }, ...s.log].slice(0, 8) })); }
+  withBible(s, e) { return s.lib.biblia.some(x => x.id === e.id) ? s.lib : { ...s.lib, biblia: [...s.lib.biblia, e] }; }
+  present(col, e) {
+    this.setState(s => ({ lib: col === 'biblia' ? this.withBible(s, e) : s.lib, adhoc: { mom: 'Avulso', col, id: e.id, ad: true },
+      tab: 'apresentar', viewIdx: 0, liveIdx: 0, slideIdx: 0, blank: false, cmd: '', cmdStage: 'book', cmdBook: null, cmdSel: 0 }));
+  }
+  addToCulto(col, e) {
+    this.setState(s => ({ lib: col === 'biblia' ? this.withBible(s, e) : s.lib, pickQ: '',
+      cultos: s.cultos.map(c => c.id === s.cultoId ? { ...c, items: [...c.items, { mom: '', col, id: e.id }] } : c) }));
+  }
+  openLib(col) { this.setState({ libCol: col, path: [], selA: null, selB: null, draft: null, saved: '' }); }
+  goPath(p) { this.setState({ path: p, selA: null, selB: null, draft: null, saved: '' }); }
+  addEntry(col, data, path) { const id = 'n' + Date.now(); this.setState(s => ({ lib: { ...s.lib, [col]: [...s.lib[col], { id, ...data }] }, path: path(id), draft: null, saved: '' })); }
+  leafEntry() {
+    const S = this.state, c = S.libCol, p = S.path, L = S.lib[c];
+    if (c === 'biblia') return p.length === 2 && S.selA != null ? makeBible(p[0], +p[1], S.selA, S.selB) : null;
+    if (c === 'cfw') return p.length === 2 ? L.find(e => e.cap === p[0] && e.sec === p[1]) : null;
+    if (c === 'breve' || c === 'maior') return p.length === 1 ? L.find(e => e.q === p[0]) : null;
+    if (c === 'salmos') return p.length === 2 ? L.find(e => e.id === p[1]) : null;
+    return p.length === 1 ? L.find(e => e.id === p[0]) : null;
+  }
+  goLive(i, si) { this.setState({ liveIdx: i, viewIdx: i, slideIdx: si, blank: false }); }
+  step(d) {
+    const items = this.seq(); if (!items.length) return;
+    const { liveIdx, slideIdx } = this.state;
+    const cur = items[liveIdx]; const n = this.slidesOf(cur.col, this.entry(cur.col, cur.id)).length;
+    let li = liveIdx, si = slideIdx + d;
+    if (si >= n && li < items.length - 1) { li++; si = 0; }
+    else if (si < 0 && li > 0) { li--; const p = items[li]; si = this.slidesOf(p.col, this.entry(p.col, p.id)).length - 1; }
+    if (li === liveIdx) si = Math.max(0, Math.min(si, n - 1));
+    this.goLive(li, si);
+  }
+
+  suggestions() {
+    const S = this.state, raw = S.cmd.trim();
+    if (S.cmdStage === 'ref') {
+      const ab = S.cmdBook, m = raw.match(/^(\d+)(?:\s*[.:]\s*(\d+)(?:\s*-\s*(\d+))?)?$/);
+      if (!m) return [{ label: BNAME[ab], sub: 'digite capítulo.versículo — ex.: 13.4-7', group: 'Bíblia', run: null }];
+      const e = makeBible(ab, +m[1], m[2] ? +m[2] : 0, m[3] ? +m[3] : 0);
+      return [{ label: e.title, sub: 'Enter apresenta', group: 'Bíblia', run: () => this.present('biblia', e) }];
+    }
+    if (!raw) return [];
+    const out = [];
+    const ref = parseBible(raw);
+    if (ref) { const e = makeBible(ref.ab, ref.ch, ref.v1, ref.v2); out.push({ label: e.title, sub: 'Enter apresenta', group: 'Bíblia', run: () => this.present('biblia', e) }); }
+    else if (!/^(cfw|credo|hnc|bc|cm|sg)(?![a-z])/i.test(raw))
+      booksFor(raw).slice(0, 10).forEach(([ab, nm]) => out.push({ label: ab, sub: nm, group: 'Bíblia', run: () => this.setState({ cmdStage: 'ref', cmdBook: ab, cmd: '', cmdSel: 0 }) }));
+    const sp = raw.match(/^(cfw|credo|hnc|bc|cm|sg)(?![a-z])\s*(.*)$/i);
+    if (sp) {
+      const c = COLS.find(x => x.key === sp[1].toLowerCase()), arg = norm(sp[2]);
+      S.lib[c.k].filter(e => {
+        const key = c.kind === 'cfw' ? `${e.cap}.${e.sec}` : c.kind === 'catecismo' ? e.q : c.kind === 'musica' ? ((e.num || '') + (e.ver || '') || e.title) : e.title;
+        return !arg || norm(key).startsWith(arg) || norm(e.title || e.pergunta || '').includes(arg);
+      }).slice(0, 8).forEach(e => out.push({ label: c.kind === 'catecismo' ? 'P. ' + e.q : c.kind === 'cfw' ? `${e.cap}.${e.sec}` : (e.num || '') + (e.ver || ''),
+        sub: c.kind === 'catecismo' ? e.pergunta : c.kind === 'cfw' ? CFW_T[e.cap] : c.k === 'salmos' ? e.meta : e.title, group: c.label, run: () => this.present(c.k, e) }));
+    }
+    return out;
+  }
+
+  renderVals() {
+    const S = this.state, tab = this.tab(), cs = this.connState();
+    const culto = this.culto(), items = culto.items, seq = this.seq();
+    const sel = x => ({ bg: x ? 'var(--color-accent)' : 'transparent', fg: x ? 'var(--color-bg)' : 'var(--color-text)' });
+    const tint = x => x ? 'color-mix(in srgb, var(--color-accent) 12%, transparent)' : 'transparent';
+    const ip = '192.168.0.12';
+    const CONN = {
+      online: { dot: 'var(--color-accent)', fg: 'var(--color-text)', label: 'OBS conectado', short: ip + ' · 18 ms', title: 'Conectado', lat: '18 ms', note: 'Os textos chegam ao OBS limpos — só referência e linhas, sem HTML.' },
+      instavel: { dot: 'var(--color-neutral-500)', fg: 'var(--color-text)', label: 'Conexão instável', short: ip + ' · 640 ms', title: 'Conexão instável', lat: '640 ms, oscilando', note: 'A rede está lenta. Os envios continuam e são confirmados um a um.' },
+      offline: { dot: 'var(--color-accent-2)', fg: 'var(--color-accent-2-700)', label: 'OBS sem resposta', short: 'tentando ' + ip, title: 'Sem resposta', lat: '—', note: 'O OBS mantém o último texto. Avise quem está no computador do OBS.' },
+    }[cs];
+
+    const sugg = this.suggestions(), cmdSel = Math.min(S.cmdSel, Math.max(0, sugg.length - 1));
+    const cmdKey = ev => {
+      if (ev.key === 'ArrowDown') { ev.preventDefault(); this.setState({ cmdSel: Math.min(cmdSel + 1, sugg.length - 1) }); }
+      else if (ev.key === 'ArrowUp') { ev.preventDefault(); this.setState({ cmdSel: Math.max(cmdSel - 1, 0) }); }
+      else if (ev.key === 'Enter') { const g = sugg[cmdSel]; if (g && g.run) g.run(); }
+      else if (ev.key === 'Escape') this.setState({ cmd: '', cmdStage: 'book', cmdBook: null });
+      else if (ev.key === 'Backspace' && !S.cmd && S.cmdStage === 'ref') this.setState({ cmdStage: 'book', cmdBook: null });
+    };
+
+    const cur = seq[S.liveIdx], viewIt = seq[S.viewIdx];
+    const viewE = viewIt && this.entry(viewIt.col, viewIt.id);
+    const viewSlides = viewE ? this.slidesOf(viewIt.col, viewE) : [];
+    let nextHint = '';
+    if (cur) {
+      const c2 = this.slidesOf(cur.col, this.entry(cur.col, cur.id)), nx = seq[S.liveIdx + 1];
+      nextHint = S.slideIdx + 1 < c2.length ? c2[S.slideIdx + 1].t.split('\n')[0]
+        : nx ? (nx.mom || '—') + ' — ' + titleOf(nx.col, this.entry(nx.col, nx.id)) : 'Fim da liturgia';
+    }
+
+    const pc = COL[S.pickCol];
+    let pickList;
+    if (pc.kind === 'biblia') {
+      const r = parseBible(S.pickQ);
+      if (r) { const e = makeBible(r.ab, r.ch, r.v1, r.v2); pickList = [{ title: 'Adicionar ' + e.title, icon: 'ph-plus-circle', add: () => this.addToCulto('biblia', e) }]; }
+      else if (S.pickQ.trim()) pickList = booksFor(S.pickQ).slice(0, 12).map(([ab, nm]) => ({ title: nm, icon: 'ph-book-open', add: () => this.setState({ pickQ: ab + ' ' }) }));
+      else pickList = S.lib.biblia.map(e => ({ title: e.title, icon: 'ph-plus-circle', add: () => this.addToCulto('biblia', e) }));
+    } else {
+      pickList = S.lib[S.pickCol].map(e => ({ e, title: titleOf(S.pickCol, e) + (pc.kind === 'catecismo' ? ' — ' + e.pergunta : '') }))
+        .filter(x => norm(x.title).includes(norm(S.pickQ)))
+        .map(x => ({ title: x.title, icon: 'ph-plus-circle', add: () => this.addToCulto(S.pickCol, x.e) }));
+    }
+
+    const lc = COL[S.libCol], L = S.lib[S.libCol], p = S.path;
+    const leaf = this.leafEntry();
+    const d = leaf && S.draft && S.draft.id === leaf.id ? S.draft : leaf;
+    const setF = k => ev => { const v = ev.target.value; this.setState(s => ({ draft: { ...(s.draft && s.draft.id === leaf.id ? s.draft : leaf), [k]: v }, saved: '' })); };
+    const dirty = !!(leaf && S.draft && S.draft.id === leaf.id && JSON.stringify(S.draft) !== JSON.stringify(leaf));
+    const dSlides = leaf ? this.slidesOf(S.libCol, d) : [];
+    const has = x => ({ bg: x ? 'var(--color-surface)' : 'transparent', fg: x ? 'var(--color-text)' : 'var(--color-neutral-600)' });
+    const NUM = { min: '52px', pad: '8px 0', align: 'center' }, NAME = { min: '150px', pad: '7px 10px', align: 'left' };
+    const lv = { title: lc.label, hint: '', mode: 'grid', groups: [], list: [], verses: [], canNew: false, newLabel: '', doNew: null };
+    const crumbs = [{ label: lc.label, go: () => this.goPath([]) }];
+    const range = n => Array.from({ length: n }, (_, i) => String(i + 1));
+    if (S.libCol === 'biblia') {
+      if (!p.length) { lv.hint = 'Escolha o livro'; lv.groups = [['Antigo Testamento', BOOKS.slice(0, 39)], ['Novo Testamento', BOOKS.slice(39)]].map(([t, bs]) => ({ title: t, ...NAME, items: bs.map(([ab, nm]) => ({ label: nm, tip: ab, ...has(true), go: () => this.goPath([ab]) })) })); }
+      else {
+        const ab = p[0]; crumbs.push({ label: BNAME[ab], go: () => this.goPath([ab]) });
+        if (p.length === 1) { lv.title = BNAME[ab]; lv.hint = 'Escolha o capítulo'; lv.groups = [{ title: CH[ab] + (CH[ab] === 1 ? ' capítulo' : ' capítulos'), ...NUM, items: range(CH[ab]).map(ch => ({ label: ch, tip: '', ...has(true), go: () => this.goPath([ab, ch]) })) }]; }
+        else {
+          const ch = p[1]; crumbs.push({ label: 'Capítulo ' + ch, go: () => this.goPath([ab, ch]) });
+          lv.mode = 'verses'; lv.title = BNAME[ab] + ' ' + ch;
+          lv.hint = S.selA == null ? 'Clique no primeiro versículo — e depois no último, para um trecho' : S.selA === S.selB ? 'Clique em outro versículo para estender o trecho' : 'Clique em um versículo para recomeçar';
+          lv.verses = range(VC[ab + ' ' + ch] || 24).map(n => { const v = +n, tx = TX[ab + ' ' + ch + '.' + v], inSel = S.selA != null && v >= S.selA && v <= S.selB;
+            return { n, t: tx || '[texto ARA]', bg: inSel ? 'var(--color-accent-200)' : 'transparent', fg: tx || inSel ? 'var(--color-text)' : 'var(--color-neutral-600)',
+              go: () => this.setState(s => (s.selA == null || s.selA !== s.selB) ? { selA: v, selB: v } : { selA: Math.min(s.selA, v), selB: Math.max(s.selA, v) }) }; });
+        }
+      }
+    } else if (S.libCol === 'cfw') {
+      if (!p.length) { lv.mode = 'list'; lv.hint = 'Escolha o capítulo';
+        lv.list = CFW_T.slice(1).map((t, i) => { const cap = String(i + 1), k = L.filter(e => e.cap === cap).length;
+          return { label: cap, sub: t, meta: k + ' de ' + CFW_S[i + 1] + ' seções', fg: k ? 'var(--color-text)' : 'var(--color-neutral-600)', go: () => this.goPath([cap]) }; }); }
+      else {
+        const cap = p[0]; crumbs.push({ label: 'Capítulo ' + cap, go: () => this.goPath([cap]) });
+        if (p.length === 1) { lv.title = cap + '. ' + CFW_T[cap]; lv.hint = 'Escolha a seção — as esmaecidas ainda não foram cadastradas';
+          lv.groups = [{ title: CFW_S[cap] + (CFW_S[cap] === 1 ? ' seção' : ' seções'), ...NUM, items: range(CFW_S[cap]).map(sec => { const ex = L.find(e => e.cap === cap && e.sec === sec);
+            return { label: sec, tip: ex ? '' : 'Não cadastrada — clique para cadastrar', ...has(ex), go: () => ex ? this.goPath([cap, sec]) : this.addEntry('cfw', { cap, sec, text: '' }, () => [cap, sec]) }; }) }]; }
+        else { crumbs.push({ label: 'Seção ' + p[1], go: () => {} }); lv.mode = 'editor'; lv.title = 'CFW ' + cap + '.' + p[1]; lv.hint = CFW_T[cap]; }
+      }
+    } else if (lc.kind === 'catecismo') {
+      if (!p.length) { lv.hint = 'Escolha a pergunta — as esmaecidas ainda não foram cadastradas';
+        lv.groups = [{ title: CAT_N[S.libCol] + ' perguntas', ...NUM, items: range(CAT_N[S.libCol]).map(q => { const ex = L.find(e => e.q === q);
+          return { label: q, tip: ex ? ex.pergunta : 'Não cadastrada — clique para cadastrar', ...has(ex), go: () => ex ? this.goPath([q]) : this.addEntry(S.libCol, { q, pergunta: '', resposta: '' }, () => [q]) }; }) }]; }
+      else { crumbs.push({ label: 'Pergunta ' + p[0], go: () => {} }); lv.mode = 'editor'; lv.title = 'Pergunta ' + p[0]; lv.hint = lc.label; }
+    } else if (S.libCol === 'salmos') {
+      if (!p.length) { lv.hint = 'Escolha o salmo — os esmaecidos ainda não têm versão cadastrada';
+        lv.groups = [{ title: '150 salmos', ...NUM, items: range(150).map(num => { const k = L.filter(e => e.num === num).length;
+          return { label: num, tip: k ? k + (k === 1 ? ' versão' : ' versões') : 'Sem versão cadastrada', ...has(k), go: () => this.goPath([num]) }; }) }]; }
+      else {
+        const num = p[0], vs = L.filter(e => e.num === num); crumbs.push({ label: 'Salmo ' + num, go: () => this.goPath([num]) });
+        if (p.length === 1) { lv.mode = 'list'; lv.title = 'Salmo ' + num; lv.hint = vs.length ? 'Escolha a versão' : 'Nenhuma versão cadastrada ainda';
+          lv.list = vs.map(e => ({ label: num + (e.ver || ''), sub: (split(e.text)[0] || '—').split('\n')[0], meta: e.meta, fg: 'var(--color-text)', go: () => this.goPath([num, e.id]) }));
+          lv.canNew = true; lv.newLabel = 'Nova versão';
+          lv.doNew = () => this.addEntry('salmos', { num, ver: vs.length ? String.fromCharCode(65 + vs.length) : '', meta: 'Comissão Brasileira de Salmodia', text: '' }, id => [num, id]); }
+        else { const e = L.find(x => x.id === p[1]); crumbs.push({ label: e && e.ver ? 'Versão ' + e.ver : 'Versão única', go: () => {} }); lv.mode = 'editor'; lv.title = e ? titleOf('salmos', e) : '—'; lv.hint = e ? e.meta : ''; }
+      }
+    } else {
+      if (!p.length) { lv.mode = 'list'; lv.hint = S.libCol === 'hnc' ? 'Hinos cadastrados' : 'Credos cadastrados';
+        lv.list = [...L].sort((a, b) => (+a.num || 999) - (+b.num || 999)).map(e => ({ label: S.libCol === 'hnc' ? (e.num || '—') : '', sub: e.title, meta: e.meta || '', fg: 'var(--color-text)', go: () => this.goPath([e.id]) }));
+        lv.canNew = true; lv.newLabel = S.libCol === 'hnc' ? 'Novo hino' : 'Novo credo';
+        lv.doNew = () => this.addEntry(S.libCol, S.libCol === 'hnc' ? { num: '', title: 'Novo hino', meta: '', text: '' } : { title: 'Novo credo', text: '' }, id => [id]); }
+      else { const e = L.find(x => x.id === p[0]); crumbs.push({ label: e ? e.title : '—', go: () => {} }); lv.mode = 'editor'; lv.title = e ? titleOf(S.libCol, e) : '—'; lv.hint = e ? (e.meta || '') : ''; }
+    }
+    const COUNT = { biblia: '66' };
+    const groups = GROUPS.map(g => ({ label: g,
+      cols: COLS.filter(c => c.g === g).map(c => ({ label: c.label, n: COUNT[c.k] || S.lib[c.k].length, ...sel(c.k === S.libCol), pick: () => this.openLib(c.k) })) }));
+
+    return {
+      tabs: [['liturgia', 'Liturgia', 'ph-list-numbers'], ['biblioteca', 'Biblioteca', 'ph-books'], ['apresentar', 'Apresentar', 'ph-presentation'], ['conexao', 'Conexão', 'ph-plugs-connected']]
+        .map(([k, label, icon]) => ({ label, icon, go: () => this.setState({ tab: k }), bg: tint(tab === k), fg: tab === k ? 'var(--color-accent-700)' : 'var(--color-text)' })),
+      conn: CONN, goCon: () => this.setState({ tab: 'conexao' }),
+
+      cmd: S.cmd, setCmd: ev => this.setState({ cmd: ev.target.value, cmdSel: 0 }), cmdKey,
+      cmdFocus: () => this.setState({ cmdFocus: true }), cmdBlur: () => setTimeout(() => this.setState({ cmdFocus: false }), 120),
+      cmdHasBook: S.cmdStage === 'ref', cmdBookName: S.cmdBook ? BNAME[S.cmdBook] : '',
+      cmdPh: S.cmdStage === 'ref' ? 'capítulo.versículo' : 'Apresentar rápido: 1co · hb 12.14 · bc 1 · cfw 1.1',
+      cmdOpen: S.cmdFocus && sugg.length > 0,
+      sugg: sugg.map((g, i) => ({ ...g, run: g.run ? (ev => { ev.preventDefault(); g.run(); }) : (ev => ev.preventDefault()), bg: i === cmdSel ? 'var(--color-accent-100)' : 'transparent' })),
+      cmdFoot: S.cmdStage === 'ref' ? 'Enter apresenta · Backspace volta ao livro · Esc cancela' : '↑↓ escolhe · Enter confirma · também: sg 133 · hnc · credo · cm 1',
+
+      isApr: tab === 'apresentar', isLit: tab === 'liturgia', isLib: tab === 'biblioteca', isCon: tab === 'conexao',
+      cultoName: culto.name,
+      aprItems: seq.map((it, i) => ({ mom: it.mom || '—', title: titleOf(it.col, this.entry(it.col, it.id)), col: COL[it.col].label,
+        momColor: it.ad ? 'var(--color-accent-700)' : 'color-mix(in srgb, var(--color-text) 55%, transparent)', isAd: !!it.ad,
+        live: i === S.liveIdx && !S.blank ? 'no ar' : '', bg: tint(i === S.viewIdx), pick: () => this.setState({ viewIdx: i }) })),
+      dropAdhoc: () => this.setState(s => ({ adhoc: null, viewIdx: Math.max(0, s.viewIdx - 1), liveIdx: Math.max(0, s.liveIdx - 1), slideIdx: s.liveIdx === 0 ? 0 : s.slideIdx })),
+      view: viewIt ? { mom: viewIt.mom || '—', col: COL[viewIt.col].label, title: titleOf(viewIt.col, viewE) } : { mom: '', col: '', title: 'Liturgia vazia' },
+      slides: viewSlides.map((s, i) => {
+        const live = S.viewIdx === S.liveIdx && i === S.slideIdx && !S.blank, nxt = S.viewIdx === S.liveIdx && i === S.slideIdx + 1;
+        return { text: s.t, label: s.h, state: live ? 'no ar' : nxt ? 'a seguir' : '',
+          stateColor: live ? 'var(--color-accent-2-700)' : 'var(--color-accent-700)',
+          bg: live ? 'var(--color-accent-200)' : 'var(--color-surface)', go: () => this.goLive(S.viewIdx, i) };
+      }),
+      blankLabel: S.blank ? 'Mostrar texto' : 'Limpar tela', toggleBlank: () => this.setState({ blank: !S.blank }),
+      prev: () => this.step(-1), next: () => this.step(1), nextHint,
+
+      cultos: S.cultos.map(c => ({ name: c.name, count: c.items.length + (c.items.length === 1 ? ' item' : ' itens'), bg: tint(c.id === S.cultoId),
+        pick: () => this.setState({ cultoId: c.id, viewIdx: 0, liveIdx: 0, slideIdx: 0 }) })),
+      newCulto: () => { const id = 'c' + Date.now(); this.setState(s => ({ cultos: [...s.cultos, { id, name: 'Novo culto', items: [] }], cultoId: id })); },
+      presentCulto: () => this.setState({ tab: 'apresentar', adhoc: null, viewIdx: 0, liveIdx: 0, slideIdx: 0 }),
+      litRows: items.map((it, i) => {
+        const e = this.entry(it.col, it.id), n = this.slidesOf(it.col, e).length;
+        return { n: String(i + 1).padStart(2, '0'), mom: it.mom, title: titleOf(it.col, e), col: COL[it.col].label, count: n + (n === 1 ? ' tela' : ' telas'),
+          setMom: ev => { const v = ev.target.value; this.updCulto(a => a.map((x, j) => j === i ? { ...x, mom: v } : x)); },
+          up: () => this.move(i, -1), down: () => this.move(i, 1), del: () => this.updCulto(a => a.filter((_, j) => j !== i)) };
+      }),
+      pickGroups: GROUPS.map(g => ({ label: g, cols: COLS.filter(c => c.g === g).map(c => ({ label: c.label, ...sel(c.k === S.pickCol), pick: () => this.setState({ pickCol: c.k, pickQ: '' }) })) })),
+      pickPh: pc.kind === 'biblia' ? 'Referência — ex.: hb 12.14-15' : pc.kind === 'catecismo' ? 'Número ou texto da pergunta' : 'Número ou título',
+      pickQ: S.pickQ, setPickQ: ev => this.setState({ pickQ: ev.target.value }), pickList,
+
+      groups, crumbs: crumbs.map((c, i) => ({ ...c, sep: i ? '›' : '', fg: i === crumbs.length - 1 ? 'var(--color-text)' : 'var(--color-accent-700)' })),
+      levelTitle: lv.title, levelHint: lv.hint, canNew: lv.canNew, newLabel: lv.newLabel, doNew: lv.doNew || (() => {}),
+      mGrid: lv.mode === 'grid', mList: lv.mode === 'list', mVerses: lv.mode === 'verses', mEditor: lv.mode === 'editor' && !!leaf,
+      gridGroups: lv.groups, listItems: lv.list, verses: lv.verses,
+      kSalmo: S.libCol === 'salmos', kHnc: S.libCol === 'hnc', kCredo: lc.kind === 'credo', kCfw: lc.kind === 'cfw', kCat: lc.kind === 'catecismo',
+      d: d || {}, f: Object.fromEntries(['num', 'ver', 'title', 'meta', 'text', 'pergunta', 'resposta'].map(k => [k, setF(k)])),
+      hasLeaf: !!leaf,
+      previewLabel: (leaf ? titleOf(S.libCol, d) + ' · ' : '') + dSlides.length + (dSlides.length === 1 ? ' tela' : ' telas'),
+      breakNote: lc.kind === 'musica' ? 'Estrofes definem as telas' : `Quebra automática nas pausas · até ${this.max()} caracteres, 2 linhas`,
+      draftSlides: dSlides,
+      leafPresent: () => leaf && this.present(S.libCol, leaf),
+      leafAdd: () => { if (leaf) { this.addToCulto(S.libCol, leaf); this.setState({ saved: 'Adicionado a ' + culto.name }); } },
+      editable: lc.kind !== 'biblia', notDirty: !dirty, savedNote: dirty ? 'Alterações não salvas' : S.saved,
+      saveDraft: () => this.setState(s => ({ lib: { ...s.lib, [s.libCol]: s.lib[s.libCol].map(e => e.id === s.draft.id ? s.draft : e) }, draft: null, saved: 'Salvo — vale para todas as liturgias' })),
+      resetDraft: () => this.setState({ draft: null }),
+
+      ip, port: S.port, setPort: ev => this.setState({ port: ev.target.value.replace(/\D/g, '').slice(0, 5) }),
+      lastSent: S.blank ? 'Tela limpa' : cur ? titleOf(cur.col, this.entry(cur.col, cur.id)) + ' · tela ' + (S.slideIdx + 1) : '—',
+      log: S.log,
+      reconnect: () => { this.setState({ conn: 'online' }); this.pushLog('Conectado a ' + ip + ':' + S.port); },
+      test: () => this.pushLog('Teste: ' + (cs === 'offline' ? 'sem resposta' : 'resposta em 18 ms')),
+    };
+  }
+}
+</script>
+</body>
+</html>
