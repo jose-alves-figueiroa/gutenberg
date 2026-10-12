@@ -16,6 +16,8 @@ export interface BibleVersionMeta {
   format: typeof DATA_FORMAT
   code: string
   name: string
+  /** Copyright line as given by the source (e.g. `Almeida Revista e Atualizada - 1993`). */
+  copyright?: string
   source: SourceRef
 }
 

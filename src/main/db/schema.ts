@@ -18,6 +18,7 @@ export const MIGRATIONS: readonly string[] = [
   CREATE TABLE bible_versions (
     code TEXT PRIMARY KEY,
     name TEXT NOT NULL,
+    copyright TEXT NOT NULL,
     source TEXT NOT NULL
   );
   CREATE TABLE bible_verses (

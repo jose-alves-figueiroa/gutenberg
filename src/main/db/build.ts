@@ -34,10 +34,10 @@ export function fillDatabase(db: SqlDatabase, data: CanonicalData): BuildCounts 
       DELETE FROM creeds;
     `)
 
-    const version = db.prepare('INSERT INTO bible_versions (code, name, source) VALUES (?, ?, ?)')
+    const version = db.prepare('INSERT INTO bible_versions (code, name, copyright, source) VALUES (?, ?, ?, ?)')
     const verse = db.prepare('INSERT INTO bible_verses (version, book, chapter, verse, text) VALUES (?, ?, ?, ?, ?)')
     for (const { meta, books } of data.bibles) {
-      version.run(meta.code, meta.name, src(meta.source))
+      version.run(meta.code, meta.name, meta.copyright ?? '', src(meta.source))
       for (const book of books)
         book.chapters.forEach((verses, c) =>
           verses.forEach((text, v) => {

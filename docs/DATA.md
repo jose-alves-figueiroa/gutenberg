@@ -38,9 +38,9 @@ Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 - [x] Limite de caracteres por tela persistido como configuração (`settings.screen_char_limit`, padrão 96; preservado entre builds). A UI que o altera fica para a E4/E6
 
 **US3.2** Como operador, quero a Bíblia ARA completa, para apresentar qualquer leitura.
-- [ ] `translate:bible`: OpenLP SQLite → `data/canonical/bible/ara/` (testes com fixture OpenLP sintética)
-- [ ] Obter o `ARA.sqlite` (github.com/damarals/biblias) em `data/sources/`
-- [ ] Traduzir e conferir: 66 livros; Hb 12.14–15 igual ao protótipo
+- [x] `translate:bible`: OpenLP SQLite → `data/canonical/bible/ara/` (testes com fixture OpenLP sintética)
+- [x] Obter o `ARA.sqlite` (github.com/damarals/biblias) em `data/sources/`
+- [x] Traduzir e conferir: 66 livros, 1.189 capítulos, 31.104 versículos; Hb 12.14–15 idêntico ao protótipo. A fonte usa "Cânticos", "Oséias", "Miquéias" e "Atos dos Apóstolos": o nome da fonte fica no formato interno, os cabeçalhos usam `BOOKS`
 
 **US3.3** Como operador, quero as músicas que a igreja cadastrou no Holyrics, com os créditos.
 - [ ] Investigar (só leitura) o formato da tabela `music` de `database.db`
@@ -97,7 +97,7 @@ Heidelberg basta um novo arquivo — sem mudar código nem schema.
 data/canonical/
   .gitcrypt-check.json
   bible/ara/
-    meta.json                      { format, code: "ARA", name, source }
+    meta.json                      { format, code: "ARA", name, copyright, source }
     01-Gn.json … 66-Ap.json
   songbooks/
     hnc/songbook.json              hinário
@@ -177,7 +177,7 @@ hinário, confissão ou catecismo é só uma linha nova.
 
 | Tabela | Colunas |
 |---|---|
-| `bible_versions` | `code` (PK), `name`, `source` |
+| `bible_versions` | `code` (PK), `name`, `copyright`, `source` |
 | `bible_verses` | `version` → `bible_versions`, `book`, `chapter`, `verse`, `text` (somente leitura) |
 | `songbooks` | `id` (PK), `title`, `short_title`, `prefix`, `item_label`, `source` |
 | `songs` | `id` (PK), `songbook_id` → `songbooks`, `number`, `version`, `title`, `versification`, `author`, `artist`, `copyright`, `lyrics`, `source`; único (`songbook_id`, `number`, `version`, `title`) — o título entra porque músicas avulsas (`other`) não têm número |
