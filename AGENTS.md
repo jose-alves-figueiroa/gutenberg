@@ -29,7 +29,7 @@ scripts/           scripts de apoio (ex.: gerar fixtures golden)
 - `npm run typecheck` — TypeScript sem emitir
 - `npm run lint` — ESLint
 - `npm run golden` — regenera `tests/fixtures/autobreak.golden.json` a partir do protótipo
-- `npm run translate:<source>` / `data:build` / `data:check` / `data:seed` / `data:unlock` / `data:key` — dados (E3, ver `docs/DATA.md`)
+- `npm run holyrics:dump` / `translate:<source>` / `data:build` / `data:check` / `data:seed` / `data:unlock` / `data:key` — dados (E3, ver `docs/DATA.md`)
 
 Antes de marcar qualquer task como `[x]` ou commitar: `npm test && npm run typecheck && npm run lint` verdes.
 

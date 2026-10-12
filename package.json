@@ -22,7 +22,9 @@
     "data:seed": "tsx scripts/gen-seed.ts",
     "translate:bible": "tsx scripts/translate-bible.ts",
     "translate:catechism": "tsx scripts/translate-catechism.ts",
-    "translate:confession": "tsx scripts/translate-confession.ts"
+    "translate:confession": "tsx scripts/translate-confession.ts",
+    "holyrics:dump": "tsx scripts/holyrics-dump.ts",
+    "translate:songs": "tsx scripts/translate-songs.ts"
   },
   "dependencies": {
     "@fontsource/source-serif-4": "^5.3.1",

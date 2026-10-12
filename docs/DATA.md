@@ -43,12 +43,12 @@ Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 - [x] Traduzir e conferir: 66 livros, 1.189 capítulos, 31.104 versículos; Hb 12.14–15 idêntico ao protótipo. A fonte usa "Cânticos", "Oséias", "Miquéias" e "Atos dos Apóstolos": o nome da fonte fica no formato interno, os cabeçalhos usam `BOOKS`
 
 **US3.3** Como operador, quero as músicas que a igreja cadastrou no Holyrics, com os créditos.
-- [ ] Investigar (só leitura) o formato da tabela `music` de `database.db`
-- [ ] `translate:songs`: decifra só `music` (chave em `HOLYRICS_DB_KEY`, fora do git) → `data/canonical/songbooks/<id>/`
-- [ ] Atribuir cada música a um hinário (`hnc`, `psalter`; as demais em `other`); número + `version` (133A/B/C); estrofes limpas; créditos (autor, artista, copyright)
-- [ ] Testes com registro sintético cifrado com chave de teste
-- [ ] Conferir: 246 músicas; Salmo 133B igual ao payload de exemplo
-- [ ] Plano B (só se a descriptografia não for viável): API local do Holyrics (`GetSongs`/`GetLyrics`)
+- [x] Investigar (só leitura) o formato da tabela `music` de `database.db`: cada registro é cifrado, e o próprio Holyrics protege o código que o lê (strings ofuscadas e 36 pacotes `lib/pack*.dat` cifrados). Descriptografar exigiria quebrar essa proteção — **não seguimos por aí**; vale o plano B
+- [x] Plano B — `npm run holyrics:dump`: cliente da API local do Holyrics (`GetSongs` → `GetLyrics` por música) → `data/sources/holyrics-songs.json` (bruto, fora do git)
+- [x] `translate:songs`: dump → `data/canonical/songbooks/<id>/`; atribui hinário (`psalter` por "Salmo 133B"/artista "Comissão Brasileira de Salmodia", `hnc` por número no título, o resto em `other` com lista para revisão); número + `version`; estrofes na ordem de apresentação do Holyrics (refrão repetido); créditos (autor, artista, copyright)
+- [x] Testes com API simulada e dump sintético
+- [ ] **Mantenedor:** no PC do Holyrics, Configurações → API Server → habilitar e criar um token com `GetSongs` e `GetLyrics`; preencher `HOLYRICS_API_URL` e `HOLYRICS_API_TOKEN` no `.env`; rodar `npm run holyrics:dump`
+- [ ] Rodar `translate:songs`, revisar a lista `other` e conferir: 246 músicas; Salmo 133B igual ao payload de exemplo
 
 **US3.4** Como operador, quero os símbolos de fé de Westminster completos, para apresentar doutrina.
 - [x] `translate:confession`: página da IP Aliança → `confessions/wcf.json`: 33 capítulos, 171 seções, todas com referências. Capítulo 31 com 4 seções (revisão americana adotada pela IPB; o protótipo contava 5, do texto de 1647). Os capítulos extras da página (34 "Do Espírito Santo", 35 "Do Amor de Deus e das Missões") ficam de fora por padrão (`--all-chapters` os inclui) — **decisão pendente do mantenedor**
@@ -65,7 +65,7 @@ Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 fontes externas            tradutores                   formato interno (versionado, cifrado)        app
 ────────────────           ─────────────                ──────────────────────────────────────      ───────────────
 ARA.sqlite (OpenLP)   ──▶  translate:bible      ──┐
-database.db Holyrics  ──▶  translate:songs      ──┤
+API do Holyrics      ──▶  translate:songs      ──┤
 página IP Aliança     ──▶  translate:confession ──┼──▶  data/canonical/**  (git-crypt)  ──▶ data:build ──▶ SQLite
 gist (JSON)           ──▶  translate:catechism  ──┤                                           (empacotado no
 PDF IPB               ──▶  translate:catechism  ──┤                                            instalador)
@@ -104,7 +104,7 @@ data/canonical/
     hnc/songs/155.json …
     psalter/songbook.json          saltério genebrino
     psalter/songs/133B.json …      <number><version>
-    other/songbook.json            músicas do Holyrics fora de um hinário publicado
+    other/songbook.json            "Outros cânticos": músicas do Holyrics fora de um hinário publicado
     other/songs/<slug>.json …
   confessions/
     wcf.json                       Confissão de Fé de Westminster
@@ -198,7 +198,7 @@ hinário, confissão ou catecismo é só uma linha nova.
 | Comando | Fonte | Tradução |
 |---|---|---|
 | `translate:bible -- --file data/sources/ARA.sqlite` | OpenLP SQLite (ex.: `ARA.sqlite` de github.com/damarals/biblias) | `book.book_reference_id` 1–66 → `BOOKS`; `verse(chapter, verse, text)` → `chapters`; limpa o texto |
-| `translate:songs -- --db tmp/Holyrics/Holyrics/files/database.db` | Banco do Holyrics da igreja, tabela `music` (246 registros cifrados) | Decifra localmente (ver abaixo) → atribui hinário (`hnc`, `psalter`, `other`), número e `version` → estrofes limpas + créditos |
+| `holyrics:dump` + `translate:songs -- --file data/sources/holyrics-songs.json` | API local do Holyrics da igreja (246 músicas) | `GetSongs`/`GetLyrics` → dump bruto → atribui hinário (`hnc`, `psalter`, `other`), número e `version` → estrofes na ordem do Holyrics + créditos |
 | `translate:confession -- --id wcf --file data/sources/wcf.html` | https://www.ipalianca.org/simbolos-de-fe/confiss%C3%A3o-de-f%C3%A9-de-westminster | Capítulos/seções; valida 33 capítulos e a contagem de seções (`CFW_S` do protótipo) |
 | `translate:catechism -- --id wsc --file data/sources/wsc.json` | https://gist.github.com/joaolucasl/2084125f96a1275be2de55e4fed89f0c | `{numero, pergunta, resposta, refs}` → `questions`; **numera pela posição** (o item 81 tem a pergunta no campo `numero`); valida 1–107 |
 | `translate:catechism -- --id wlc --file data/sources/wlc.pdf` | https://www.ipb.org.br/content/Arquivos/Catecismo_Maior_de_Westminster.pdf | Extrai texto do PDF, separa perguntas, remove cabeçalhos/rodapés, guarda refs; valida 1–196; revisão manual do que quebrar |
@@ -206,16 +206,18 @@ hinário, confissão ou catecismo é só uma linha nova.
 
 As fontes só são baixadas quando a user story correspondente for executada. O tradutor do PDF usa `pdftotext` (poppler: `brew install poppler`); só o mantenedor roda tradutores, e o resultado é versionado.
 
-### Músicas do Holyrics — descriptografia
-Escopo: **somente** a tabela `music` de `files/database.db` (conteúdo cadastrado pela igreja).
-1. Investigar, só leitura, a classe do Holyrics que lê/grava `database.db` (decompilação local com
-   CFR/jadx): algoritmo, modo, IV, origem da chave, formato do conteúdo decifrado. Validar contra o
-   Salmo 133B do payload de exemplo.
-2. O tradutor lê o banco em modo somente leitura, decifra e gera `data/canonical/songbooks/**`.
-3. A chave do Holyrics fica em `.env` local (`HOLYRICS_DB_KEY`), fora do git.
-4. Testes com registro sintético cifrado com chave de teste.
-5. Plano B: API local do Holyrics (`GetSongs` / `GetLyrics` devolvem `slides[].text`, `artist`,
-   `author`, `copyright`).
+### Músicas do Holyrics — API local
+A tabela `music` de `files/database.db` é cifrada registro a registro, e o Holyrics protege o código
+que a lê (strings ofuscadas, classes em pacotes `lib/pack*.dat` cifrados). Não quebramos essa
+proteção: as músicas saem pela **API local oficial** (github.com/holyrics/API-Server), que entrega o
+mesmo conteúdo — letra por slide, ordem de apresentação e créditos.
+
+1. No PC do Holyrics: Configurações → API Server → habilitar; criar um token com permissão para
+   `GetSongs` e `GetLyrics`; anotar IP e porta.
+2. No `.env`: `HOLYRICS_API_URL=http://<ip>:<porta>` e `HOLYRICS_API_TOKEN=<token>`.
+3. `npm run holyrics:dump` → `data/sources/holyrics-songs.json` (não precisa do repositório destrancado).
+4. `npm run translate:songs -- --file data/sources/holyrics-songs.json` → `data/canonical/songbooks/`;
+   revisar a lista de músicas em `other` (não reconhecidas como HNC ou Saltério).
 
 ### Limpeza comum (`src/shared/clean.ts`)
 - Remove `<ctt>`, `<desc>`, `<span …>`, `text-force-update`, `&nbsp;`, `(RA)` final e espaços duplicados.
