@@ -72,7 +72,7 @@ jobs:
           echo "$files"
           if gh release view "$tag" > /dev/null 2>&1; then
             gh release upload "$tag" $files --clobber
-            gh release edit "$tag" --notes-file dist/notes.md
+            gh release edit "$tag" --notes-file dist/notes.md --target "$GITHUB_SHA"
           else
             flags=()
             [ "$DRAFT" = "true" ] && flags+=(--draft)

@@ -17,10 +17,6 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 
 ## [Não lançado]
 
-### Adicionado
-- Capítulos da Confissão de Westminster e listas de hinos paginados para caber na janela,
-  sem rolagem; ←/→ trocam de página e a página é lembrada ao voltar de um item (E9)
-
 ## [0.1.0] — 2026-10-13
 
 ### Adicionado
@@ -36,3 +32,5 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 - Instaladores para Windows, macOS (Apple Silicon) e Ubuntu/Debian, com liberação do
   firewall (E8)
 - Atualizações da biblioteca preservam as edições do operador (E8)
+- Capítulos da Confissão de Westminster e listas de hinos paginados para caber na janela,
+  sem rolagem; ←/→ trocam de página e a página é lembrada ao voltar de um item (E9)
