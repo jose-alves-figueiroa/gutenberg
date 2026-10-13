@@ -2,7 +2,7 @@
 
 Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 Fonte: `design_handoff_gutenberg/README.md` + protótipo `design/Gutenberg.dc.html` (classe `Component`).
-Concluídos: E0–E8. Pendente: **US8.4** (validar os instaladores em Windows/Ubuntu reais e rodar o CI).
+Concluídos: E0–E8. Pendente: **US8.4** (validar os instaladores em Windows/Ubuntu reais).
 
 ## Stack e protocolo (decisão)
 O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP** — o protocolo já em uso (substitui o JSON do Holyrics). Isso substitui o obs-websocket sugerido no README do handoff.
@@ -238,5 +238,5 @@ Alvos: **Windows**, **macOS** (Apple Silicon/arm64 — o Mac do mantenedor, macO
 - [x] Dados novos da E3 entram sem perder edições: o `data:build` grava `content_version` (hash dos dados); ao abrir, se o banco empacotado tiver outra versão, o conteúdo é atualizado a partir dele, **mantendo os registros editados pelo operador** (músicas e credos com `source = 'edited'`; seções da confissão e perguntas de catecismo marcadas `edited` — migração 2), novas seções do operador na mesma ordem; cultos, liturgias e configurações intactos
 
 **US8.4** Validação em campo
-- [ ] Rodar o workflow **installers** depois de cadastrar os segredos no GitHub
+- [x] Rodar o workflow **installers** depois de cadastrar os segredos no GitHub (2026-10-13: testes + banco no Ubuntu, instaladores Windows/macOS/Linux gerados)
 - [ ] Instalar num Windows e num Ubuntu reais: regra de firewall / `ufw`, atalho, primeira execução; OBS em outro PC lendo `/overlay/<saída>`

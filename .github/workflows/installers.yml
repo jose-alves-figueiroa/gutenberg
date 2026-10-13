@@ -18,8 +18,8 @@ jobs:
     name: library database
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -37,7 +37,7 @@ jobs:
           rm -f .secrets/gutenberg-data.key.gpg
       - run: npm run data:check
       - run: npm run data:build
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: gutenberg-sqlite
           path: data/build/gutenberg.sqlite
@@ -57,13 +57,13 @@ jobs:
             target: linux
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
       - run: npm ci
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: gutenberg-sqlite
           path: data/build
@@ -71,7 +71,7 @@ jobs:
         env:
           # No Apple/Windows certificates: unsigned (macOS ad-hoc); the scripts never publish.
           CSC_IDENTITY_AUTO_DISCOVERY: false
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: gutenberg-${{ matrix.target }}
           path: |
