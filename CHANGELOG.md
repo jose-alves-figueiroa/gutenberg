@@ -17,6 +17,12 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 
 ## [Não lançado]
 
+## [0.2.2] - 2026-10-13
+
+### Alterado
+- Versão de manutenção, sem mudanças no app: README com prints de cada tela e notas de versão
+  com título no formato novo
+
 ## [0.2.1] - 2026-10-13
 
 ### Adicionado
