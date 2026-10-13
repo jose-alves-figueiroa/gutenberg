@@ -7,6 +7,7 @@ e envia telas limpas para o OBS via obs-websocket.
 ## Fontes de verdade
 - **Especificação:** `design_handoff_gutenberg/README.md`. O protótipo `design/Gutenberg.dc.html`
   (classe `Component`) é a referência de comportamento — **não é código de produção**.
+- **Histórico de versões:** `CHANGELOG.md` (formato descrito no topo do arquivo).
 - **Plano e progresso:** `PLAN.md` (épicos) e `docs/DATA.md` → Progresso (tasks da E3). Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito.
   - Marque `[~]` ao começar uma task e `[x]` só quando ela estiver pronta **e** com testes passando.
   - Não crie épicos/tasks novos sem registrar no `PLAN.md`.
@@ -70,7 +71,15 @@ Formato [Conventional Commits](https://www.conventionalcommits.org/) com o épic
   - `feat(E2): porta autobreak do protótipo com testes golden`
   - `docs(repo): adiciona AGENTS.md e regras de commit`
 - **Ritmo:** um commit (ou poucos commits coesos) **por épico finalizado**, seguido de
-  `git push origin main`. O commit do épico inclui o `PLAN.md` com as tasks marcadas `[x]`.
+  `git push origin main`. O commit do épico inclui o `PLAN.md` com as tasks marcadas `[x]`
+  e o `CHANGELOG.md` atualizado.
 - Não commitar com testes, typecheck ou lint quebrados. Não usar `--no-verify`, `--force`
   nem reescrever histórico já publicado.
 - Remoto: `git@github.com:jose-alves-figueiroa/gutenberg.git` (SSH), branch `main`.
+
+## Changelog
+- **Todo commit** com `feat` ou `fix` (e qualquer outro que o operador perceba) acrescenta um item
+  em `## [Não lançado]` do `CHANGELOG.md`, no mesmo commit, seguindo o formato do topo do arquivo.
+- Ao gerar instaladores de uma versão nova: subir a versão do `package.json`, transformar
+  `[Não lançado]` em `## [x.y.z] — AAAA-MM-DD` e abrir um `[Não lançado]` vazio acima.
+- Um teste (`tests/changelog.test.ts`) garante que a versão do `package.json` está no changelog.
