@@ -201,7 +201,7 @@ hinário, confissão ou catecismo é só uma linha nova.
 | `liturgy_items` | `service_id`, `position`, `moment`, `collection`, `item_ref` (E5) |
 | `settings` | `key`, `value` (ex.: limite de caracteres por tela) |
 
-`songs.lyrics` guarda as estrofes separadas por linha em branco. O `data:build` substitui as tabelas de conteúdo e preserva `services`, `liturgy_items` e `settings`. O build usa `node:sqlite` (sem dependência nativa); o driver do app em runtime é decidido na E4 — o código só depende da interface `SqlDatabase`. `confession_sections.chapter` e
+O `data:build` grava `settings.content_version` (hash dos dados); ao abrir, o app atualiza a biblioteca a partir do banco empacotado quando a versão muda, mantendo o que o operador editou (`src/main/db/content.ts`, `docs/OBS.md` → Atualizações). `songs.lyrics` guarda as estrofes separadas por linha em branco. O `data:build` substitui as tabelas de conteúdo e preserva `services`, `liturgy_items` e `settings`. O build usa `node:sqlite` (sem dependência nativa); o driver do app em runtime é decidido na E4 — o código só depende da interface `SqlDatabase`. `confession_sections.chapter` e
 `section` são texto (rótulos); `position` dá a ordem.
 
 ## Tradutores (fonte → formato interno)

@@ -120,7 +120,7 @@ export function confessionSection(db: SqlDatabase, confessionId: string, chapter
 /** Updates a section, or inserts it in order (after the chapter's last section with a lower number). */
 export function saveConfessionSection(db: SqlDatabase, s: ConfessionSectionRecord): void {
   const updated = db
-    .prepare('UPDATE confession_sections SET text = ?, refs = ? WHERE confession_id = ? AND chapter = ? AND section = ?')
+    .prepare('UPDATE confession_sections SET text = ?, refs = ?, edited = 1 WHERE confession_id = ? AND chapter = ? AND section = ?')
     .run(s.text, s.refs, s.confessionId, s.chapter, s.section) as { changes: number }
   if (Number(updated.changes) > 0) return
   const before = get<{ position: number }>(
@@ -139,8 +139,8 @@ export function saveConfessionSection(db: SqlDatabase, s: ConfessionSectionRecor
     db.prepare('UPDATE confession_sections SET position = -position - 1 WHERE confession_id = ? AND position >= ?').run(s.confessionId, position)
     db.prepare('UPDATE confession_sections SET position = -position WHERE confession_id = ? AND position < 0').run(s.confessionId)
     db.prepare(
-      `INSERT INTO confession_sections (confession_id, position, chapter, chapter_title, section, section_title, text, refs)
-       VALUES (?, ?, ?, ?, ?, '', ?, ?)`
+      `INSERT INTO confession_sections (confession_id, position, chapter, chapter_title, section, section_title, text, refs, edited)
+       VALUES (?, ?, ?, ?, ?, '', ?, ?, 1)`
     ).run(s.confessionId, position, s.chapter, s.chapterTitle, s.section, s.text, s.refs)
     db.exec('COMMIT')
   } catch (err) {
@@ -168,8 +168,8 @@ export function catechismQuestion(db: SqlDatabase, catechismId: string, number: 
 
 export function saveCatechismQuestion(db: SqlDatabase, q: CatechismQuestionRecord): void {
   db.prepare(
-    `INSERT INTO catechism_questions (catechism_id, number, question, answer, refs) VALUES (?, ?, ?, ?, ?)
-     ON CONFLICT (catechism_id, number) DO UPDATE SET question = excluded.question, answer = excluded.answer, refs = excluded.refs`
+    `INSERT INTO catechism_questions (catechism_id, number, question, answer, refs, edited) VALUES (?, ?, ?, ?, ?, 1)
+     ON CONFLICT (catechism_id, number) DO UPDATE SET question = excluded.question, answer = excluded.answer, refs = excluded.refs, edited = 1`
   ).run(q.catechismId, q.number, q.question, q.answer, q.refs)
 }
 
@@ -227,7 +227,7 @@ export function saveSong(db: SqlDatabase, s: SongRecord): SongRecord {
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT (id) DO UPDATE SET number = excluded.number, version = excluded.version, title = excluded.title,
        versification = excluded.versification, author = excluded.author, artist = excluded.artist,
-       copyright = excluded.copyright, lyrics = excluded.lyrics`
+       copyright = excluded.copyright, lyrics = excluded.lyrics, source = excluded.source`
   ).run(id, s.songbookId, s.number, s.version, s.title, s.versification, s.author, s.artist, s.copyright, s.lyrics, EDITED)
   return { ...s, id }
 }
@@ -239,7 +239,7 @@ export function creeds(db: SqlDatabase): CreedRecord[] {
 export function saveCreed(db: SqlDatabase, c: CreedRecord): void {
   db.prepare(
     `INSERT INTO creeds (id, title, text, source) VALUES (?, ?, ?, ?)
-     ON CONFLICT (id) DO UPDATE SET title = excluded.title, text = excluded.text`
+     ON CONFLICT (id) DO UPDATE SET title = excluded.title, text = excluded.text, source = excluded.source`
   ).run(c.id, c.title, c.text, EDITED)
 }
 

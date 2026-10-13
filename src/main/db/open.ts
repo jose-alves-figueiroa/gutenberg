@@ -1,11 +1,13 @@
 /**
  * Opens the operator's database. On first run it is copied from the database shipped with the
  * app (built by `npm run data:build`), so library edits live in the user's copy and survive
- * updates of the app. Pending migrations are applied on every open.
+ * updates of the app. Pending migrations are applied on every open, and new shipped content is
+ * merged in keeping the operator's edits (db/content.ts).
  */
 import { copyFileSync, existsSync, mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
+import { updateContent } from './content'
 import { migrate } from './schema'
 
 export interface OpenOptions {
@@ -24,5 +26,6 @@ export function openAppDatabase({ file, seed }: OpenOptions): DatabaseSync {
   const db = new DatabaseSync(file)
   db.exec('PRAGMA foreign_keys = ON')
   migrate(db)
+  if (existsSync(seed)) updateContent(db, seed)
   return db
 }

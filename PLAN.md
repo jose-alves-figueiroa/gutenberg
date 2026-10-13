@@ -2,7 +2,7 @@
 
 Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 Fonte: `design_handoff_gutenberg/README.md` + protótipo `design/Gutenberg.dc.html` (classe `Component`).
-Concluídos: E0–E7. Próximo: **E8 (Empacotamento)**.
+Concluídos: E0–E8. Pendente: **US8.4** (validar os instaladores em Windows/Ubuntu reais e rodar o CI).
 
 ## Stack e protocolo (decisão)
 O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP** — o protocolo já em uso (substitui o JSON do Holyrics). Isso substitui o obs-websocket sugerido no README do handoff.
@@ -216,21 +216,27 @@ Especificação: README → "Apresentar" e "Busca rápida"; protótipo (`goLive`
 - [x] Aba Conexão: IP do operador e, para cada saída, as URLs `/overlay/<saída>` e `/overlay/resources/<saída>` (copiar), as coleções ligadas e o estado dela (o indicador da nav resume todas), porta editável (só números, até 5 dígitos; reinicia só o servidor da LAN — a interface usa um servidor próprio no loopback, em porta livre; porta ocupada mantém a anterior e entra no registro), Testar, registro de eventos com hora
 - [x] Saídas editáveis na aba Conexão: criar/renomear/remover, escolher as coleções (cada coleção em no máximo uma saída) e o estilo (cor, fundo, fonte, alinhamentos, linhas máximas)
 
-### E8 — Empacotamento (Fase 8)
+### E8 — Empacotamento (Fase 8) ✓ (falta a validação em campo, US8.4)
 Alvos: **Windows**, **macOS** (Apple Silicon/arm64 — o Mac do mantenedor, macOS 26) e **Linux** simples (Ubuntu/Debian). Comum a todos: `electron-builder`, o banco gerado por `npm run data:build` (após `data:unlock`) como recurso `gutenberg.sqlite`, ícone do app, versão do `package.json`.
 
 **US8.1** Build e artefatos
-- [ ] `electron-builder.yml` com `extraResources` (banco), `asar`, e scripts `dist:win`, `dist:mac`, `dist:linux`
-- [ ] **Windows**: instalador NSIS (x64), atalho no menu Iniciar; build no Windows ou via CI
-- [ ] **macOS**: `.dmg` arm64 (Apple Silicon); assinatura ad-hoc (sem conta de desenvolvedor) e instrução para abrir na 1ª vez (Gatekeeper: botão direito → Abrir / "Abrir mesmo assim")
-- [ ] **Linux**: `.deb` (Ubuntu/Debian, amd64) com atalho no menu; `AppImage` opcional
-- [ ] CI (GitHub Actions) com matriz `windows-latest` / `macos-latest` / `ubuntu-latest`, publicando os artefatos; a chave do git-crypt entra como segredo (`GUTENBERG_DATA_PASSWORD` + `.gpg`)
+- [x] `electron-builder.yml` com `extraResources` (banco), `asar`, e scripts `dist:win`, `dist:mac`, `dist:linux` (conferem antes que o banco existe e foi gerado de dados destrancados)
+- [x] Ícone do app (1b — tipo móvel, fornecido pelo mantenedor): `build/icon.png` 1024 px (o `electron-builder` gera `.ico`/`.icns`), `build/icons/` por tamanho (Linux), `resources/icon.png` 256 px na janela
+- [x] **Windows**: instalador NSIS (x64), atalhos no menu Iniciar e na área de trabalho; gerado no Mac (`npm run dist:win`) ou via CI
+- [x] **macOS**: `.dmg` arm64 (Apple Silicon); assinatura ad-hoc (sem conta de desenvolvedor) e instrução para abrir na 1ª vez (Gatekeeper: Ajustes → Privacidade e Segurança → "Abrir mesmo assim"); gerado e aberto neste Mac (banco copiado, overlay respondendo na LAN)
+- [x] **Linux**: `.deb` (Ubuntu/Debian, amd64) com atalho no menu e os passos padrão do electron-builder (link em `/usr/bin`, `chrome-sandbox`, AppArmor); `AppImage`; gerados no Mac
+- [x] CI (GitHub Actions, `workflow_dispatch`): um job no Ubuntu destranca os dados (segredos `GUTENBERG_DATA_PASSWORD` + `GUTENBERG_DATA_KEY_GPG` em base64) e gera o banco; a matriz `windows-latest` / `macos-latest` / `ubuntu-latest` empacota com ele, sem git-crypt no Windows. Artefatos com retenção curta — **os instaladores contêm os textos em claro**: o repositório é público, então nada de Release pública sem decisão do mantenedor
 
 **US8.2** Rede no PC do operador (o OBS acessa a porta do Gutenberg)
-- [ ] **Windows**: regra de firewall para a porta (`netsh advfirewall`) criada pelo instalador NSIS e removida na desinstalação
-- [ ] **macOS**: o firewall do sistema pergunta na 1ª execução ("permitir conexões de entrada") — documentar; verificar com `socketfilterfw`
-- [ ] **Linux**: se o `ufw` estiver ativo, `postinst` do `.deb` libera a porta (ou instrução `sudo ufw allow <porta>/tcp`)
+- [x] **Windows**: regra de firewall para o **programa** (vale para qualquer porta escolhida na aba Conexão), perfis privado e domínio, criada pelo instalador NSIS (instalação por máquina, pede administrador) e removida na desinstalação
+- [x] **macOS**: o firewall do sistema pergunta na 1ª execução ("permitir conexões de entrada") — documentar; verificar com `socketfilterfw`
+- [x] **Linux**: se o `ufw` estiver ativo, o `postinst` do `.deb` libera a porta padrão 8484/tcp (e o `postrm` remove); porta trocada → instrução `sudo ufw allow <porta>/tcp`
 
 **US8.3** Configuração do OBS e atualização
-- [ ] Guia: Browser Source com a URL do overlay exibida na aba Conexão (ou o consumidor de JSON existente apontado para `/overlay/resources/<saída>` ou `/overlay/resources`)
-- [ ] Atualização preserva o banco do operador em `userData` (o banco empacotado só é copiado na 1ª execução); estratégia para incorporar dados novos da E3 sem perder edições
+- [x] Guia `docs/OBS.md`: instalar em cada sistema, Browser Source com a URL da saída exibida na aba Conexão (ou o consumidor de JSON existente apontado para `/overlay/resources/<saída>` ou `/overlay/resources`), firewall, problemas comuns
+- [x] Atualização preserva o banco do operador em `userData` (o banco empacotado só é copiado na 1ª execução)
+- [x] Dados novos da E3 entram sem perder edições: o `data:build` grava `content_version` (hash dos dados); ao abrir, se o banco empacotado tiver outra versão, o conteúdo é atualizado a partir dele, **mantendo os registros editados pelo operador** (músicas e credos com `source = 'edited'`; seções da confissão e perguntas de catecismo marcadas `edited` — migração 2), novas seções do operador na mesma ordem; cultos, liturgias e configurações intactos
+
+**US8.4** Validação em campo
+- [ ] Rodar o workflow **installers** depois de cadastrar os segredos no GitHub
+- [ ] Instalar num Windows e num Ubuntu reais: regra de firewall / `ufw`, atalho, primeira execução; OBS em outro PC lendo `/overlay/<saída>`

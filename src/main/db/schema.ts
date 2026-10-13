@@ -113,6 +113,11 @@ export const MIGRATIONS: readonly string[] = [
     key TEXT PRIMARY KEY,
     value TEXT NOT NULL
   );
+  `,
+  // 2: sections and questions changed by the operator survive content updates (E8).
+  `
+  ALTER TABLE confession_sections ADD COLUMN edited INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE catechism_questions ADD COLUMN edited INTEGER NOT NULL DEFAULT 0;
   `
 ]
 

@@ -1,0 +1,82 @@
+# Installers for Windows, macOS (arm64) and Ubuntu/Debian (PLAN.md → US8.1).
+# Manual only: the installers carry the library texts in clear and this repository is public,
+# so artifacts are kept for a few days and nothing is published as a Release.
+#
+# Secrets:
+#   GUTENBERG_DATA_PASSWORD  password of the git-crypt key (same as in .env)
+#   GUTENBERG_DATA_KEY_GPG   base64 of .secrets/gutenberg-data.key.gpg (`base64 -i .secrets/gutenberg-data.key.gpg`)
+name: installers
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  data:
+    name: library database
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: sudo apt-get update && sudo apt-get install -y git-crypt gnupg
+      - run: npm ci
+      - run: npm test && npm run typecheck && npm run lint
+      - name: Unlock data
+        env:
+          GUTENBERG_DATA_PASSWORD: ${{ secrets.GUTENBERG_DATA_PASSWORD }}
+          GUTENBERG_DATA_KEY_GPG: ${{ secrets.GUTENBERG_DATA_KEY_GPG }}
+        run: |
+          mkdir -p .secrets
+          echo "$GUTENBERG_DATA_KEY_GPG" | base64 -d > .secrets/gutenberg-data.key.gpg
+          npm run data:unlock
+          rm -f .secrets/gutenberg-data.key.gpg
+      - run: npm run data:check
+      - run: npm run data:build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gutenberg-sqlite
+          path: data/build/gutenberg.sqlite
+          retention-days: 1
+
+  installer:
+    needs: data
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: win
+          - os: macos-latest
+            target: mac
+          - os: ubuntu-latest
+            target: linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: gutenberg-sqlite
+          path: data/build
+      - run: npm run dist:${{ matrix.target }}
+        env:
+          # No Apple/Windows certificates: unsigned (macOS ad-hoc); the scripts never publish.
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gutenberg-${{ matrix.target }}
+          path: |
+            release/*/*.exe
+            release/*/*.dmg
+            release/*/*.deb
+            release/*/*.AppImage
+          retention-days: 3

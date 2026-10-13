@@ -9,6 +9,9 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
+    "dist:mac": "node scripts/dist-check.mjs && electron-vite build && electron-builder --mac --publish never",
+    "dist:win": "node scripts/dist-check.mjs && electron-vite build && electron-builder --win --publish never",
+    "dist:linux": "node scripts/dist-check.mjs && electron-vite build && electron-builder --linux --publish never",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit -p tsconfig.json",
@@ -51,6 +54,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^5.2.0",
     "electron": "^44.7.0",
+    "electron-builder": "^26.15.3",
     "electron-vite": "^5.0.0",
     "eslint": "^10.12.0",
     "eslint-plugin-react-hooks": "^7.1.1",
@@ -66,5 +70,11 @@
     "esbuild@0.25.12": true,
     "esbuild@0.28.2": true,
     "electron@44.7.0": true
-  }
+  },
+  "author": {
+    "name": "José Ricardo Alves Figueirôa",
+    "email": "josericardoaf@gmail.com"
+  },
+  "homepage": "https://github.com/jose-alves-figueiroa/gutenberg",
+  "desktopName": "gutenberg.desktop"
 }

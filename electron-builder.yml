@@ -1,0 +1,62 @@
+# Installers for Windows, macOS (Apple Silicon) and Ubuntu/Debian (PLAN.md → E8).
+# The library database (npm run data:build) ships as a resource and is copied to userData on first run.
+appId: br.org.ipa.gutenberg
+productName: Gutenberg
+copyright: Igreja Presbiteriana
+directories:
+  output: release/${version}
+  buildResources: build
+files:
+  - out/**
+  - package.json
+asar: true
+extraResources:
+  - from: data/build/gutenberg.sqlite
+    to: gutenberg.sqlite
+  # Window icon (taskbar on Windows/Linux); macOS uses the app icon.
+  - from: resources/icon.png
+    to: icon.png
+icon: build/icon.png
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+nsis:
+  # Per machine: the firewall rule needs administrator rights.
+  oneClick: false
+  perMachine: true
+  allowToChangeInstallationDirectory: true
+  createStartMenuShortcut: true
+  createDesktopShortcut: true
+  include: build/installer.nsh
+
+mac:
+  target:
+    - target: dmg
+      arch: [arm64]
+  category: public.app-category.productivity
+  # No Apple developer account: ad-hoc signature (required to run on Apple Silicon).
+  identity: '-'
+  hardenedRuntime: false
+  gatekeeperAssess: false
+  extendInfo:
+    NSLocalNetworkUsageDescription: O Gutenberg envia os textos para o OBS em outro computador da rede local.
+
+linux:
+  target:
+    - target: deb
+      arch: [x64]
+    - target: AppImage
+      arch: [x64]
+  icon: build/icons
+  executableName: gutenberg
+  syncDesktopName: true
+  category: AudioVideo
+  maintainer: José Ricardo Alves Figueirôa <josericardoaf@gmail.com>
+  synopsis: Liturgia e textos limpos para o OBS
+  description: Monta a liturgia e envia ao OBS os textos da Bíblia, dos hinos e dos símbolos de fé, limpos e em telas de duas linhas.
+deb:
+  afterInstall: build/linux/after-install.sh
+  afterRemove: build/linux/after-remove.sh

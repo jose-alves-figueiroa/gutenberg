@@ -16,6 +16,7 @@ function createWindow(serverUrl: string): void {
     minWidth: 900,
     minHeight: 600,
     title: 'Gutenberg',
+    icon: resourcePath('icon.png', 'resources/icon.png'),
     backgroundColor: '#f3f2f2',
     show: false,
     webPreferences: {
@@ -38,9 +39,12 @@ function createWindow(serverUrl: string): void {
   else win.loadFile(join(__dirname, '../renderer/index.html'))
 }
 
+/** A file shipped with the app: an extra resource when packaged, the repository file in dev. */
+const resourcePath = (packaged: string, dev: string) =>
+  app.isPackaged ? join(process.resourcesPath, packaged) : join(app.getAppPath(), dev)
+
 /** Database shipped with the app: packaged as a resource, or the dev build of `npm run data:build`. */
-const seedDatabase = () =>
-  app.isPackaged ? join(process.resourcesPath, 'gutenberg.sqlite') : join(app.getAppPath(), 'data', 'build', 'gutenberg.sqlite')
+const seedDatabase = () => resourcePath('gutenberg.sqlite', 'data/build/gutenberg.sqlite')
 
 /** IPv4 addresses of this computer on the LAN (shown in the Connection tab). */
 const lanAddresses = (): string[] =>

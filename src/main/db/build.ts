@@ -2,6 +2,7 @@
  * Fills a freshly migrated database from the internal data format (`npm run data:build`).
  * Content tables are replaced wholesale; services, liturgy items and user settings are kept.
  */
+import { createHash } from 'node:crypto'
 import { DEFAULT_MAX } from '../../shared/autobreak'
 import type { CanonicalData, SourceRef } from '../../shared/data-model'
 import type { SqlDatabase } from './schema'
@@ -18,8 +19,13 @@ export const SETTINGS = {
   /** Presentation state (JSON, src/shared/presentation.ts), restored after a restart. */
   presentationState: 'presentation_state',
   /** Outputs for OBS: slug, name, collections and style of each (JSON, src/shared/outputs.ts). */
-  outputs: 'outputs'
+  outputs: 'outputs',
+  /** Hash of the content the database was built from (`data:build`); see db/content.ts. */
+  contentVersion: 'content_version'
 } as const
+
+/** Version of a content build: hash of the internal data. */
+export const contentHash = (data: CanonicalData): string => createHash('sha256').update(JSON.stringify(data)).digest('hex').slice(0, 16)
 
 const src = (s: SourceRef) => (s.id ? `${s.name}:${s.id}` : s.name)
 
@@ -104,6 +110,10 @@ export function fillDatabase(db: SqlDatabase, data: CanonicalData): BuildCounts 
     }
 
     db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run(SETTINGS.screenCharLimit, String(DEFAULT_MAX))
+    db.prepare('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value').run(
+      SETTINGS.contentVersion,
+      contentHash(data)
+    )
     db.exec('COMMIT')
   } catch (err) {
     db.exec('ROLLBACK')
