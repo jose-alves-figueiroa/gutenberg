@@ -12,7 +12,7 @@ http://<ip-do-operador>:8484/overlay/bible
 ## 1. Gerar os instaladores (mantenedor)
 
 Os textos da biblioteca ficam cifrados no repositório; o instalador leva o banco gerado a partir
-deles. **O instalador contém os textos em claro** — não publique os arquivos em lugar público.
+deles. **O instalador contém os textos em claro**: não publique os arquivos em lugar público.
 
 ```sh
 npm run data:unlock      # senha em .env (GUTENBERG_DATA_PASSWORD)
@@ -66,8 +66,8 @@ a porta na aba Conexão: `sudo ufw allow <porta>/tcp`. Sem instalar: `chmod +x` 
 
 1. No Gutenberg, abra a aba **Conexão**. Em **Saídas**, cada saída mostra dois endereços com botão
    de copiar:
-   - `http://<ip>:<porta>/overlay/<saída>` — a página para o OBS;
-   - `http://<ip>:<porta>/overlay/resources/<saída>` — o JSON da tela (formato do Holyrics).
+   - `http://<ip>:<porta>/overlay/<saída>`: a página para o OBS;
+   - `http://<ip>:<porta>/overlay/resources/<saída>`: o JSON da tela (formato do Holyrics).
 2. No OBS: **Fontes → + → Navegador (Browser Source)**, uma por saída:
    - **URL:** o endereço `/overlay/<saída>`;
    - **Largura/Altura:** a da cena (ex.: 1920 × 1080);
@@ -95,7 +95,7 @@ Cada saída só mostra as coleções dela: quando entra um hino, a fonte da Bíb
 O Gutenberg verifica as versões publicadas no GitHub ao abrir e a cada 6 horas (aba **Conexão →
 Atualizações** mostra a versão instalada e o estado; sem internet, nada acontece):
 - **Windows e Linux:** a versão nova é baixada em segundo plano e instalada **quando o app é
-  fechado** — nunca no meio do culto. "Reiniciar e atualizar" instala na hora. O Windows pede
+  fechado**, nunca no meio do culto. "Reiniciar e atualizar" instala na hora. O Windows pede
   permissão de administrador; o `.deb`, a senha.
 - **macOS:** sem conta de desenvolvedor da Apple o app não pode se atualizar sozinho; aparece um
   aviso na barra e o botão **Baixar a nova versão**.

@@ -1,4 +1,4 @@
-# Dados — Gutenberg
+# Dados do Gutenberg
 
 Plano detalhado da E3 (resumo em `PLAN.md`). **Requisito funcional:** o Gutenberg sai com estes dados completos:
 
@@ -17,7 +17,7 @@ Convenção: **código, formato, chaves, nomes de arquivo, comandos e tabelas em
 
 Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 
-### E3 — Dados
+### E3: Dados
 
 **US3.0** Como mantenedor, quero os dados versionados e cifrados, para o repositório público não expor os textos.
 - [x] git-crypt: `init`, `.gitattributes` (`data/canonical/**`)
@@ -45,23 +45,23 @@ Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 
 **US3.3** Como operador, quero o Saltério de Genebra e o Hinário Novo Cântico completos, com os créditos.
 
-Fontes (as músicas cadastradas no Holyrics não puderam ser lidas: o `database.db` é cifrado e o Holyrics protege o código que o lê — ver "Músicas do Holyrics"):
+Fontes (as músicas cadastradas no Holyrics não puderam ser lidas: o `database.db` é cifrado e o Holyrics protege o código que o lê; ver "Músicas do Holyrics"):
 
-- [x] **Saltério** — `translate:psalter`: `letras.docx` de salteriodegenebra.com.br (**licença CC0 / domínio público**) → `songbooks/psalter/`: **173 títulos** — os 150 salmos (o 119 em 22 partes, `Salmo 119.1-8A`…), todos na versão A, e os 2 cânticos (Os Dez Mandamentos — Êxodo 20.1-17; O Cântico de Simeão — Lucas 2.29-32)
+- [x] **Saltério**: `translate:psalter`: `letras.docx` de salteriodegenebra.com.br (**licença CC0 / domínio público**) → `songbooks/psalter/`: **173 títulos**: os 150 salmos (o 119 em 22 partes, `Salmo 119.1-8A`…), todos na versão A, e os 2 cânticos (Os Dez Mandamentos, Êxodo 20.1-17; O Cântico de Simeão, Lucas 2.29-32)
   - limpeza: números e faixas de versículo bíblico removidos dos versos (`1 Quão…`, `4-5 É vero…`, `Dizendo:_3 “Os…`); `_` (elisão) → espaço
   - créditos: autoria da metrificação (`CBS` → Comissão Brasileira de Salmodia; Vítor Olivier, Lucas Freire, Arthur Pires…) e `copyright` "CC0 1.0 — salteriodegenebra.com.br"; a referência bíblica dos cânticos vai em `versification`
-- [x] **HNC** — `npm run hymnal:fetch` (descobre os hinos pelos índices do site e baixa `hino/NNN/NNN.xml` para `data/sources/hnc/`) + `translate:hymnal` → `songbooks/hnc/`: **404 hinos** — os 400 numerados e os apêndices A–D (Ofertório e Améns)
+- [x] **HNC**: `npm run hymnal:fetch` (descobre os hinos pelos índices do site e baixa `hino/NNN/NNN.xml` para `data/sources/hnc/`) + `translate:hymnal` → `songbooks/hnc/`: **404 hinos**: os 400 numerados e os apêndices A–D (Ofertório e Améns)
   - estrofes na ordem de apresentação: depois de cada estrofe vem o coro mais recente (o XML imprime o coro uma vez e às vezes o troca no meio do hino); números de estrofe impressos no texto removidos (hinos 101, 126, 326, 358)
   - créditos: `origem_letra` → autor (várias, unidas por " / ", com "(trad.)", "(adap.)"); referências bíblicas de `origem_letra`/`referencia_biblica` → `versification`; `origem_musica` → `artist`; copyright "Hinário Novo Cântico © Editora Cultura Cristã"
   - `situacao="incompleto"` (280 hinos) diz respeito a metadados do site, não à letra: a letra foi conferida contra o `novo_cantico.pdf` (amostras 326 e 384 idênticas verso a verso; o PDF perde espaços e não separa estrofes, por isso não é a fonte)
 - [x] **Telas de 2 linhas para cânticos** (`SONG_LINES_PER_SCREEN` em `slides.ts`; cântico sem número usa o título como cabeçalho): as fontes trazem estrofes de até 8 versos e a faixa do OBS tem no máximo 2 linhas. O formato interno guarda a estrofe inteira (fiel à fonte); `slidesOf` divide cada estrofe em telas de 2 versos, sem juntar estrofes diferentes. Ajusta a regra do README ("cada estrofe é uma tela"), que valia para os slides do Holyrics, já divididos pelo operador
 - [x] Requisito em `requirements.ts`: salmos 1–150 + 2 cânticos no Saltério e hinos 1–400 no HNC, no lugar das "246 músicas do Holyrics"
 - [x] Testes com docx e XML sintéticos: Saltério (versículos e faixas, elisões, partes do 119, cânticos, créditos) e HNC (coro repetido e trocado, apêndices, créditos, referências)
-- [x] `data:check: complete ✓` — todos os dados do requisito presentes
-- [x] Ferramental da API do Holyrics (`holyrics:dump` + `translate:songs`) — **opcional**: serve para trazer, no futuro, as músicas da igreja que não estão no Saltério nem no HNC (hinário `other`, "Outros cânticos")
+- [x] `data:check: complete ✓`: todos os dados do requisito presentes
+- [x] Ferramental da API do Holyrics (`holyrics:dump` + `translate:songs`), **opcional**: serve para trazer, no futuro, as músicas da igreja que não estão no Saltério nem no HNC (hinário `other`, "Outros cânticos")
 
 **US3.4** Como operador, quero os símbolos de fé de Westminster completos, para apresentar doutrina.
-- [x] `translate:confession`: página da IP Aliança → `confessions/wcf.json`: **35 capítulos, 179 seções**, todas com referências — a edição da IP Aliança: revisão americana (cap. 31 com 4 seções; o protótipo contava 5, do texto de 1647) e os capítulos 34 "Do Espírito Santo" e 35 "Do Amor de Deus e das Missões"
+- [x] `translate:confession`: página da IP Aliança → `confessions/wcf.json`: **35 capítulos, 179 seções**, todas com referências. É a edição da IP Aliança: revisão americana (cap. 31 com 4 seções; o protótipo contava 5, do texto de 1647) e os capítulos 34 "Do Espírito Santo" e 35 "Do Amor de Deus e das Missões"
 - [x] `translate:catechism -- --id wsc`: gist JSON → `catechisms/wsc.json`: 107 perguntas com referências; a 81 recuperada do campo `numero`
 - [x] `translate:catechism -- --id wlc`: PDF da IPB → `catechisms/wlc.json`: **196 perguntas**. O PDF não tem as 176, 177 e 192, e imprime após a 191 as referências da 192: o complemento `data/sources/wlc-supplement.json` (gerado da página da IP Bom Pastor, ipbompastor.org.br/simbolos-de-fe/catecismos/catecismo-maior-de-westminster) traz as três perguntas e as referências corretas da 191. Na 176, "Mc 28:19" está assim na fonte (provável erro tipográfico)
 
@@ -97,12 +97,12 @@ texto revisado à mão  ──▶  translate:creeds     ──┘
 ## Formato interno (`data/canonical/`)
 
 JSON UTF-8, com `"format": 1` no topo, texto já limpo (sem HTML). Texto corrido (versículo, seção,
-resposta, credo) usa linha em branco entre parágrafos e **nenhuma** quebra simples — o `autobreak`
+resposta, credo) usa linha em branco entre parágrafos e **nenhuma** quebra simples; o `autobreak`
 cuida das telas. Tipos: `src/shared/data-model.ts`.
 
 **Documentos, não tipos fixos.** Hinários, confissões e catecismos são documentos com `id`, título,
 título curto e prefixo de busca. Para acrescentar a Harpa Cristã, os Cânones de Dort ou o Catecismo de
-Heidelberg basta um novo arquivo — sem mudar código nem schema.
+Heidelberg basta um novo arquivo, sem mudar código nem schema.
 
 ```
 data/canonical/
@@ -183,7 +183,7 @@ Cânones de Dort) ou `R1` (rejeição de erros). A ordem é a do array.
 ## Schema SQLite do app (`data:build`)
 
 Gerado a partir do formato interno; nomes em inglês (substituem os nomes em português sugeridos no
-README do handoff). Documentos ficam em tabelas próprias e os itens apontam para eles — um novo
+README do handoff). Documentos ficam em tabelas próprias e os itens apontam para eles: um novo
 hinário, confissão ou catecismo é só uma linha nova.
 
 | Tabela | Colunas |
@@ -191,17 +191,17 @@ hinário, confissão ou catecismo é só uma linha nova.
 | `bible_versions` | `code` (PK), `name`, `copyright`, `source` |
 | `bible_verses` | `version` → `bible_versions`, `book`, `chapter`, `verse`, `text` (somente leitura) |
 | `songbooks` | `id` (PK), `title`, `short_title`, `prefix`, `item_label`, `source` |
-| `songs` | `id` (PK), `songbook_id` → `songbooks`, `number`, `version`, `title`, `versification`, `author`, `artist`, `copyright`, `lyrics`, `source`; único (`songbook_id`, `number`, `version`, `title`) — o título entra porque músicas avulsas (`other`) não têm número |
+| `songs` | `id` (PK), `songbook_id` → `songbooks`, `number`, `version`, `title`, `versification`, `author`, `artist`, `copyright`, `lyrics`, `source`; único (`songbook_id`, `number`, `version`, `title`); o título entra porque músicas avulsas (`other`) não têm número |
 | `confessions` | `id` (PK), `title`, `short_title`, `prefix`, `source` |
 | `confession_sections` | `confession_id` → `confessions`, `position`, `chapter`, `chapter_title`, `section`, `section_title`, `text`, `refs` |
 | `catechisms` | `id` (PK), `title`, `short_title`, `prefix`, `source` |
 | `catechism_questions` | `catechism_id` → `catechisms`, `number`, `question`, `answer`, `refs` |
 | `creeds` | `id` (PK), `title`, `text`, `source` |
-| `services` | `id`, `name` (cultos — E5) |
+| `services` | `id`, `name` (cultos, E5) |
 | `liturgy_items` | `service_id`, `position`, `moment`, `collection`, `item_ref` (E5) |
 | `settings` | `key`, `value` (ex.: limite de caracteres por tela) |
 
-O `data:build` grava `settings.content_version` (hash dos dados); ao abrir, o app atualiza a biblioteca a partir do banco empacotado quando a versão muda, mantendo o que o operador editou (`src/main/db/content.ts`, `docs/OBS.md` → Atualizações). `songs.lyrics` guarda as estrofes separadas por linha em branco. O `data:build` substitui as tabelas de conteúdo e preserva `services`, `liturgy_items` e `settings`. O build usa `node:sqlite` (sem dependência nativa); o driver do app em runtime é decidido na E4 — o código só depende da interface `SqlDatabase`. `confession_sections.chapter` e
+O `data:build` grava `settings.content_version` (hash dos dados); ao abrir, o app atualiza a biblioteca a partir do banco empacotado quando a versão muda, mantendo o que o operador editou (`src/main/db/content.ts`, `docs/OBS.md` → Atualizações). `songs.lyrics` guarda as estrofes separadas por linha em branco. O `data:build` substitui as tabelas de conteúdo e preserva `services`, `liturgy_items` e `settings`. O build usa `node:sqlite` (sem dependência nativa); o driver do app em runtime é decidido na E4; o código só depende da interface `SqlDatabase`. `confession_sections.chapter` e
 `section` são texto (rótulos); `position` dá a ordem.
 
 ## Tradutores (fonte → formato interno)
@@ -219,7 +219,7 @@ O `data:build` grava `settings.content_version` (hash dos dados); ao abrir, o ap
 
 As fontes só são baixadas quando a user story correspondente for executada. O tradutor do PDF usa `pdftotext` (poppler: `brew install poppler`); só o mantenedor roda tradutores, e o resultado é versionado.
 
-### Músicas do Holyrics — API local (opcional)
+### Músicas do Holyrics: API local (opcional)
 A tabela `music` de `files/database.db` é cifrada registro a registro, e o Holyrics protege o código
 que a lê (strings ofuscadas, classes em pacotes `lib/pack*.dat` cifrados); nenhum outro arquivo da
 instalação tem as letras em claro. Não quebramos essa proteção. O Saltério e o HNC vêm das fontes
@@ -242,12 +242,12 @@ quiser, as músicas cadastradas fora desses dois hinários.
 ## git-crypt
 
 **Arquivos (todos ignorados pelo git, dentro do projeto):**
-- `.env` → `GUTENBERG_DATA_PASSWORD=…` (modelo em `.env.example`; a variável de ambiente, se definida, tem prioridade — útil no CI).
+- `.env` → `GUTENBERG_DATA_PASSWORD=…` (modelo em `.env.example`; a variável de ambiente, se definida, tem prioridade (útil no CI)).
 - `.secrets/gutenberg-data.key.gpg` → chave do git-crypt cifrada (AES-256) com essa senha.
 
 **Comandos (`scripts/data-key.mjs`):**
-- `npm run data:unlock` — decifra o `.gpg` com a senha e roda `git-crypt unlock`; não faz nada se já estiver destrancado. Roda sozinho antes do `npm run build` (`prebuild`).
-- `npm run data:key` — recria o `.gpg` a partir do repositório destrancado e da senha atual (também serve para trocar a senha), e confere que ele decifra.
+- `npm run data:unlock`: decifra o `.gpg` com a senha e roda `git-crypt unlock`; não faz nada se já estiver destrancado. Roda sozinho antes do `npm run build` (`prebuild`).
+- `npm run data:key`: recria o `.gpg` a partir do repositório destrancado e da senha atual (também serve para trocar a senha), e confere que ele decifra.
 - A chave em claro só existe num arquivo temporário `0600`, apagado ao final.
 
 **Em outra máquina / no build:**
