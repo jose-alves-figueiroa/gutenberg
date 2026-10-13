@@ -15,7 +15,7 @@
 
 Projeção da liturgia para o OBS. O Gutenberg cadastra a liturgia do culto, mantém a biblioteca
 (Bíblia ARA, salmos, HNC, credos, Confissão de Westminster, catecismos) e envia telas limpas para
-o OBS de outro computador da rede local, por HTTP.
+o OBS de outro computador da rede local, por HTTP. Feito para a [IP Aliança](https://www.ipalianca.org/).
 
 ## Instalar
 
