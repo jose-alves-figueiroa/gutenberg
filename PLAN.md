@@ -271,7 +271,7 @@ Sem servidor próprio: o app consulta as versões publicadas no GitHub Releases 
 
 **US10.4** Validação
 - [x] App empacotado no Mac consultando o GitHub: sem versão publicada → "versão mais recente" (rascunhos não contam)
-- [ ] Publicar a 0.1.0, depois uma 0.1.1: o Windows e o Linux baixam e instalam ao fechar; o macOS mostra o aviso e o link
+- [ ] Publicar a 0.1.0, depois a 0.2.0: o Windows e o Linux baixam e instalam ao fechar; o macOS mostra o aviso e o link
 
 ### E11 — Itens longos em seções ✓
 Itens longos (capítulo inteiro, Sl 119, hinos de muitas estrofes) aparecem **uma seção por vez**, com uma faixa para pular — seções, não páginas. Duas funções puras em `src/shared/sections.ts`: `sectionUnits` corta o item em **pontos sugeridos** (`SUGGESTED_SECTIONS`, dados: Sl 119 em blocos de 8 versículos com as letras, Lm 3 em blocos de 3; senão, versículo a versículo; hinos por estrofe) e `fitSections` junta os pedaços que **cabem na tela** medida (Sl 119: 8, 16 ou 24 versículos por seção conforme a janela). O payload do OBS não muda.

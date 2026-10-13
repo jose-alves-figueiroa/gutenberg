@@ -17,6 +17,8 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 
 ## [Não lançado]
 
+## [0.2.0] — 2026-10-13
+
 ### Adicionado
 - Itens longos aparecem uma seção por vez, com uma faixa para pular entre elas, no Apresentar,
   nos capítulos da Bíblia e nas prévias: o Salmo 119 é cortado pelas letras hebraicas (8, 16 ou
