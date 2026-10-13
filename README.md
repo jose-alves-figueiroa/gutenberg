@@ -1,4 +1,17 @@
-# Gutenberg
+<p align="center">
+  <img src="build/icons/256x256.png" alt="Gutenberg" width="128" height="128">
+</p>
+
+<h1 align="center">Gutenberg</h1>
+
+<p align="center">
+  <a href="https://github.com/jose-alves-figueiroa/gutenberg/releases/latest"><img alt="Versão" src="https://img.shields.io/github/v/release/jose-alves-figueiroa/gutenberg?label=vers%C3%A3o&color=201e1d"></a>
+  <img alt="Windows | macOS | Linux" src="https://img.shields.io/badge/plataformas-Windows%20%7C%20macOS%20%7C%20Linux-201e1d">
+  <img alt="Electron" src="https://img.shields.io/badge/Electron-44-47848F?logo=electron&logoColor=white">
+  <img alt="React" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white">
+  <a href="https://claude.com/claude-code"><img alt="Made with Claude Code" src="https://img.shields.io/badge/Made%20with-Claude%20Code-D97757?logo=claude&logoColor=white"></a>
+</p>
 
 Projeção da liturgia para o OBS. O Gutenberg cadastra a liturgia do culto, mantém a biblioteca
 (Bíblia ARA, salmos, HNC, credos, Confissão de Westminster, catecismos) e envia telas limpas para
