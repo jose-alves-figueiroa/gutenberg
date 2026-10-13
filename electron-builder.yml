@@ -18,6 +18,13 @@ extraResources:
     to: icon.png
 icon: build/icon.png
 artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+# Updates (PLAN.md → E10): the app reads latest*.yml from the published GitHub Releases. The dist
+# scripts never publish (--publish never); the release workflow uploads the files.
+publish:
+  provider: github
+  owner: jose-alves-figueiroa
+  repo: gutenberg
+  releaseType: release
 
 win:
   target:

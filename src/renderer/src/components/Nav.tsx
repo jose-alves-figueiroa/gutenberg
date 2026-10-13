@@ -1,5 +1,7 @@
 import { t } from '@shared/i18n'
+import { hasUpdate } from '@shared/update'
 import { useConnection } from '../connection'
+import { useUpdate } from '../update'
 import { CONN_VIEW, TABS, connShort, tabLabel, type TabId } from '../tabs'
 import { QuickSearch } from './QuickSearch'
 
@@ -10,6 +12,7 @@ interface NavProps {
 
 export function Nav({ tab, onTab }: NavProps) {
   const conn = useConnection().data
+  const update = useUpdate().data
   const status = conn?.status ?? 'offline'
   const c = CONN_VIEW[status]
   const label = c.label()
@@ -37,6 +40,11 @@ export function Nav({ tab, onTab }: NavProps) {
         ))}
       </div>
       <QuickSearch />
+      {update && hasUpdate(update) && (
+        <button type="button" className="nav-update" onClick={() => onTab('connection')}>
+          {update.status === 'ready' ? t('update.nav.ready', { v: update.latest ?? '' }) : t('update.nav.available', { v: update.latest ?? '' })}
+        </button>
+      )}
       <button
         type="button"
         className="nav-status"

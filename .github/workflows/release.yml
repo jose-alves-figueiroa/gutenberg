@@ -68,7 +68,7 @@ jobs:
           DRAFT: ${{ inputs.draft }}
         run: |
           tag="v$VERSION"
-          files=$(find dist -type f \( -name '*.exe' -o -name '*.dmg' -o -name '*.deb' -o -name '*.AppImage' \))
+          files=$(find dist -type f \( -name '*.exe' -o -name '*.dmg' -o -name '*.deb' -o -name '*.AppImage' -o -name '*.blockmap' -o -name 'latest*.yml' \))
           echo "$files"
           if gh release view "$tag" > /dev/null 2>&1; then
             gh release upload "$tag" $files --clobber

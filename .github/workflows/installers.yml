@@ -81,4 +81,6 @@ jobs:
             release/*/*.dmg
             release/*/*.deb
             release/*/*.AppImage
+            release/*/*.blockmap
+            release/*/latest*.yml
           retention-days: 3

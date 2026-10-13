@@ -74,4 +74,10 @@ describe('packaging (E8)', () => {
     expect(wf).toContain('npm run --silent release:notes')
     expect(wf).toContain('gh release create "$tag"')
   })
+
+  it('ships the update metadata the app reads (E10)', () => {
+    expect(config).toMatch(/publish:\s+provider: github\s+owner: jose-alves-figueiroa\s+repo: gutenberg/)
+    expect(read('.github/workflows/installers.yml')).toMatch(/release\/\*\/\*\.blockmap\s+release\/\*\/latest\*\.yml/)
+    expect(read('.github/workflows/release.yml')).toContain("-name 'latest*.yml'")
+  })
 })

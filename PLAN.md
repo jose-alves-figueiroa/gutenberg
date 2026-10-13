@@ -2,7 +2,7 @@
 
 Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 Fonte: `design_handoff_gutenberg/README.md` + protótipo `design/Gutenberg.dc.html` (classe `Component`).
-Concluídos: E0–E9. Próximo: **E10** (atualização automática). Pendente: **US8.4** (validar os instaladores em Windows/Ubuntu reais).
+Concluídos: E0–E10. Pendente: **US8.4** e **US10.4** (validação em campo). Pendente: **US8.4** (validar os instaladores em Windows/Ubuntu reais).
 
 ## Stack e protocolo (decisão)
 O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP** — o protocolo já em uso (substitui o JSON do Holyrics). Isso substitui o obs-websocket sugerido no README do handoff.
@@ -252,19 +252,23 @@ Listas longas da Biblioteca são paginadas para caber na janela, sem rolar a pá
 - [x] A página aberta é lembrada ao voltar de um item (ex.: abrir o hino 245 e voltar cai na mesma página)
 - [x] Aplicada aos capítulos da CFW e à lista de hinos (HNC e hinários sem número de salmo); teclas ←/→ trocam de página quando o foco não está em campo de texto
 
-### E10 — Atualização automática
+### E10 — Atualização automática ✓ (falta validar com duas versões publicadas)
 Sem servidor próprio: o app consulta as versões publicadas no GitHub Releases (repositório público) com o `electron-updater`. Rascunhos não são vistos pelo app.
 
 **US10.1** Publicação dos metadados de atualização
-- [ ] O workflow **release** anexa também `latest.yml`, `latest-mac.yml`, `latest-linux.yml` e os `.blockmap` (download diferencial)
-- [ ] `publish: github` no `electron-builder.yml` só para gerar os metadados (os scripts `dist:*` continuam com `--publish never`)
+- [x] O workflow **release** anexa também `latest.yml`, `latest-mac.yml`, `latest-linux.yml` e os `.blockmap` (download diferencial)
+- [x] `publish: github` no `electron-builder.yml` só para gerar os metadados (os scripts `dist:*` continuam com `--publish never`)
 
 **US10.2** Como operador, quero que o app se atualize sozinho, para não precisar baixar instaladores.
-- [ ] `electron-updater` no processo principal: verifica ao abrir (e a cada 6 h), em silêncio se offline; baixa em segundo plano e instala **ao fechar o app** (nunca no meio do culto)
-- [ ] **Windows** (NSIS por máquina, pede administrador ao instalar), **Linux** AppImage e `.deb` (pede a senha): atualização automática
-- [ ] **macOS**: sem Developer ID o Squirrel.Mac recusa a atualização — só avisa que há versão nova, com botão que abre a página de versões
+- [x] `electron-updater` no processo principal: verifica ao abrir (e a cada 6 h), em silêncio se offline; baixa em segundo plano e instala **ao fechar o app** (nunca no meio do culto)
+- [x] **Windows** (NSIS por máquina, pede administrador ao instalar), **Linux** AppImage e `.deb` (pede a senha): atualização automática
+- [x] **macOS**: sem Developer ID o Squirrel.Mac recusa a atualização — só avisa que há versão nova, com botão que abre a página de versões
 
 **US10.3** Como operador, quero ver e controlar as atualizações.
-- [ ] Na aba Conexão: versão instalada, "Verificar atualizações", estado (atualizado / baixando k% / pronto para instalar ao fechar / erro) e "Reiniciar e atualizar"
-- [ ] Aviso discreto na barra quando houver versão nova; textos via i18n
-- [ ] Rotas locais `/api/v1/update` (estado, verificar, instalar) com `localOnly`; testes com um updater falso
+- [x] Na aba Conexão: versão instalada, "Verificar atualizações", estado (atualizado / baixando k% / pronto para instalar ao fechar / erro) e "Reiniciar e atualizar"
+- [x] Aviso discreto na barra quando houver versão nova; textos via i18n
+- [x] Rotas locais `/api/v1/update` (estado, verificar, instalar) com `localOnly`; testes com um updater falso
+
+**US10.4** Validação
+- [x] App empacotado no Mac consultando o GitHub: sem versão publicada → "versão mais recente" (rascunhos não contam)
+- [ ] Publicar a 0.1.0, depois uma 0.1.1: o Windows e o Linux baixam e instalam ao fechar; o macOS mostra o aviso e o link

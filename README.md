@@ -29,6 +29,9 @@ em **Assets**:
 | Ubuntu / Debian (x64) | `Gutenberg-<versão>-linux-amd64.deb` |
 | Outras distribuições Linux (x64) | `Gutenberg-<versão>-linux-x86_64.AppImage` |
 
+Depois de instalado, o Gutenberg se atualiza sozinho no Windows e no Linux (instala ao fechar o
+app); no macOS, avisa quando há versão nova.
+
 Versões anteriores: [todas as versões](https://github.com/jose-alves-figueiroa/gutenberg/releases).
 
 ### Windows

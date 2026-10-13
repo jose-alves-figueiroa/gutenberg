@@ -92,6 +92,14 @@ Cada saída só mostra as coleções dela: quando entra um hino, a fonte da Bíb
 
 ## 5. Atualizações
 
-Instale a versão nova por cima. O banco do operador (cultos, liturgias, saídas, edições da
+O Gutenberg verifica as versões publicadas no GitHub ao abrir e a cada 6 horas (aba **Conexão →
+Atualizações** mostra a versão instalada e o estado; sem internet, nada acontece):
+- **Windows e Linux:** a versão nova é baixada em segundo plano e instalada **quando o app é
+  fechado** — nunca no meio do culto. "Reiniciar e atualizar" instala na hora. O Windows pede
+  permissão de administrador; o `.deb`, a senha.
+- **macOS:** sem conta de desenvolvedor da Apple o app não pode se atualizar sozinho; aparece um
+  aviso na barra e o botão **Baixar a nova versão**.
+
+Para instalar à mão, instale a versão nova por cima. O banco do operador (cultos, liturgias, saídas, edições da
 biblioteca) fica na pasta de dados do usuário e é mantido. Se a versão nova trouxer textos
 revisados, eles entram na biblioteca **sem apagar o que o operador editou ou criou**.

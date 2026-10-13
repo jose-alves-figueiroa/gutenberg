@@ -34,3 +34,6 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 - Atualizações da biblioteca preservam as edições do operador (E8)
 - Capítulos da Confissão de Westminster e listas de hinos paginados para caber na janela,
   sem rolagem; ←/→ trocam de página e a página é lembrada ao voltar de um item (E9)
+- Atualização automática pelas versões publicadas no GitHub: no Windows e no Linux a versão
+  nova é baixada em segundo plano e instalada ao fechar o app; no macOS, aviso com link para
+  baixar. Versão instalada e "Verificar atualizações" na aba Conexão (E10)

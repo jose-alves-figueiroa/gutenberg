@@ -1,7 +1,7 @@
 /**
  * Connection tab (README → Conexão; PLAN.md → US7.2): the state of OBS, this computer's address
  * and port, "Testar", the event log and the outputs (one Browser Source each), which the operator
- * sets up here.
+ * sets up here; then the app updates (US10.3).
  */
 import { ArrowsClockwiseIcon, CopyIcon, PlusIcon, PulseIcon } from '@phosphor-icons/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -14,6 +14,7 @@ import { json, useApi } from '../../api'
 import { useConnection } from '../../connection'
 import { CONN_VIEW } from '../../tabs'
 import { OutputEditor, kindLabel } from './OutputEditor'
+import { UpdateSection } from './UpdateSection'
 
 const hhmm = (time: number) => new Date(time).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
 
@@ -142,6 +143,7 @@ export function ConnectionView() {
         </section>
       </div>
       {data && <OutputsSection outputs={data.outputs} base={base} onSaved={refresh} />}
+      <UpdateSection />
     </main>
   )
 }

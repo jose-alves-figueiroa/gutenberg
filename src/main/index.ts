@@ -3,11 +3,14 @@ import type { AddressInfo } from 'node:net'
 import { networkInterfaces } from 'node:os'
 import { join } from 'node:path'
 import { app, BrowserWindow, dialog, shell } from 'electron'
+// CommonJS with a lazy getter: a named import isn't seen by Node's ESM loader.
+import electronUpdater from 'electron-updater'
 import { openAppDatabase } from './db/open'
 import { httpPort, saveHttpPort } from './library/repository'
 import { createServerApp } from './server/app'
 import type { NetworkControl } from './server/connection'
 import { startHttpServer } from './server/listen'
+import { createUpdateService } from './update/service'
 
 function createWindow(serverUrl: string): void {
   const win = new BrowserWindow({
@@ -81,7 +84,14 @@ app.whenReady().then(async () => {
         saveHttpPort(db, port)
       }
     }
-    const server = createServerApp(db, { network })
+    // Packaged only; macOS without a Developer ID can't install updates, so it only tells.
+    const updates = createUpdateService({
+      version: app.getVersion(),
+      mode: process.platform === 'darwin' ? 'notify' : 'auto',
+      updater: app.isPackaged ? electronUpdater.autoUpdater : undefined
+    })
+    updates.start()
+    const server = createServerApp(db, { network, updates })
     const ui = (await startHttpServer(server, 0, '127.0.0.1')) as Server
     serverUrl = `http://127.0.0.1:${(ui.address() as AddressInfo).port}`
     try {

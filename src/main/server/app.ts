@@ -27,6 +27,8 @@ import { connectionRoutes, type NetworkControl } from './connection'
 import { localOnly, remoteIp } from './guards'
 import { createConnectionMonitor, type ConnectionMonitor } from './monitor'
 import { overlayHtml } from './overlay'
+import { updateRoutes } from './update'
+import { createUpdateService, type UpdateService } from '../update/service'
 import { PresentCommand } from '../../shared/presentation'
 
 function libraryRoutes(db: SqlDatabase) {
@@ -198,6 +200,8 @@ export interface ServerOptions {
   monitor?: ConnectionMonitor
   /** Port and addresses of the LAN server (the main process restarts it on a port change). */
   network?: NetworkControl
+  /** App updates (E10); off in tests and development. */
+  updates?: UpdateService
 }
 
 /** For tests and tools: a fixed address, port changes only saved. */
@@ -211,6 +215,7 @@ export function createServerApp(db: SqlDatabase, options: ServerOptions = {}) {
   const presenter = options.presenter ?? createPresenter(db)
   const monitor = options.monitor ?? createConnectionMonitor()
   const network = options.network ?? staticNetwork(db)
+  const updates = options.updates ?? createUpdateService({ version: '0.0.0', mode: 'off' })
   // An edit may change the text on the air: OBS gets the screen again (same seq).
   const notifyAfterEdit: MiddlewareHandler = async (c, next) => {
     await next()
@@ -229,6 +234,7 @@ export function createServerApp(db: SqlDatabase, options: ServerOptions = {}) {
     .route('/api/v1/liturgy', liturgyRoutes(db))
     .route('/api/v1/present', presentRoutes(presenter))
     .route('/api/v1/connection', connectionRoutes(db, presenter, monitor, network))
+    .route('/api/v1/update', updateRoutes(updates))
     .route('/', publicRoutes(presenter, monitor))
 }
 
