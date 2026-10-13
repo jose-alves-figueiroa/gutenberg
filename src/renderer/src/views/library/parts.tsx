@@ -1,5 +1,6 @@
 /** Building blocks shared by the library browsers (prototype: breadcrumb, header, grids). */
-import type { ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
+import { t } from '@shared/i18n'
 
 export interface Crumb {
   label: string
@@ -69,18 +70,83 @@ export interface ListRow {
   go: () => void
 }
 
-/** Rows with a number/label, a title and a muted meta column (prototype `lv.list`). */
-export function List({ rows }: { rows: ListRow[] }) {
+/** Rows per page when the layout can't be measured (tests, first paint). */
+export const FALLBACK_PAGE_SIZE = 12
+/** Space kept below the list for the pager and the view's bottom padding. */
+const PAGER_RESERVE = 88
+/** Last page shown per list, so going back from an item lands on the same page. */
+const lastPage = new Map<string, number>()
+
+/** Rows that fit between the list's top and the bottom of the window. */
+function useFitRows(list: RefObject<HTMLDivElement | null>) {
+  const [size, setSize] = useState(FALLBACK_PAGE_SIZE)
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = list.current
+      const row = el?.firstElementChild as HTMLElement | null
+      const rowHeight = row?.getBoundingClientRect().height ?? 0
+      if (!el || rowHeight <= 0) return
+      const free = window.innerHeight - el.getBoundingClientRect().top - PAGER_RESERVE
+      setSize(Math.max(3, Math.floor(free / rowHeight)))
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [list])
+  return size
+}
+
+/**
+ * Rows with a number/label, a title and a muted meta column (prototype `lv.list`), paged to fit the
+ * window instead of scrolling. `pageKey` remembers the page while the operator opens an item.
+ */
+export function List({ rows, pageKey }: { rows: ListRow[]; pageKey?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const size = useFitRows(ref)
+  const pages = Math.max(1, Math.ceil(rows.length / size))
+  const [wanted, setWanted] = useState(() => (pageKey && lastPage.get(pageKey)) || 0)
+  const page = Math.min(wanted, pages - 1)
+  const goPage = (p: number) => {
+    const next = Math.max(0, Math.min(p, pages - 1))
+    setWanted(next)
+    if (pageKey) lastPage.set(pageKey, next)
+  }
+
+  useEffect(() => {
+    if (pages < 2) return
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)) return
+      if (e.key === 'ArrowRight') goPage(page + 1)
+      else if (e.key === 'ArrowLeft') goPage(page - 1)
+      else return
+      e.preventDefault()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  })
+
   return (
-    <div className="lib-list">
-      {rows.map((r) => (
-        <button key={r.key} type="button" className={`lib-row${r.faded ? ' lib-row--faded' : ''}`} onClick={r.go}>
-          <span className="lib-row-label">{r.label}</span>
-          <span className="lib-row-sub">{r.sub}</span>
-          <span className="lib-row-meta text-muted">{r.meta}</span>
-        </button>
-      ))}
-    </div>
+    <>
+      <div className="lib-list" ref={ref}>
+        {rows.slice(page * size, (page + 1) * size).map((r) => (
+          <button key={r.key} type="button" className={`lib-row${r.faded ? ' lib-row--faded' : ''}`} onClick={r.go}>
+            <span className="lib-row-label">{r.label}</span>
+            <span className="lib-row-sub">{r.sub}</span>
+            <span className="lib-row-meta text-muted">{r.meta}</span>
+          </button>
+        ))}
+      </div>
+      {pages > 1 && (
+        <nav className="pager" aria-label={t('pager.label')}>
+          <button type="button" className="btn btn-ghost" disabled={page === 0} onClick={() => goPage(0)} aria-label={t('pager.first')}>«</button>
+          <button type="button" className="btn btn-ghost" disabled={page === 0} onClick={() => goPage(page - 1)} aria-label={t('pager.previous')}>‹</button>
+          <span className="pager-status text-muted" aria-live="polite">{t('pager.status', { k: page + 1, n: pages })}</span>
+          <button type="button" className="btn btn-ghost" disabled={page === pages - 1} onClick={() => goPage(page + 1)} aria-label={t('pager.next')}>›</button>
+          <button type="button" className="btn btn-ghost" disabled={page === pages - 1} onClick={() => goPage(pages - 1)} aria-label={t('pager.last')}>»</button>
+        </nav>
+      )}
+    </>
   )
 }
 

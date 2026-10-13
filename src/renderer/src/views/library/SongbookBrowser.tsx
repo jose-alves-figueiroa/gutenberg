@@ -52,7 +52,7 @@ export function SongbookBrowser({ id, label, path, go }: Props) {
             hint={t('library.songs')}
             action={<button type="button" className="btn btn-secondary" onClick={() => go(['new'])}>{t('library.newSong')}</button>}
           />
-          <List rows={songs.map(songRow)} />
+          <List pageKey={`songbook:${id}`} rows={songs.map(songRow)} />
         </>
       )
     const counts = new Map<string, number>()
@@ -72,7 +72,7 @@ export function SongbookBrowser({ id, label, path, go }: Props) {
               return { key: n, label: n, filled: k > 0, tip, go: () => go(['ps', n]) }
             })}
           />
-          {unnumbered.length > 0 && <List rows={unnumbered.map((s) => ({ ...songRow(s), label: '', sub: s.title }))} />}
+          {unnumbered.length > 0 && <List pageKey={`songbook:${id}:unnumbered`} rows={unnumbered.map((s) => ({ ...songRow(s), label: '', sub: s.title }))} />}
         </div>
       </>
     )

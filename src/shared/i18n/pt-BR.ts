@@ -94,6 +94,12 @@ export const ptBR = {
 
   'liturgy.aside': 'Cultos',
   'library.aside': 'Coleções',
+  'pager.label': 'Páginas',
+  'pager.first': 'Primeira página',
+  'pager.previous': 'Página anterior',
+  'pager.next': 'Próxima página',
+  'pager.last': 'Última página',
+  'pager.status': 'Página {k} de {n}',
   'present.aside': 'Itens',
   'present.adhoc': 'Avulso',
   'present.dropAdhoc': 'Tirar item avulso',

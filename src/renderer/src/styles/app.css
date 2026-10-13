@@ -188,6 +188,8 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .lib-row-label { font-size: 15px; font-weight: 600; font-feature-settings: 'tnum' 1; }
 .lib-row-sub { font-size: 15px; min-width: 0; }
 .lib-row-meta { font-size: 12px; }
+.pager { display: flex; align-items: center; gap: var(--space-1); }
+.pager-status { font-size: 13px; font-feature-settings: 'tnum' 1; padding: 0 var(--space-2); }
 .lib-row--faded .lib-row-label, .lib-row--faded .lib-row-sub { color: var(--color-neutral-600); }
 .editor { display: flex; flex-direction: column; gap: var(--space-3); max-width: 760px; }
 .editor-row { display: grid; gap: var(--space-3); }

@@ -2,7 +2,7 @@
 
 Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 Fonte: `design_handoff_gutenberg/README.md` + protótipo `design/Gutenberg.dc.html` (classe `Component`).
-Concluídos: E0–E8. Pendente: **US8.4** (validar os instaladores em Windows/Ubuntu reais).
+Concluídos: E0–E9. Pendente: **US8.4** (validar os instaladores em Windows/Ubuntu reais).
 
 ## Stack e protocolo (decisão)
 O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP** — o protocolo já em uso (substitui o JSON do Holyrics). Isso substitui o obs-websocket sugerido no README do handoff.
@@ -240,3 +240,11 @@ Alvos: **Windows**, **macOS** (Apple Silicon/arm64 — o Mac do mantenedor, macO
 **US8.4** Validação em campo
 - [x] Rodar o workflow **installers** depois de cadastrar os segredos no GitHub (2026-10-13: testes + banco no Ubuntu, instaladores Windows/macOS/Linux gerados)
 - [ ] Instalar num Windows e num Ubuntu reais: regra de firewall / `ufw`, atalho, primeira execução; OBS em outro PC lendo `/overlay/<saída>`
+
+### E9 — Navegação sem rolagem ✓
+Listas longas da Biblioteca são paginadas para caber na janela, sem rolar a página.
+
+**US9.1** Como operador, quero navegar a Confissão de Westminster e os hinários sem rolar, para achar o item rápido durante o culto.
+- [x] Lista paginada (`List` em `views/library/parts.tsx`): o número de linhas por página vem da altura livre da janela (recalculado ao redimensionar); paginador com primeira/anterior/"Página k de n"/próxima/última, só quando há mais de uma página
+- [x] A página aberta é lembrada ao voltar de um item (ex.: abrir o hino 245 e voltar cai na mesma página)
+- [x] Aplicada aos capítulos da CFW e à lista de hinos (HNC e hinários sem número de salmo); teclas ←/→ trocam de página quando o foco não está em campo de texto

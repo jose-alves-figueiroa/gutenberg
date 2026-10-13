@@ -31,6 +31,7 @@ export function ConfessionBrowser({ id, label, shortTitle, path, go }: Props) {
       <>
         <LevelHeader crumbs={crumbs} title={label} hint={t('library.chooseChapter')} />
         <List
+          pageKey={`confession:${id}`}
           rows={chapters.data.map((c) => ({
             key: c.chapter,
             label: c.chapter,
