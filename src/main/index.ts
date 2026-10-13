@@ -46,8 +46,15 @@ function createWindow(serverUrl: string): void {
 const resourcePath = (packaged: string, dev: string) =>
   app.isPackaged ? join(process.resourcesPath, packaged) : join(app.getAppPath(), dev)
 
-/** Database shipped with the app: packaged as a resource, or the dev build of `npm run data:build`. */
-const seedDatabase = () => resourcePath('gutenberg.sqlite', 'data/build/gutenberg.sqlite')
+/**
+ * Database shipped with the app: packaged as a resource, or the dev build of `npm run data:build`.
+ * Dev only: `GUTENBERG_SEED` replaces it (README screenshots use the prototype seed).
+ */
+const seedDatabase = () =>
+  (!app.isPackaged && process.env.GUTENBERG_SEED) || resourcePath('gutenberg.sqlite', 'data/build/gutenberg.sqlite')
+
+// Dev only: an isolated profile (scripts/screenshots.mjs), so the operator's services stay out.
+if (!app.isPackaged && process.env.GUTENBERG_USER_DATA) app.setPath('userData', process.env.GUTENBERG_USER_DATA)
 
 /** IPv4 addresses of this computer on the LAN (shown in the Connection tab). */
 const lanAddresses = (): string[] =>

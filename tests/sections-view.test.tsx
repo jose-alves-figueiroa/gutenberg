@@ -28,31 +28,32 @@ describe('long chapters in the Library (US11.2, US11.3)', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Salmos' }))
     await userEvent.click(screen.getByRole('button', { name: '119' }))
     await screen.findByRole('navigation', { name: 'Seções' })
-    // 40 verses before measuring: five letters per section.
-    expect(within(strips()[0]).getAllByRole('button')[0]).toHaveTextContent('Álefe–He1–40')
-    expect(verses()).toHaveLength(40)
-    await userEvent.click(screen.getByRole('button', { name: /^37\s*Versículo 37/ }))
-    await userEvent.click(within(strips()[0]).getByRole('button', { name: /Vau/ }))
-    expect(verses()[0]).toBe('41')
-    await userEvent.click(screen.getByRole('button', { name: /^44\s*Versículo 44/ }))
+    // One letter per section, whatever fits.
+    expect(within(strips()[0]).getAllByRole('button')[0]).toHaveTextContent('Álefe1–8')
+    expect(verses()).toHaveLength(8)
+    await userEvent.click(screen.getByRole('button', { name: /^5\s*Versículo 5/ }))
+    await userEvent.click(within(strips()[0]).getByRole('button', { name: /Bete/ }))
+    expect(verses()[0]).toBe('9')
+    await userEvent.click(screen.getByRole('button', { name: /^12\s*Versículo 12/ }))
     const preview = screen.getByRole('region', { name: /Como fica na transmissão · 8 telas/ })
     expect(within(preview).queryByRole('navigation')).toBeNull()
     expect(preview.querySelectorAll('.slide-card')).toHaveLength(8)
   })
 
-  it('a long passage preview is cut at the suggested parts (12 screens fit)', async () => {
+  it('a long passage preview is cut at the suggested parts, one letter each', async () => {
     renderPsalm119()
     await userEvent.click(await screen.findByRole('button', { name: 'Salmos' }))
     await userEvent.click(screen.getByRole('button', { name: '119' }))
     await userEvent.click(await screen.findByRole('button', { name: /^5\s*Versículo 5/ }))
+    await userEvent.click(within(strips()[0]).getByRole('button', { name: /Guímel/ }))
     await userEvent.click(screen.getByRole('button', { name: /^20\s*Versículo 20/ }))
     const preview = screen.getByRole('region', { name: /Como fica na transmissão · 16 telas/ })
-    // Álefe 5–8 and Bete fit together.
+    // Each letter stays its own section, even when two would fit.
     const previewStrip = within(preview).getByRole('navigation', { name: 'Seções' })
-    expect(within(previewStrip).getAllByRole('button').map((b) => b.textContent)).toEqual(['Álefe–Bete5–16', 'Guímel17–20'])
-    expect(preview.querySelectorAll('.slide-card')).toHaveLength(12)
-    await userEvent.click(within(previewStrip).getByRole('button', { name: /Guímel/ }))
+    expect(within(previewStrip).getAllByRole('button').map((b) => b.textContent)).toEqual(['Álefe5–8', 'Bete9–16', 'Guímel17–20'])
     expect(preview.querySelectorAll('.slide-card')).toHaveLength(4)
+    await userEvent.click(within(previewStrip).getByRole('button', { name: /Bete/ }))
+    expect(preview.querySelectorAll('.slide-card')).toHaveLength(8)
   })
 })
 

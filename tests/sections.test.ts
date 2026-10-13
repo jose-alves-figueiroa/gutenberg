@@ -16,21 +16,13 @@ function expectCover(sections: { start: number; end: number }[], total: number) 
 describe('sections fitted to the screen (E11)', () => {
   const ps119 = bibleUnits('Sl', 119, ones(1, 176))
 
-  it('Psalm 119: 8, 16 or 24 verses per section, depending on what fits', () => {
-    const by8 = fitSections(ps119, 8)
-    expect(titles(by8)).toEqual(HEBREW_LETTERS)
-    expect(by8[0]).toMatchObject({ title: 'Álefe', detail: '1–8', from: 1, to: 8, start: 0, end: 8 })
-    const by16 = fitSections(ps119, 20)
-    expect(by16).toHaveLength(11)
-    expect(by16[0]).toMatchObject({ title: 'Álefe–Bete', detail: '1–16' })
-    expect(fitSections(ps119, 24)[1]).toMatchObject({ title: 'Dálete–Vau', detail: '25–48' })
-    for (const c of [8, 20, 24]) expectCover(fitSections(ps119, c), 176)
-  })
-
-  it('a part bigger than the screen is split by verse and keeps its name', () => {
-    const s = fitSections(ps119, 5)
-    expect(titles(s).slice(0, 3)).toEqual(['Álefe 1–5', 'Álefe 6–8', 'Bete 9–13'])
-    expectCover(s, 176)
+  it('Psalm 119: one letter per section (1–8, 9–16…), whatever fits', () => {
+    for (const c of [5, 8, 20, 24, 60]) {
+      const s = fitSections(ps119, c)
+      expect(titles(s)).toEqual(HEBREW_LETTERS)
+      expect(s[1]).toMatchObject({ title: 'Bete', detail: '9–16', from: 9, to: 16, start: 8, end: 16 })
+      expectCover(s, 176)
+    }
   })
 
   it('a passage keeps only the parts it covers, cut to it', () => {
@@ -42,6 +34,8 @@ describe('sections fitted to the screen (E11)', () => {
     const s = fitSections(bibleUnits('Lm', 3, ones(1, 66)), 10)
     expect(s[0]).toMatchObject({ title: 'Álefe–Guímel', detail: '1–9' })
     for (const x of s) expect((x.to! - x.from! + 1) % 3).toBe(0)
+    // A part bigger than the screen stays whole.
+    expect(titles(fitSections(bibleUnits('Lm', 3, ones(1, 66)), 2)).slice(0, 2)).toEqual(['Álefe', 'Bete'])
   })
 
   it('other chapters: as many whole verses as fit', () => {

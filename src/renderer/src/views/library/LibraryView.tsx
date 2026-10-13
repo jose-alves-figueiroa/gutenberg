@@ -9,6 +9,7 @@ import { BibleBrowser } from './BibleBrowser'
 import { CatechismBrowser } from './CatechismBrowser'
 import { ConfessionBrowser } from './ConfessionBrowser'
 import { CreedsBrowser } from './CreedsBrowser'
+import { SearchField, SearchResults, useSearchRows } from './LibrarySearch'
 import { SongbookBrowser } from './SongbookBrowser'
 import { Loading } from './parts'
 
@@ -27,9 +28,11 @@ export function LibraryView() {
   const collections = useQuery({ queryKey: ['collections'], queryFn: () => json(api.api.v1.library.collections.$get()) })
   const [selected, setSelected] = useState<Selected>({ kind: 'bible', id: 'ara' })
   const [path, setPath] = useState<string[]>([])
+  const [query, setQuery] = useState('')
   const open = (s: Selected) => {
     setSelected(s)
     setPath([])
+    setQuery('')
   }
   const current = collections.data?.find((c) => c.kind === selected.kind && c.id === selected.id)
 
@@ -62,10 +65,28 @@ export function LibraryView() {
           )}
         </aside>
         <section className="lib-main">
-          {current && <Browser key={`${current.kind}:${current.id}`} c={current} path={path} go={setPath} />}
+          {current && <Collection key={`${current.kind}:${current.id}`} c={current} path={path} go={setPath} query={query} setQuery={setQuery} />}
         </section>
       </div>
     </main>
+  )
+}
+
+/** The collection's browser, or the search results while the search field has text. */
+function Collection({ c, path, go, query, setQuery }: { c: CollectionSummary; path: string[]; go: (p: string[]) => void; query: string; setQuery: (q: string) => void }) {
+  const search = useSearchRows({
+    c,
+    query,
+    open: (p) => {
+      setQuery('')
+      go(p)
+    }
+  })
+  return (
+    <>
+      <SearchField c={c} query={query} setQuery={setQuery} rows={search.rows} />
+      {query.trim() ? <SearchResults {...search} /> : <Browser c={c} path={path} go={go} />}
+    </>
   )
 }
 

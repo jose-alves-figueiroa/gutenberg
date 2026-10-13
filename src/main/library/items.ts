@@ -142,10 +142,17 @@ export function searchCollection(db: SqlDatabase, coll: string, query: string, l
   const out: SearchResult[] = []
   if (kind === 'songbook') {
     const { info, songs } = repo.songbook(db, id)
+    // Numbers first: `42B` exactly, then every version of 42, then 420, 421…; titles last.
+    const rank = (s: (typeof songs)[number]) => {
+      const n = fold(s.number)
+      return fold(`${s.number}${s.version}`) === q ? 0 : n === q ? 1 : n.startsWith(q) ? 2 : 3
+    }
+    const hits: { rank: number; result: SearchResult }[] = []
     for (const s of songs) {
       const title = info.itemLabel && s.number ? `${info.itemLabel} ${s.number}${s.version}` : s.number ? `${s.number} · ${s.title}` : s.title
-      if (match(`${s.number}${s.version}`, s.title, title)) out.push({ collection: coll, itemRef: s.id, title })
+      if (match(`${s.number}${s.version}`, s.title, title)) hits.push({ rank: q ? rank(s) : 0, result: { collection: coll, itemRef: s.id, title } })
     }
+    out.push(...hits.sort((a, b) => a.rank - b.rank).map((h) => h.result))
   } else if (kind === 'catechism') {
     const index = repo.catechism(db, id)
     for (const qn of index.questions)

@@ -274,7 +274,7 @@ Sem servidor próprio: o app consulta as versões publicadas no GitHub Releases 
 - [ ] Publicar a 0.1.0, depois a 0.2.0: o Windows e o Linux baixam e instalam ao fechar; o macOS mostra o aviso e o link
 
 ### E11 — Itens longos em seções ✓
-Itens longos (capítulo inteiro, Sl 119, hinos de muitas estrofes) aparecem **uma seção por vez**, com uma faixa para pular — seções, não páginas. Duas funções puras em `src/shared/sections.ts`: `sectionUnits` corta o item em **pontos sugeridos** (`SUGGESTED_SECTIONS`, dados: Sl 119 em blocos de 8 versículos com as letras, Lm 3 em blocos de 3; senão, versículo a versículo; hinos por estrofe) e `fitSections` junta os pedaços que **cabem na tela** medida (Sl 119: 8, 16 ou 24 versículos por seção conforme a janela). O payload do OBS não muda.
+Itens longos (capítulo inteiro, Sl 119, hinos de muitas estrofes) aparecem **uma seção por vez**, com uma faixa para pular — seções, não páginas. Duas funções puras em `src/shared/sections.ts`: `sectionUnits` corta o item em **pontos sugeridos** (`SUGGESTED_SECTIONS`, dados: Sl 119 em blocos de 8 versículos com as letras, Lm 3 em blocos de 3; senão, versículo a versículo; hinos por estrofe) e `fitSections` junta os pedaços que **cabem na tela** medida (desde a E12, o Sl 119 fica sempre com uma letra por seção). O payload do OBS não muda.
 
 **US11.1** Como operador, quero apresentar um capítulo longo sem rolar, para achar o ponto da leitura.
 - [x] Apresentar: faixa de seções acima das telas, só a seção vista aparece; segue o "no ar" (Próximo/←→ atravessam seções); clicar numa seção só olha; `Shift+←/→` pula de seção (comando `go` existente); dica do Próximo com a seção seguinte
@@ -288,3 +288,20 @@ Itens longos (capítulo inteiro, Sl 119, hinos de muitas estrofes) aparecem **um
 **US11.4** Revisão das demais páginas (janela 1280×820 e mínima 900×600)
 - [x] Registro da aba Conexão: os 8 mais recentes e "Ver todos"
 - [x] Grades (Catecismo Maior 196, Saltério 150, capítulos de Salmos) e listas laterais: cabem em 1280×820 (células de 52 px); na janela mínima (900×600) o Catecismo Maior ainda rola um pouco — sem paginação por ora
+
+### E12 — Busca na Biblioteca, cultos recentes e telas no README
+Pedidos do operador depois da 0.2.0: achar itens pelo número/título, o Sl 119 uma letra por seção, os cultos mais recentes primeiro e prints no README.
+
+**US12.1** Como operador, quero buscar na coleção aberta da Biblioteca por número, título ou referência (`42B`, `castelo`, `sl 119`, `1.2`).
+- [x] Campo de busca acima do navegador da coleção (`LibrarySearch.tsx`); reaproveita `/library/search`; a Bíblia usa `parseBibleRef`/`booksFor`; Enter abre o primeiro, Esc limpa
+- [x] `searchCollection` ordena hinos por número: `42B` exato, depois todas as versões de 42, depois 420…; títulos por último
+
+**US12.2** Sl 119: uma letra por seção (1–8, 9–16…), sem dividir nem juntar letras
+- [x] `fitSections`: parte nomeada nunca é cortada; só se junta às vizinhas quando o capítulo permite (`join`, dado: Lm 3)
+
+**US12.3** Liturgia: cultos do mais recente para o mais antigo, paginados na lateral
+- [x] `services` em ordem decrescente de id; `Pager`/`usePaging` extraídos de `List`; a página segue o culto selecionado
+
+**US12.4** README com prints de cada aba e do OBS
+- [~] `npm run screenshots` (playwright-core + Electron): perfil isolado e seed do protótipo (`GUTENBERG_USER_DATA`/`GUTENBERG_SEED`, só fora do app empacotado), OBS simulado por uma janela oculta em `/overlay`
+

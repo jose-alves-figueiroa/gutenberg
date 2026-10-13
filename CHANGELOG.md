@@ -17,6 +17,20 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 
 ## [Não lançado]
 
+## [0.2.1] — 2026-10-13
+
+### Adicionado
+- Busca na Biblioteca: na coleção aberta, por número, título ou referência (`42B`, `castelo`,
+  `sl 119`, `1.2`); Enter abre o primeiro resultado (E12)
+- Lista de cultos paginada na Liturgia (E12)
+
+### Alterado
+- Cultos aparecem do mais recente para o mais antigo, e o mais recente abre selecionado (E12)
+- Salmo 119 sempre com uma letra hebraica por seção (1–8, 9–16…), sem dividir nem juntar
+  letras (E12)
+- Busca por número nos hinários mostra primeiro o número exato: `42` traz 42A e 42B antes de
+  142 e 420 (E12)
+
 ## [0.2.0] — 2026-10-13
 
 ### Adicionado

@@ -77,8 +77,8 @@ const PAGER_RESERVE = 88
 /** Last page shown per list, so going back from an item lands on the same page. */
 const lastPage = new Map<string, number>()
 
-/** Rows that fit between the list's top and the bottom of the window. */
-function useFitRows(list: RefObject<HTMLDivElement | null>) {
+/** Rows that fit between the list's top and the bottom of the window, minus `reserve` px below it. */
+export function useFitRows(list: RefObject<HTMLElement | null>, reserve = PAGER_RESERVE) {
   const [size, setSize] = useState(FALLBACK_PAGE_SIZE)
   useLayoutEffect(() => {
     const measure = () => {
@@ -86,24 +86,19 @@ function useFitRows(list: RefObject<HTMLDivElement | null>) {
       const row = el?.firstElementChild as HTMLElement | null
       const rowHeight = row?.getBoundingClientRect().height ?? 0
       if (!el || rowHeight <= 0) return
-      const free = window.innerHeight - el.getBoundingClientRect().top - PAGER_RESERVE
+      const free = window.innerHeight - el.getBoundingClientRect().top - reserve
       setSize(Math.max(3, Math.floor(free / rowHeight)))
     }
     measure()
     window.addEventListener('resize', measure)
     return () => window.removeEventListener('resize', measure)
-  }, [list])
+  }, [list, reserve])
   return size
 }
 
-/**
- * Rows with a number/label, a title and a muted meta column (prototype `lv.list`), paged to fit the
- * window instead of scrolling. `pageKey` remembers the page while the operator opens an item.
- */
-export function List({ rows, pageKey }: { rows: ListRow[]; pageKey?: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const size = useFitRows(ref)
-  const pages = Math.max(1, Math.ceil(rows.length / size))
+/** Page shown of `count` rows, `size` per page; `pageKey` remembers it while the list is away. */
+export function usePaging(count: number, size: number, pageKey?: string) {
+  const pages = Math.max(1, Math.ceil(count / size))
   const [wanted, setWanted] = useState(() => (pageKey && lastPage.get(pageKey)) || 0)
   const page = Math.min(wanted, pages - 1)
   const goPage = (p: number) => {
@@ -111,6 +106,33 @@ export function List({ rows, pageKey }: { rows: ListRow[]; pageKey?: string }) {
     setWanted(next)
     if (pageKey) lastPage.set(pageKey, next)
   }
+  return { page, pages, goPage }
+}
+
+/** « ‹ Página k de n › » — nothing when there is a single page; `compact` (narrow sidebars): ‹ k de n ›. */
+export function Pager({ page, pages, goPage, compact = false }: ReturnType<typeof usePaging> & { compact?: boolean }) {
+  if (pages < 2) return null
+  return (
+    <nav className="pager" aria-label={t('pager.label')}>
+      {!compact && <button type="button" className="btn btn-ghost" disabled={page === 0} onClick={() => goPage(0)} aria-label={t('pager.first')}>«</button>}
+      <button type="button" className="btn btn-ghost" disabled={page === 0} onClick={() => goPage(page - 1)} aria-label={t('pager.previous')}>‹</button>
+      <span className="pager-status text-muted" aria-live="polite">{t(compact ? 'pager.short' : 'pager.status', { k: page + 1, n: pages })}</span>
+      <button type="button" className="btn btn-ghost" disabled={page === pages - 1} onClick={() => goPage(page + 1)} aria-label={t('pager.next')}>›</button>
+      {!compact && <button type="button" className="btn btn-ghost" disabled={page === pages - 1} onClick={() => goPage(pages - 1)} aria-label={t('pager.last')}>»</button>}
+    </nav>
+  )
+}
+
+/**
+ * Rows with a number/label, a title and a muted meta column (prototype `lv.list`), paged to fit the
+ * window instead of scrolling; ←/→ change page. `pageKey` remembers the page while the operator opens an item;
+ * `plain`: titles only, without the number column (search results).
+ */
+export function List({ rows, pageKey, plain = false }: { rows: ListRow[]; pageKey?: string; plain?: boolean }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const size = useFitRows(ref)
+  const paging = usePaging(rows.length, size, pageKey)
+  const { page, pages, goPage } = paging
 
   useEffect(() => {
     if (pages < 2) return
@@ -128,7 +150,7 @@ export function List({ rows, pageKey }: { rows: ListRow[]; pageKey?: string }) {
 
   return (
     <>
-      <div className="lib-list" ref={ref}>
+      <div className={plain ? 'lib-list lib-list--plain' : 'lib-list'} ref={ref}>
         {rows.slice(page * size, (page + 1) * size).map((r) => (
           <button key={r.key} type="button" className={`lib-row${r.faded ? ' lib-row--faded' : ''}`} onClick={r.go}>
             <span className="lib-row-label">{r.label}</span>
@@ -137,15 +159,7 @@ export function List({ rows, pageKey }: { rows: ListRow[]; pageKey?: string }) {
           </button>
         ))}
       </div>
-      {pages > 1 && (
-        <nav className="pager" aria-label={t('pager.label')}>
-          <button type="button" className="btn btn-ghost" disabled={page === 0} onClick={() => goPage(0)} aria-label={t('pager.first')}>«</button>
-          <button type="button" className="btn btn-ghost" disabled={page === 0} onClick={() => goPage(page - 1)} aria-label={t('pager.previous')}>‹</button>
-          <span className="pager-status text-muted" aria-live="polite">{t('pager.status', { k: page + 1, n: pages })}</span>
-          <button type="button" className="btn btn-ghost" disabled={page === pages - 1} onClick={() => goPage(page + 1)} aria-label={t('pager.next')}>›</button>
-          <button type="button" className="btn btn-ghost" disabled={page === pages - 1} onClick={() => goPage(pages - 1)} aria-label={t('pager.last')}>»</button>
-        </nav>
-      )}
+      <Pager {...paging} />
     </>
   )
 }

@@ -5,8 +5,9 @@
  *    (data: Ps 119 in blocks of 8 verses named after the Hebrew letters, Lam 3 in blocks of 3),
  *    else every verse; songs at every stanza. Each unit weighs its number of screens.
  * 2. `fitSections` joins consecutive units while they fit the screen (`capacity`, measured by the
- *    UI): Ps 119 gets sections of 8, 16 or 24 verses depending on the window. A unit bigger than
- *    the screen is split by verse, keeping its name. When everything fits, one section.
+ *    UI). A named part is never split, even when bigger than the screen, and is joined with its
+ *    neighbours only when its chapter allows (`join`): Ps 119 is always one letter per section
+ *    (1–8, 9–16…), Lam 3 joins blocks of 3 verses. When everything fits, one section.
  */
 import { t } from './i18n'
 import { slidesOf, SONG_LINES_PER_SCREEN, type LibraryEntry } from './slides'
@@ -23,6 +24,8 @@ export interface SuggestedSections {
   book: string
   chapter: number
   parts: SuggestedPart[]
+  /** Consecutive parts may share a section when they fit; otherwise one part per section. */
+  join?: boolean
 }
 
 /** The Hebrew alphabet as Portuguese Bibles write it. */
@@ -38,17 +41,17 @@ export const lettered = (size: number): SuggestedPart[] =>
 /** Where long chapters should be cut. Adding a chapter is data: book, chapter and named parts. */
 export const SUGGESTED_SECTIONS: SuggestedSections[] = [
   { book: 'Sl', chapter: 119, parts: lettered(8) },
-  { book: 'Lm', chapter: 3, parts: lettered(3) }
+  { book: 'Lm', chapter: 3, parts: lettered(3), join: true }
 ]
 
-/** A piece of an item that is never cut, except by verse when it alone is bigger than the screen. */
+/** A piece of an item that is never cut. */
 export type SectionUnit =
-  | { kind: 'part'; label: string; verses: { number: number; weight: number }[] }
+  | { kind: 'part'; label: string; join: boolean; verses: { number: number; weight: number }[] }
   | { kind: 'verse'; number: number; weight: number }
   | { kind: 'stanza'; number: number; weight: number }
 
 export interface Section {
-  /** `Álefe`, `Álefe–Bete`, `Álefe 1–4`, `1–9`, `Estrofe 2`, `Estrofes 1–3`. */
+  /** `Álefe`, `Álefe–Bete`, `1–9`, `Estrofe 2`, `Estrofes 1–3`. */
   title: string
   /** Verses of a named section (`1–16`); empty otherwise. */
   detail: string
@@ -71,7 +74,7 @@ export function bibleUnits(book: string, chapter: number, verses: { number: numb
     const part = suggested?.parts.find((p) => v.number >= p.from && v.number <= p.to)
     const last = units[units.length - 1]
     if (part && last?.kind === 'part' && last.label === part.label) last.verses.push(v)
-    else if (part) units.push({ kind: 'part', label: part.label, verses: [v] })
+    else if (part) units.push({ kind: 'part', label: part.label, join: suggested?.join ?? false, verses: [v] })
     else units.push({ kind: 'verse', ...v })
   }
   return units
@@ -89,14 +92,14 @@ export function sectionUnits(entry: LibraryEntry, max?: number): SectionUnit[] {
   return [{ kind: 'stanza', number: 1, weight: slidesOf(entry, max).length }]
 }
 
-function title(group: SectionUnit[], whole: boolean): Pick<Section, 'title' | 'detail' | 'from' | 'to'> {
+function title(group: SectionUnit[]): Pick<Section, 'title' | 'detail' | 'from' | 'to'> {
   const first = group[0]
   const last = group[group.length - 1]
   if (first.kind === 'part' && last.kind === 'part') {
     const from = first.verses[0].number
     const to = last.verses[last.verses.length - 1].number
     const name = group.length === 1 ? first.label : `${first.label}–${last.label}`
-    return whole ? { title: name, detail: range(from, to), from, to } : { title: `${name} ${range(from, to)}`, detail: '', from, to }
+    return { title: name, detail: range(from, to), from, to }
   }
   if (first.kind === 'stanza' && last.kind === 'stanza')
     return { title: group.length === 1 ? t('section.stanza', { n: first.number }) : t('section.stanzas', { range: range(first.number, last.number) }), detail: '' }
@@ -109,42 +112,24 @@ function title(group: SectionUnit[], whole: boolean): Pick<Section, 'title' | 'd
 export function fitSections(units: readonly SectionUnit[], capacity: number): Section[] {
   const total = units.reduce((n, u) => n + weight(u), 0)
   if (total <= capacity || units.length === 0) {
-    const all = units.length ? title([...units], true) : { title: '', detail: '' }
+    const all = units.length ? title([...units]) : { title: '', detail: '' }
     return [{ ...all, title: '', detail: '', start: 0, end: total, ...(all.from !== undefined ? { from: all.from, to: all.to } : {}) }]
   }
-  // A unit bigger than the screen is split by verse (a named part keeps its name).
-  const pieces: { units: SectionUnit[]; split: boolean }[] = []
+  const groups: { units: SectionUnit[]; size: number }[] = []
   for (const u of units) {
-    if (u.kind !== 'part' || weight(u) <= capacity) {
-      pieces.push({ units: [u], split: false })
-      continue
-    }
-    let chunk: typeof u.verses = []
-    let size = 0
-    for (const v of u.verses) {
-      if (chunk.length && size + v.weight > capacity) {
-        pieces.push({ units: [{ ...u, verses: chunk }], split: true })
-        chunk = []
-        size = 0
-      }
-      chunk.push(v)
-      size += v.weight
-    }
-    pieces.push({ units: [{ ...u, verses: chunk }], split: true })
-  }
-  const groups: { units: SectionUnit[]; split: boolean; size: number }[] = []
-  for (const p of pieces) {
-    const w = weight(p.units[0])
+    const w = weight(u)
     const last = groups[groups.length - 1]
-    // Units of different kinds (named part / plain verse) and split parts are never joined.
-    if (last && !last.split && !p.split && last.units[0].kind === p.units[0].kind && last.size + w <= capacity) {
-      last.units.push(p.units[0])
+    const head = last?.units[0]
+    // Units of different kinds (named part / plain verse) are never joined, nor parts that can't be.
+    const joinable = head && head.kind === u.kind && (u.kind !== 'part' || u.join)
+    if (joinable && last.size + w <= capacity) {
+      last.units.push(u)
       last.size += w
-    } else groups.push({ units: [...p.units], split: p.split, size: w })
+    } else groups.push({ units: [u], size: w })
   }
   let start = 0
   return groups.map((g) => {
-    const section = { ...title(g.units, !g.split), start, end: start + g.size }
+    const section = { ...title(g.units), start, end: start + g.size }
     start += g.size
     return section
   })

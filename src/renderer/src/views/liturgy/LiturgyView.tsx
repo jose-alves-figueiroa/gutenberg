@@ -1,12 +1,16 @@
 /** Liturgy tab: services on the left; the current service's items and the picker on the right. */
 import { CaretDownIcon, CaretUpIcon, PlusIcon, PresentationIcon, XIcon } from '@phosphor-icons/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { t } from '@shared/i18n'
 import { json, useApi } from '../../api'
 import { usePresentAndOpen } from '../../present'
 import { useServices } from '../../service'
+import { Pager, useFitRows, usePaging } from '../library/parts'
 import { Picker } from './Picker'
+
+/** Space below the services: pager and "Novo culto". */
+const ASIDE_RESERVE = 120
 
 export function LiturgyView() {
   const api = useApi()
@@ -41,12 +45,7 @@ export function LiturgyView() {
       <div className="view-grid view-grid--liturgy">
         <aside className="lit-aside" aria-label={t('liturgy.aside')}>
           <h6 className="text-muted">{t('liturgy.aside')}</h6>
-          {services?.map((s) => (
-            <button key={s.id} type="button" className="lit-service" aria-current={s.id === current?.id} onClick={() => select(s.id)}>
-              <span className="lit-service-name">{s.name}</span>
-              <span className="text-muted lit-service-count">{s.count === 1 ? t('liturgy.items.one') : t('liturgy.items.other', { n: s.count })}</span>
-            </button>
-          ))}
+          <ServiceList />
           <button type="button" className="btn btn-ghost lit-new" onClick={() => create.mutate()}>
             <PlusIcon size={16} weight="duotone" aria-hidden />
             {t('liturgy.newService')}
@@ -73,6 +72,35 @@ export function LiturgyView() {
         </section>
       </div>
     </main>
+  )
+}
+
+/** Services, most recent first, paged to fit the window; the page follows the selected service. */
+function ServiceList() {
+  const { services = [], current, select } = useServices()
+  const ref = useRef<HTMLDivElement>(null)
+  const size = useFitRows(ref, ASIDE_RESERVE)
+  const paging = usePaging(services.length, size)
+  const { page, goPage } = paging
+  // Adjusted while rendering (not in an effect) when another service is selected or created.
+  const [followed, setFollowed] = useState<number | null>(null)
+  const at = services.findIndex((s) => s.id === current?.id)
+  if (current && current.id !== followed && at >= 0) {
+    setFollowed(current.id)
+    if (Math.floor(at / size) !== page) goPage(Math.floor(at / size))
+  }
+  return (
+    <>
+      <div className="lit-services" ref={ref}>
+        {services.slice(page * size, (page + 1) * size).map((s) => (
+          <button key={s.id} type="button" className="lit-service" aria-current={s.id === current?.id} onClick={() => select(s.id)}>
+            <span className="lit-service-name">{s.name}</span>
+            <span className="text-muted lit-service-count">{s.count === 1 ? t('liturgy.items.one') : t('liturgy.items.other', { n: s.count })}</span>
+          </button>
+        ))}
+      </div>
+      <Pager {...paging} compact />
+    </>
   )
 }
 

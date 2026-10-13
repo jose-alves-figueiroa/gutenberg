@@ -26,9 +26,10 @@ export interface ServiceDetail {
   items: LiturgyItem[]
 }
 
+/** Most recent first (higher id). */
 export function services(db: SqlDatabase): ServiceSummary[] {
   return db
-    .prepare('SELECT s.id, s.name, (SELECT count(*) FROM liturgy_items i WHERE i.service_id = s.id) AS count FROM services s ORDER BY s.id')
+    .prepare('SELECT s.id, s.name, (SELECT count(*) FROM liturgy_items i WHERE i.service_id = s.id) AS count FROM services s ORDER BY s.id DESC')
     .all() as unknown as ServiceSummary[]
 }
 

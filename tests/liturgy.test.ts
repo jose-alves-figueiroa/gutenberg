@@ -116,6 +116,12 @@ describe('picker search (US5.3)', () => {
     expect(await search('songbook:psalter', '')).toHaveLength(5)
   })
 
+  it('songbooks: number with version, exact number first', async () => {
+    expect((await search('songbook:psalter', '133b')).map((r) => r.title)).toEqual(['Salmo 133B'])
+    expect((await search('songbook:psalter', '1')).map((r) => r.title)[0]).toBe('Salmo 1')
+    expect((await search('songbook:psalter', '1')).map((r) => r.title).slice(1).sort()).toEqual(['Salmo 100', 'Salmo 133A', 'Salmo 133B'])
+  })
+
   it('catechisms by exact number or question text', async () => {
     expect((await search('catechism:wsc', '2')).map((r) => r.itemRef)).toEqual(['2'])
     expect((await search('catechism:wsc', 'fim principal')).map((r) => r.itemRef)).toEqual(['1'])
