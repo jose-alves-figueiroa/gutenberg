@@ -74,6 +74,18 @@ describe('Connection tab (US7.2)', () => {
     expect(await screen.findByText('Teste: nenhum overlay respondeu')).toBeInTheDocument()
   })
 
+  it('the log shows the 8 newest entries, then "Ver todos" (E11)', async () => {
+    const { app } = await renderConnection()
+    for (let i = 0; i < 10; i++) await app.request('/api/v1/connection/test', { method: 'POST' }, { incoming: { socket: { remoteAddress: '127.0.0.1' } } })
+    const rows = () => document.querySelectorAll('.con-log-row')
+    const all = await screen.findByRole('button', { name: 'Ver todos (10)' })
+    expect(rows()).toHaveLength(8)
+    await userEvent.click(all)
+    expect(rows()).toHaveLength(10)
+    await userEvent.click(screen.getByRole('button', { name: 'Ver menos' }))
+    expect(rows()).toHaveLength(8)
+  })
+
   it('creates an output, binding a single songbook taken from the kind', async () => {
     const { db } = await renderConnection()
     await userEvent.click(within(outputs()).getByRole('button', { name: /Nova saída/ }))

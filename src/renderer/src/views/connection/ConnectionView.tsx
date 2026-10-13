@@ -16,6 +16,9 @@ import { CONN_VIEW } from '../../tabs'
 import { OutputEditor, kindLabel } from './OutputEditor'
 import { UpdateSection } from './UpdateSection'
 
+/** Log entries shown before "Ver todos" (E11: the tab fits the window). */
+export const LOG_PREVIEW = 8
+
 const hhmm = (time: number) => new Date(time).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
 
 export function logText(e: LogEntry): string {
@@ -44,6 +47,7 @@ export function ConnectionView() {
   const refresh = () => qc.invalidateQueries({ queryKey: ['connection'] })
   const [port, setPort] = useState<string | null>(null)
   const [portError, setPortError] = useState('')
+  const [fullLog, setFullLog] = useState(false)
   const applyPort = useMutation({
     mutationFn: async (p: number) => {
       const res = await api.api.v1.connection.port.$post({ json: { port: p } })
@@ -133,12 +137,17 @@ export function ConnectionView() {
           <div className="con-log">
             <h6 className="text-muted">{t('connection.log')}</h6>
             {data?.log.length === 0 && <p className="empty-note">{t('connection.log.empty')}</p>}
-            {data?.log.map((e, i) => (
+            {data?.log.slice(0, fullLog ? undefined : LOG_PREVIEW).map((e, i) => (
               <div key={`${e.time}:${i}`} className="con-log-row">
                 <span className="text-muted">{hhmm(e.time)}</span>
                 <span>{logText(e)}</span>
               </div>
             ))}
+            {data && data.log.length > LOG_PREVIEW && (
+              <button type="button" className="btn btn-ghost con-log-more" onClick={() => setFullLog((v) => !v)}>
+                {fullLog ? t('connection.log.less') : t('connection.log.all', { n: data.log.length })}
+              </button>
+            )}
           </div>
         </section>
       </div>

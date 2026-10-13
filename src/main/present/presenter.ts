@@ -12,6 +12,7 @@ import {
 } from '../../shared/presentation'
 import { DEFAULT_OUTPUTS, Outputs, outputPayload, type Output } from '../../shared/outputs'
 import type { Payload, SongCredits } from '../../shared/payload'
+import type { SectionUnit } from '../../shared/sections'
 import type { Slide } from '../../shared/slides'
 import { SETTINGS } from '../db/build'
 import type { SqlDatabase } from '../db/schema'
@@ -27,6 +28,8 @@ export interface PresentItem {
   title: string
   collectionLabel: string
   slides: Slide[]
+  /** Where the screens may be cut into sections (E11); the UI fits them to the window. */
+  units: SectionUnit[]
   missing: boolean
   adhoc: boolean
   credits?: SongCredits
@@ -154,6 +157,7 @@ const pick = (r: ReturnType<typeof resolveItem>) => ({
   title: r.title,
   collectionLabel: r.collectionLabel,
   slides: r.slides,
+  units: r.units,
   missing: r.missing,
   ...(r.credits ? { credits: r.credits } : {})
 })

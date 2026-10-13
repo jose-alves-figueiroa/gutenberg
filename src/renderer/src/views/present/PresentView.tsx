@@ -3,9 +3,14 @@
  * viewed item's screens, and Anterior / Próximo. The state lives in the main process.
  */
 import { ArrowLeftIcon, ArrowRightIcon, EyeSlashIcon, XIcon } from '@phosphor-icons/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { t } from '@shared/i18n'
+import { fitSections, sectionOfSlide } from '@shared/sections'
+import { SectionStrip, useCapacity } from '../../components/Sections'
 import { usePresent } from '../../present'
+
+/** Space kept below the screens for the Anterior / Próximo bar. */
+const BAR_RESERVE = 120
 
 export function PresentView() {
   const { view, command } = usePresent()
@@ -17,29 +22,50 @@ export function PresentView() {
   const viewed = picked !== null && picked < items.length ? picked : live
   const item = items[viewed]
 
+  // Long items one section at a time (E11): as many screens as fit; the section follows the air.
+  const grid = useRef<HTMLDivElement>(null)
+  const capacity = useCapacity(grid, { reserve: BAR_RESERVE, key: `${viewed}:${item?.itemRef}` })
+  const sections = item ? fitSections(item.units, capacity) : []
+  const liveSections = items[live] ? fitSections(items[live].units, capacity) : []
+  const liveSection = sectionOfSlide(liveSections, state?.slide ?? 0)
+  // Section being looked at; null follows the screen on the air.
+  const [peek, setPeek] = useState<{ item: number; section: number } | null>(null)
+  const shown = peek && peek.item === viewed && peek.section < sections.length ? peek.section : viewed === live ? liveSection : 0
+  const section = sections[shown] ?? { start: 0, end: item?.slides.length ?? 0 }
+
   const go = (index: number, slide: number) => {
     setPicked(null)
+    setPeek(null)
     command({ type: 'go', index, slide })
   }
   const step = (delta: -1 | 1) => {
     setPicked(null)
+    setPeek(null)
     command({ type: 'step', delta })
   }
+  /** Shift+← / Shift+→: first screen of the previous / next section of the item on the air. */
+  const jump = (delta: -1 | 1) => {
+    const target = liveSections[liveSection + delta]
+    if (target) go(live, target.start)
+  }
 
-  // ← / → (and PageUp / PageDown, as presentation remotes send) outside text fields.
+  const jumpRef = useRef(jump)
+  useEffect(() => {
+    jumpRef.current = jump
+  })
+  // ← / → (and PageUp / PageDown, as presentation remotes send) outside text fields; with Shift,
+  // a whole section.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement | null
       if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)) return
-      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
-        e.preventDefault()
-        setPicked(null)
-        command({ type: 'step', delta: 1 })
-      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        e.preventDefault()
-        setPicked(null)
-        command({ type: 'step', delta: -1 })
-      }
+      const forward = e.key === 'ArrowRight' || e.key === 'PageDown'
+      if (!forward && e.key !== 'ArrowLeft' && e.key !== 'PageUp') return
+      e.preventDefault()
+      if (e.shiftKey) return jumpRef.current(forward ? 1 : -1)
+      setPicked(null)
+      setPeek(null)
+      command({ type: 'step', delta: forward ? 1 : -1 })
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -49,9 +75,12 @@ export function PresentView() {
   const current = items[live]
   if (current && state) {
     const following = items[live + 1]
+    const nextSection = liveSections[liveSection + 1]
     nextHint =
       state.slide + 1 < current.slides.length
-        ? current.slides[state.slide + 1].lines[0]
+        ? nextSection && state.slide + 1 === nextSection.start
+          ? `${nextSection.title} — ${current.slides[state.slide + 1].lines[0]}`
+          : current.slides[state.slide + 1].lines[0]
         : following
           ? `${following.adhoc ? t('present.adhoc') : following.moment || '—'} — ${following.title}`
           : t('present.end')
@@ -101,8 +130,15 @@ export function PresentView() {
               {state?.blank ? t('present.show') : t('present.blank')}
             </button>
           </div>
-          <div className="pres-slides">
-            {item?.slides.map((s, i) => {
+          <SectionStrip
+            sections={sections}
+            current={shown}
+            live={viewed === live && !state?.blank ? liveSection : undefined}
+            onPick={(i) => setPeek({ item: viewed, section: i })}
+          />
+          <div className="pres-slides" ref={grid}>
+            {item?.slides.slice(section.start, section.end).map((s, k) => {
+              const i = section.start + k
               const onAir = viewed === live && i === state?.slide && !state.blank
               const upNext = viewed === live && i === (state?.slide ?? 0) + 1
               return (

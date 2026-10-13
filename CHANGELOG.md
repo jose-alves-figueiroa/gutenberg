@@ -17,6 +17,14 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 
 ## [Não lançado]
 
+### Adicionado
+- Itens longos aparecem uma seção por vez, com uma faixa para pular entre elas, no Apresentar,
+  nos capítulos da Bíblia e nas prévias: o Salmo 119 é cortado pelas letras hebraicas (8, 16 ou
+  24 versículos por seção, conforme cabe na janela), Lamentações 3 de 3 em 3 versículos, hinos
+  por estrofe e os demais capítulos por versículos inteiros; Shift+←/→ pula de seção no
+  Apresentar (E11)
+- Aba Conexão mostra os 8 eventos mais recentes do registro, com "Ver todos" (E11)
+
 ## [0.1.0] — 2026-10-13
 
 ### Adicionado

@@ -2,7 +2,7 @@
 
 Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito
 Fonte: `design_handoff_gutenberg/README.md` + protótipo `design/Gutenberg.dc.html` (classe `Component`).
-Concluídos: E0–E10. Pendente: **US8.4** e **US10.4** (validação em campo). Pendente: **US8.4** (validar os instaladores em Windows/Ubuntu reais).
+Concluídos: E0–E11. Pendente: **US8.4** e **US10.4** (validação em campo). Pendente: **US8.4** (validar os instaladores em Windows/Ubuntu reais).
 
 ## Stack e protocolo (decisão)
 O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP** — o protocolo já em uso (substitui o JSON do Holyrics). Isso substitui o obs-websocket sugerido no README do handoff.
@@ -272,3 +272,19 @@ Sem servidor próprio: o app consulta as versões publicadas no GitHub Releases 
 **US10.4** Validação
 - [x] App empacotado no Mac consultando o GitHub: sem versão publicada → "versão mais recente" (rascunhos não contam)
 - [ ] Publicar a 0.1.0, depois uma 0.1.1: o Windows e o Linux baixam e instalam ao fechar; o macOS mostra o aviso e o link
+
+### E11 — Itens longos em seções ✓
+Itens longos (capítulo inteiro, Sl 119, hinos de muitas estrofes) aparecem **uma seção por vez**, com uma faixa para pular — seções, não páginas. Duas funções puras em `src/shared/sections.ts`: `sectionUnits` corta o item em **pontos sugeridos** (`SUGGESTED_SECTIONS`, dados: Sl 119 em blocos de 8 versículos com as letras, Lm 3 em blocos de 3; senão, versículo a versículo; hinos por estrofe) e `fitSections` junta os pedaços que **cabem na tela** medida (Sl 119: 8, 16 ou 24 versículos por seção conforme a janela). O payload do OBS não muda.
+
+**US11.1** Como operador, quero apresentar um capítulo longo sem rolar, para achar o ponto da leitura.
+- [x] Apresentar: faixa de seções acima das telas, só a seção vista aparece; segue o "no ar" (Próximo/←→ atravessam seções); clicar numa seção só olha; `Shift+←/→` pula de seção (comando `go` existente); dica do Próximo com a seção seguinte
+
+**US11.2** Biblioteca: capítulo longo da Bíblia (> 30 versículos) mostra os versículos por seção; a seleção de trecho atravessa seções
+- [x] `BibleBrowser` com a faixa de seções
+
+**US11.3** Prévias "Como fica na transmissão" por seção (hino por estrofe, trecho longo por bloco)
+- [x] `Leaf` com a faixa de seções
+
+**US11.4** Revisão das demais páginas (janela 1280×820 e mínima 900×600)
+- [x] Registro da aba Conexão: os 8 mais recentes e "Ver todos"
+- [x] Grades (Catecismo Maior 196, Saltério 150, capítulos de Salmos) e listas laterais: cabem em 1280×820 (células de 52 px); na janela mínima (900×600) o Catecismo Maior ainda rola um pouco — sem paginação por ora

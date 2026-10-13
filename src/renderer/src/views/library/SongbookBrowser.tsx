@@ -10,6 +10,7 @@ import { t } from '@shared/i18n'
 import { lyricsToStanzas } from '@shared/lyrics'
 import type { SongRecord, SongbookInfo, SongSummary } from '@shared/library-schemas'
 import { REQUIRED } from '@shared/requirements'
+import { sectionUnits } from '@shared/sections'
 import { slidesOf, songHeader } from '@shared/slides'
 import { json, jsonOrNull, useApi } from '../../api'
 import { Leaf, useDraft, useScreenLimit, type SaveStatus } from './leaf'
@@ -214,6 +215,7 @@ function SongEditor({ info, songId, template, crumbs, initialStatus, onCreated }
       </div>
       <Leaf
         slides={slidesOf({ kind: 'song', songbook: info, item: song }, max)}
+        units={sectionUnits({ kind: 'song', songbook: info, item: song }, max)}
         song
         max={max}
         editable

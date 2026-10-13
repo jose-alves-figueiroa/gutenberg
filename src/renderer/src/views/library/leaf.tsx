@@ -3,10 +3,12 @@
  * and the sticky action bar (README → Biblioteca → Folha).
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { DEFAULT_MAX } from '@shared/autobreak'
 import { t } from '@shared/i18n'
+import { fitSections, type SectionUnit } from '@shared/sections'
 import type { Slide } from '@shared/slides'
+import { SectionStrip, useCapacity } from '../../components/Sections'
 import { json, useApi } from '../../api'
 import { usePresentAndOpen } from '../../present'
 import { useServices } from '../../service'
@@ -40,6 +42,8 @@ export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 
 interface LeafProps {
   slides: Slide[]
+  /** Where long previews may be cut into sections (E11). */
+  units?: SectionUnit[]
   song?: boolean
   max: number
   editable: boolean
@@ -51,12 +55,21 @@ interface LeafProps {
   item?: { collection: string; itemRef: string }
 }
 
-export function Leaf({ slides, song, max, editable, dirty = false, status = 'idle', onSave, onDiscard, item }: LeafProps) {
+/** Space for the sticky action bar and the strip, so one section fits the window. */
+const LEAF_RESERVE = 180
+
+export function Leaf({ slides, units, song, max, editable, dirty = false, status = 'idle', onSave, onDiscard, item }: LeafProps) {
   const api = useApi()
   const qc = useQueryClient()
   const { current } = useServices()
   const present = usePresentAndOpen()
   const [added, setAdded] = useState<string | null>(null)
+  const cards = useRef<HTMLDivElement>(null)
+  const capacity = useCapacity(cards, { reserve: LEAF_RESERVE, viewport: true })
+  const sections = units ? fitSections(units, capacity) : []
+  const [picked, setPicked] = useState(0)
+  const shown = picked < sections.length ? picked : 0
+  const section = sections[shown] ?? { start: 0, end: slides.length }
   const add = useMutation({
     mutationFn: () =>
       json(api.api.v1.liturgy.services[':id'].items.$post({ param: { id: String(current!.id) }, json: { ...item!, moment: '' } })),
@@ -81,8 +94,9 @@ export function Leaf({ slides, song, max, editable, dirty = false, status = 'idl
         <span className="leaf-label text-muted">{t(slides.length === 1 ? 'leaf.preview.one' : 'leaf.preview.other', { n: slides.length })}</span>
         <span className="leaf-note text-muted">{song ? t('leaf.breakSong') : t('leaf.breakProse', { max })}</span>
       </div>
-      <div className="slide-cards">
-        {slides.map((s, i) => (
+      <SectionStrip sections={sections} current={shown} onPick={setPicked} />
+      <div className="slide-cards" ref={cards}>
+        {slides.slice(section.start, section.end).map((s, i) => (
           <div key={i} className="slide-card">
             <span className="slide-card-head text-muted">{s.header}</span>
             <span className="slide-card-text">{s.lines.join('\n')}</span>

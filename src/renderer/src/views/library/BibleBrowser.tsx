@@ -1,12 +1,17 @@
 /** Bible (read only): books (OT/NT) → chapters → verses, with passage selection. */
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { t } from '@shared/i18n'
-import { slidesOf } from '@shared/slides'
+import { bibleUnits, fitSections, sectionUnits } from '@shared/sections'
+import { slidesOf, type BiblePassage } from '@shared/slides'
+import { SectionStrip, useCapacity } from '../../components/Sections'
 import { bibleItemRef } from '@shared/bible-ref'
 import { json, useApi } from '../../api'
 import { Leaf, useScreenLimit } from './leaf'
 import { Grid, LevelHeader, Loading, type Crumb } from './parts'
+
+/** Verses shown at once before the list can be measured (most chapters fit). */
+const VERSES_FALLBACK = 40
 
 export interface Passage {
   book: string
@@ -40,6 +45,10 @@ export function BibleBrowser({ version, label, path, go, onSelect }: Props) {
   })
   const [sel, setSel] = useState<{ a: number; b: number } | null>(null)
   const max = useScreenLimit()
+  // Long chapters one section at a time (E11): as many verses as fit, cut at the suggested parts.
+  const list = useRef<HTMLDivElement>(null)
+  const capacity = useCapacity(list, { reserve: 40, key: `${book}:${chapter}`, fallback: VERSES_FALLBACK })
+  const [shown, setShown] = useState({ key: '', section: 0 })
   // Report the passage after each change (functional updates keep rapid clicks consistent).
   useEffect(() => {
     onSelect?.(sel && book ? { book, chapter, from: sel.a, to: sel.b } : null)
@@ -48,6 +57,10 @@ export function BibleBrowser({ version, label, path, go, onSelect }: Props) {
     setSel(null)
     go(p)
   }
+  const sections = verses.data ? fitSections(bibleUnits(book, chapter, verses.data.map((v) => ({ number: v.number, weight: 1 }))), capacity) : []
+  const current = shown.key === `${book}:${chapter}` && shown.section < sections.length ? shown.section : 0
+  const section = sections[current]
+  const inSection = (n: number) => !section || section.from === undefined || (n >= section.from && n <= section.to!)
 
   if (!books.data) return <Loading error={books.error} />
   const info = books.data.find((b) => b.book === book)
@@ -103,24 +116,25 @@ export function BibleBrowser({ version, label, path, go, onSelect }: Props) {
       {!verses.data ? (
         <Loading error={verses.error} />
       ) : (
-        <div className="verses">
-          {verses.data.map((v) => {
-            const inSel = sel !== null && v.number >= sel.a && v.number <= sel.b
-            return (
-              <button key={v.number} type="button" className="verse" aria-pressed={inSel} onClick={() => click(v.number)}>
-                <span className="verse-n">{v.number}</span>
-                <span className="verse-t">{v.text}</span>
-              </button>
-            )
-          })}
-        </div>
+        <>
+          <SectionStrip sections={sections} current={current} onPick={(i) => setShown({ key: `${book}:${chapter}`, section: i })} />
+          <div className="verses" ref={list}>
+            {verses.data.filter((v) => inSection(v.number)).map((v) => {
+              const inSel = sel !== null && v.number >= sel.a && v.number <= sel.b
+              return (
+                <button key={v.number} type="button" className="verse" aria-pressed={inSel} onClick={() => click(v.number)}>
+                  <span className="verse-n">{v.number}</span>
+                  <span className="verse-t">{v.text}</span>
+                </button>
+              )
+            })}
+          </div>
+        </>
       )}
       {sel && verses.data && (
         <Leaf
-          slides={slidesOf(
-            { kind: 'bible', item: { book: info.book, chapter, verses: verses.data.filter((v) => v.number >= sel.a && v.number <= sel.b) } },
-            max
-          )}
+          slides={slidesOf({ kind: 'bible', item: passage(info.book, chapter, verses.data, sel) }, max)}
+          units={sectionUnits({ kind: 'bible', item: passage(info.book, chapter, verses.data, sel) }, max)}
           max={max}
           editable={false}
           item={{ collection: `bible:${version}`, itemRef: bibleItemRef({ book: info.book, chapter, from: sel.a, to: sel.b }) }}
@@ -129,3 +143,9 @@ export function BibleBrowser({ version, label, path, go, onSelect }: Props) {
     </>
   )
 }
+
+const passage = (book: string, chapter: number, verses: BiblePassage['verses'], sel: { a: number; b: number }): BiblePassage => ({
+  book,
+  chapter,
+  verses: verses.filter((v) => v.number >= sel.a && v.number <= sel.b)
+})

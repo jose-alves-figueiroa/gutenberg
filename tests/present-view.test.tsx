@@ -168,3 +168,57 @@ describe('Quick search (US6.3)', () => {
     expect(await screen.findByRole('heading', { level: 2 })).toHaveTextContent('Credo Niceno')
   })
 })
+
+describe('long items in sections (E11)', () => {
+  function renderPsalm119() {
+    const api = createTestApi()
+    const insert = api.db.prepare("INSERT INTO bible_verses (version, book, chapter, verse, text) VALUES ('ARA', 'Sl', 119, ?, ?)")
+    for (let v = 1; v <= 176; v++) insert.run(v, `Versículo ${v} do salmo.`)
+    const s = createService(api.db, 'Domingo')
+    addItem(api.db, s.id, { collection: 'bible:ARA', itemRef: 'Sl:119', moment: 'Leitura' })
+    addItem(api.db, s.id, { collection: 'creeds', itemRef: 'apostles', moment: 'Credo' })
+    render(<App initialTab="present" api={api.client} />)
+    return api
+  }
+  const strip = () => screen.getByRole('navigation', { name: 'Seções' })
+  const pressed = () => within(strip()).getByRole('button', { pressed: true })
+
+  it('shows one section at a time, named after the suggested parts, following the air', async () => {
+    renderPsalm119()
+    await screen.findByRole('navigation', { name: 'Seções' })
+    // 12 screens fit (fallback): the 8-verse parts stay one per section.
+    expect(within(strip()).getAllByRole('button')).toHaveLength(22)
+    expect(pressed()).toHaveTextContent('Álefe1–8')
+    expect(cards()).toHaveLength(8)
+    expect(cards()[0]).toHaveTextContent('Salmos 119.1')
+    const next = screen.getByRole('button', { name: /Próximo/ })
+    for (let i = 0; i < 7; i++) await userEvent.keyboard('{ArrowRight}')
+    await waitFor(() => expect(cards()[7]).toHaveClass('pres-slide--live'))
+    expect(next).toHaveTextContent('Bete — Versículo 9 do salmo.')
+    await userEvent.keyboard('{ArrowRight}')
+    await waitFor(() => expect(pressed()).toHaveTextContent('Bete9–16'))
+    expect(cards()[0]).toHaveTextContent('Salmos 119.9')
+    expect(liveCard()).toHaveTextContent('Salmos 119.9')
+  })
+
+  it('Shift+arrows jump a section; picking a section only looks', async () => {
+    const { db } = renderPsalm119()
+    await screen.findByRole('navigation', { name: 'Seções' })
+    await userEvent.keyboard('{Shift>}{ArrowRight}{ArrowRight}{/Shift}')
+    await waitFor(() => expect(pressed()).toHaveTextContent('Guímel17–24'))
+    expect(stored(db)).toMatchObject({ live: 0, slide: 16 })
+    await userEvent.click(within(strip()).getByRole('button', { name: /Tau/ }))
+    expect(cards()[0]).toHaveTextContent('Salmos 119.169')
+    expect(liveCard()).toBeNull()
+    expect(stored(db)).toMatchObject({ slide: 16 })
+    await userEvent.keyboard('{Shift>}{ArrowLeft}{/Shift}')
+    await waitFor(() => expect(pressed()).toHaveTextContent('Bete9–16'))
+    expect(liveCard()).toHaveTextContent('Salmos 119.9')
+  })
+
+  it('short items have no strip', async () => {
+    renderApp()
+    await within(aside()).findByText('Credo Apostólico')
+    expect(screen.queryByRole('navigation', { name: 'Seções' })).toBeNull()
+  })
+})

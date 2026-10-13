@@ -13,9 +13,13 @@ import { DEFAULT_COLLECTIONS } from '../../shared/collections'
 import type { CreedId } from '../../shared/data-model'
 import { lyricsToStanzas } from '../../shared/lyrics'
 import type { SongCredits } from '../../shared/payload'
-import { slidesOf, songHeader, type Slide } from '../../shared/slides'
+import { sectionUnits, type SectionUnit } from '../../shared/sections'
+import { slidesOf, songHeader, type LibraryEntry, type Slide } from '../../shared/slides'
 import type { SqlDatabase } from '../db/schema'
 import * as repo from './repository'
+
+/** Screens and their sections for one library entry. */
+const screens = (entry: LibraryEntry, max: number) => ({ slides: slidesOf(entry, max), units: sectionUnits(entry, max) })
 
 export interface ResolvedItem {
   collection: string
@@ -23,6 +27,8 @@ export interface ResolvedItem {
   title: string
   collectionLabel: string
   slides: Slide[]
+  /** Where the screens may be cut into sections (E11); the UI fits them to the window. */
+  units: SectionUnit[]
   /** The referenced record no longer exists. */
   missing: boolean
   /** Songs only: credits sent to OBS (`$system_var_music_*`). */
@@ -47,7 +53,7 @@ const collection = (kind: string, id: string) => (id ? `${kind}:${id}` : kind)
 export function resolveItem(db: SqlDatabase, coll: string, itemRef: string, max: number): ResolvedItem {
   const { kind, id } = parseCollection(coll)
   const base = { collection: coll, itemRef, collectionLabel: label(db, kind, id) }
-  const missing = (title = MISSING_TITLE): ResolvedItem => ({ ...base, title, slides: [], missing: true })
+  const missing = (title = MISSING_TITLE): ResolvedItem => ({ ...base, title, slides: [], units: [], missing: true })
 
   switch (kind) {
     case 'bible': {
@@ -57,7 +63,7 @@ export function resolveItem(db: SqlDatabase, coll: string, itemRef: string, max:
         .bibleChapter(db, id, ref.book, ref.chapter)
         .filter((v) => ref.from === undefined || (v.number >= ref.from && v.number <= (ref.to ?? ref.from)))
       if (verses.length === 0) return missing(bibleRefTitle(ref))
-      return { ...base, title: bibleRefTitle(ref), slides: slidesOf({ kind: 'bible', item: { book: ref.book, chapter: ref.chapter, verses } }, max), missing: false }
+      return { ...base, title: bibleRefTitle(ref), ...screens({ kind: 'bible', item: { book: ref.book, chapter: ref.chapter, verses } }, max), missing: false }
     }
     case 'songbook': {
       const song = repo.song(db, itemRef)
@@ -79,7 +85,7 @@ export function resolveItem(db: SqlDatabase, coll: string, itemRef: string, max:
       return {
         ...base,
         title,
-        slides: slidesOf({ kind: 'song', songbook: info, item }, max),
+        ...screens({ kind: 'song', songbook: info, item }, max),
         missing: false,
         credits: { title, artist: song.artist, author: song.author, copyright: song.copyright }
       }
@@ -94,7 +100,7 @@ export function resolveItem(db: SqlDatabase, coll: string, itemRef: string, max:
       return {
         ...base,
         title: `${short} ${chapter}.${section} — ${s.chapterTitle}`,
-        slides: slidesOf({ kind: 'confession', confession: { shortTitle: short }, chapter, item: { id: section, text: s.text } }, max),
+        ...screens({ kind: 'confession', confession: { shortTitle: short }, chapter, item: { id: section, text: s.text } }, max),
         missing: false
       }
     }
@@ -106,14 +112,14 @@ export function resolveItem(db: SqlDatabase, coll: string, itemRef: string, max:
       return {
         ...base,
         title: `${short} · P. ${number}`,
-        slides: slidesOf({ kind: 'catechism', catechism: { shortTitle: short }, item: { number, question: q.question, answer: q.answer } }, max),
+        ...screens({ kind: 'catechism', catechism: { shortTitle: short }, item: { number, question: q.question, answer: q.answer } }, max),
         missing: false
       }
     }
     case 'creeds': {
       const c = repo.creeds(db).find((x) => x.id === itemRef)
       if (!c) return missing()
-      return { ...base, title: c.title, slides: slidesOf({ kind: 'creed', item: { id: c.id as CreedId, title: c.title, text: c.text } }, max), missing: false }
+      return { ...base, title: c.title, ...screens({ kind: 'creed', item: { id: c.id as CreedId, title: c.title, text: c.text } }, max), missing: false }
     }
     default:
       return missing()
