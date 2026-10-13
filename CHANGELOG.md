@@ -8,7 +8,7 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 [SemVer](https://semver.org/lang/pt-BR/) iguais às do `package.json`.
 
 - A seção `## [Não lançado]` fica sempre no topo e recebe as mudanças de cada commit.
-- Ao gerar uma versão, ela vira `## [x.y.z] — AAAA-MM-DD` e uma nova `[Não lançado]` vazia sobe.
+- Ao gerar uma versão, ela vira `## [x.y.z] - AAAA-MM-DD` e uma nova `[Não lançado]` vazia sobe.
 - Grupos, nesta ordem e só os que tiverem itens: **Adicionado**, **Alterado**, **Corrigido**,
   **Removido**, **Segurança**.
 - Um item por mudança, em pt-BR, do ponto de vista de quem usa o app (não do código), com o
@@ -17,7 +17,7 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 
 ## [Não lançado]
 
-## [0.2.1] — 2026-10-13
+## [0.2.1] - 2026-10-13
 
 ### Adicionado
 - Busca na Biblioteca: na coleção aberta, por número, título ou referência (`42B`, `castelo`,
@@ -31,7 +31,7 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 - Busca por número nos hinários mostra primeiro o número exato: `42` traz 42A e 42B antes de
   142 e 420 (E12)
 
-## [0.2.0] — 2026-10-13
+## [0.2.0] - 2026-10-13
 
 ### Adicionado
 - Itens longos aparecem uma seção por vez, com uma faixa para pular entre elas, no Apresentar,
@@ -41,7 +41,7 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
   Apresentar (E11)
 - Aba Conexão mostra os 8 eventos mais recentes do registro, com "Ver todos" (E11)
 
-## [0.1.0] — 2026-10-13
+## [0.1.0] - 2026-10-13
 
 ### Adicionado
 - Abas Liturgia, Biblioteca, Apresentar e Conexão, no visual Broadsheet (E1)

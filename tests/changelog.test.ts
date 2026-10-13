@@ -14,7 +14,7 @@ describe('CHANGELOG.md', () => {
   })
 
   it('has an entry for the package version, with its date', () => {
-    expect(changelog).toMatch(new RegExp(`^## \\[${version.replace(/\./g, '\\.')}\\] — \\d{4}-\\d{2}-\\d{2}$`, 'm'))
+    expect(changelog).toMatch(new RegExp(`^## \\[${version.replace(/\./g, '\\.')}\\] - \\d{4}-\\d{2}-\\d{2}$`, 'm'))
   })
 
   it('uses only the known groups', () => {

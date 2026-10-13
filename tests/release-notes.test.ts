@@ -8,12 +8,12 @@ const changelog = `# Changelog
 ### Adicionado
 - Algo novo (E9)
 
-## [0.2.0] — 2026-11-01
+## [0.2.0] - 2026-11-01
 
 ### Corrigido
 - Um erro (E9)
 
-## [0.1.0] — 2026-10-13
+## [0.1.0] - 2026-10-13
 
 ### Adicionado
 - Primeira versão (E1)
@@ -27,6 +27,6 @@ describe('release notes from CHANGELOG.md', () => {
 
   it('fails when the version was not closed in the changelog', () => {
     expect(() => releaseNotes(changelog, '0.3.0')).toThrow(/no section for 0\.3\.0/)
-    expect(() => releaseNotes('## [1.0.0] — 2026-12-01\n\n## [0.1.0] — x\n- a', '1.0.0')).toThrow(/empty/)
+    expect(() => releaseNotes('## [1.0.0] - 2026-12-01\n\n## [0.1.0] - x\n- a', '1.0.0')).toThrow(/empty/)
   })
 })

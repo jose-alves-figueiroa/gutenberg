@@ -2,7 +2,7 @@
 # library texts in clear, so running this workflow is the maintainer's decision to publish them.
 #
 # Before running: bump "version" in package.json and close "[Não lançado]" in CHANGELOG.md as
-# "## [x.y.z] — YYYY-MM-DD" (AGENTS.md → Changelog). The release is tagged v<version>, its notes
+# "## [x.y.z] - YYYY-MM-DD" (AGENTS.md → Changelog). The release is tagged v<version>, its notes
 # come from that CHANGELOG section; running again for the same version replaces the files.
 name: release
 

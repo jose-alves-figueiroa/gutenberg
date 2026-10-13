@@ -29,7 +29,7 @@ instaladores ficam 3 dias como artefatos do workflow.
 
 Para publicar uma versão no GitHub (página de versões, links do README):
 1. Suba `version` no `package.json` e feche `[Não lançado]` no `CHANGELOG.md` como
-   `## [x.y.z] — AAAA-MM-DD`; commit e push.
+   `## [x.y.z] - AAAA-MM-DD`; commit e push.
 2. `Actions → release → Run workflow` (ou `gh workflow run release`). Marque **draft** para
    revisar antes de publicar.
 3. O workflow gera os instaladores e cria a versão `v<x.y.z>` com eles e as notas do changelog.
