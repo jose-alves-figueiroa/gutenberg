@@ -59,9 +59,19 @@ describe('packaging (E8)', () => {
 
   it('CI unlocks the data on Ubuntu only and keeps installers private and short-lived', () => {
     const wf = read('.github/workflows/installers.yml')
-    expect(wf).toMatch(/on:\s+workflow_dispatch:/)
-    expect(wf).not.toMatch(/softprops|gh release create/)
+    expect(wf).toMatch(/on:\s+workflow_dispatch:\s+workflow_call:/)
+    expect(wf).not.toMatch(/softprops|gh release/)
     expect(wf).toContain('retention-days: 3')
     expect(existsSync(join(root, 'docs/OBS.md'))).toBe(true)
+  })
+
+  it('publishes a Release only from the manual release workflow, with notes from the changelog', () => {
+    const wf = read('.github/workflows/release.yml')
+    const triggers = wf.slice(wf.indexOf('\non:'), wf.indexOf('\npermissions:'))
+    expect(triggers).toMatch(/workflow_dispatch:/)
+    expect(triggers).not.toMatch(/push|pull_request|schedule|release:|workflow_run/)
+    expect(wf).toContain('uses: ./.github/workflows/installers.yml')
+    expect(wf).toContain('npm run --silent release:notes')
+    expect(wf).toContain('gh release create "$tag"')
   })
 })

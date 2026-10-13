@@ -27,6 +27,15 @@ Os três saem de um Mac. Também há o workflow manual **installers** no GitHub 
 `GUTENBERG_DATA_KEY_GPG` (o resultado de `base64 -i .secrets/gutenberg-data.key.gpg`). Os
 instaladores ficam 3 dias como artefatos do workflow.
 
+Para publicar uma versão no GitHub (página de versões, links do README):
+1. Suba `version` no `package.json` e feche `[Não lançado]` no `CHANGELOG.md` como
+   `## [x.y.z] — AAAA-MM-DD`; commit e push.
+2. `Actions → release → Run workflow` (ou `gh workflow run release`). Marque **draft** para
+   revisar antes de publicar.
+3. O workflow gera os instaladores e cria a versão `v<x.y.z>` com eles e as notas do changelog.
+   Rodar de novo para a mesma versão substitui os arquivos. **A versão é pública** e leva os
+   textos da biblioteca em claro.
+
 ## 2. Instalar no computador do operador
 
 ### Windows

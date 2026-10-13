@@ -81,5 +81,7 @@ Formato [Conventional Commits](https://www.conventionalcommits.org/) com o épic
 - **Todo commit** com `feat` ou `fix` (e qualquer outro que o operador perceba) acrescenta um item
   em `## [Não lançado]` do `CHANGELOG.md`, no mesmo commit, seguindo o formato do topo do arquivo.
 - Ao gerar instaladores de uma versão nova: subir a versão do `package.json`, transformar
-  `[Não lançado]` em `## [x.y.z] — AAAA-MM-DD` e abrir um `[Não lançado]` vazio acima.
+  `[Não lançado]` em `## [x.y.z] — AAAA-MM-DD` e abrir um `[Não lançado]` vazio acima. A seção
+  vira as notas da versão no workflow manual **release** (`.github/workflows/release.yml`), que
+  só o mantenedor dispara.
 - Um teste (`tests/changelog.test.ts`) garante que a versão do `package.json` está no changelog.

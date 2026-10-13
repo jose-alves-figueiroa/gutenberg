@@ -31,7 +31,8 @@
     "translate:creeds": "tsx scripts/translate-creeds.ts",
     "translate:psalter": "tsx scripts/translate-psalter.ts",
     "hymnal:fetch": "tsx scripts/hymnal-fetch.ts",
-    "translate:hymnal": "tsx scripts/translate-hymnal.ts"
+    "translate:hymnal": "tsx scripts/translate-hymnal.ts",
+    "release:notes": "tsx scripts/release-notes.ts"
   },
   "dependencies": {
     "@fontsource/source-serif-4": "^5.3.1",

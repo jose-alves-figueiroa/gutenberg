@@ -1,6 +1,7 @@
 # Installers for Windows, macOS (arm64) and Ubuntu/Debian (PLAN.md → US8.1).
 # Manual only: the installers carry the library texts in clear and this repository is public,
-# so artifacts are kept for a few days and nothing is published as a Release.
+# so artifacts are kept for a few days. Publishing is a separate manual workflow (release.yml),
+# which calls this one.
 #
 # Secrets:
 #   GUTENBERG_DATA_PASSWORD  password of the git-crypt key (same as in .env)
@@ -9,6 +10,7 @@ name: installers
 
 on:
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read

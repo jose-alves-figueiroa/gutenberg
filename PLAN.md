@@ -237,6 +237,9 @@ Alvos: **Windows**, **macOS** (Apple Silicon/arm64 — o Mac do mantenedor, macO
 - [x] Atualização preserva o banco do operador em `userData` (o banco empacotado só é copiado na 1ª execução)
 - [x] Dados novos da E3 entram sem perder edições: o `data:build` grava `content_version` (hash dos dados); ao abrir, se o banco empacotado tiver outra versão, o conteúdo é atualizado a partir dele, **mantendo os registros editados pelo operador** (músicas e credos com `source = 'edited'`; seções da confissão e perguntas de catecismo marcadas `edited` — migração 2), novas seções do operador na mesma ordem; cultos, liturgias e configurações intactos
 
+**US8.5** Versões no GitHub
+- [x] Workflow manual **release** (`workflow_dispatch`, opção draft): reaproveita o `installers` (`workflow_call`), cria a versão `v<package.json>` com os quatro instaladores e as notas da seção do `CHANGELOG.md` (`npm run release:notes`; falha se a versão não estiver fechada no changelog); rodar de novo substitui os arquivos. Publicar é decisão do mantenedor (textos em claro)
+
 **US8.4** Validação em campo
 - [x] Rodar o workflow **installers** depois de cadastrar os segredos no GitHub (2026-10-13: testes + banco no Ubuntu, instaladores Windows/macOS/Linux gerados)
 - [ ] Instalar num Windows e num Ubuntu reais: regra de firewall / `ufw`, atalho, primeira execução; OBS em outro PC lendo `/overlay/<saída>`
