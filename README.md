@@ -6,14 +6,17 @@ o OBS de outro computador da rede local, por HTTP.
 
 ## Instalar
 
-Baixe o instalador do seu sistema na [página de versões](https://github.com/jose-alves-figueiroa/gutenberg/releases/latest):
+Baixe o instalador do seu sistema na **[página de versões](https://github.com/jose-alves-figueiroa/gutenberg/releases/latest)**,
+em **Assets**:
 
-| Sistema | Instalador |
+| Sistema | Arquivo |
 |---|---|
-| Windows 10/11 (x64) | [Gutenberg-0.1.0-win-x64.exe](https://github.com/jose-alves-figueiroa/gutenberg/releases/download/v0.1.0/Gutenberg-0.1.0-win-x64.exe) |
-| macOS (Apple Silicon) | [Gutenberg-0.1.0-mac-arm64.dmg](https://github.com/jose-alves-figueiroa/gutenberg/releases/download/v0.1.0/Gutenberg-0.1.0-mac-arm64.dmg) |
-| Ubuntu / Debian (x64) | [Gutenberg-0.1.0-linux-amd64.deb](https://github.com/jose-alves-figueiroa/gutenberg/releases/download/v0.1.0/Gutenberg-0.1.0-linux-amd64.deb) |
-| Outras distribuições Linux (x64) | [Gutenberg-0.1.0-linux-x86_64.AppImage](https://github.com/jose-alves-figueiroa/gutenberg/releases/download/v0.1.0/Gutenberg-0.1.0-linux-x86_64.AppImage) |
+| Windows 10/11 (x64) | `Gutenberg-<versão>-win-x64.exe` |
+| macOS (Apple Silicon) | `Gutenberg-<versão>-mac-arm64.dmg` |
+| Ubuntu / Debian (x64) | `Gutenberg-<versão>-linux-amd64.deb` |
+| Outras distribuições Linux (x64) | `Gutenberg-<versão>-linux-x86_64.AppImage` |
+
+Versões anteriores: [todas as versões](https://github.com/jose-alves-figueiroa/gutenberg/releases).
 
 ### Windows
 1. Execute o `.exe` e aceite o pedido de administrador.
@@ -33,10 +36,10 @@ Baixe o instalador do seu sistema na [página de versões](https://github.com/jo
 
 ### Ubuntu / Debian
 ```sh
-sudo apt install ./Gutenberg-0.1.0-linux-amd64.deb
+sudo apt install ./Gutenberg-<versão>-linux-amd64.deb
 ```
 Com o `ufw` ativo, a instalação libera a porta 8484/tcp. Para o AppImage:
-`chmod +x Gutenberg-0.1.0-linux-x86_64.AppImage` e execute.
+`chmod +x Gutenberg-<versão>-linux-x86_64.AppImage` e execute.
 
 ### Ligar ao OBS
 Na aba **Conexão** do Gutenberg, copie o endereço da saída (ex.: `http://<ip>:8484/overlay/bible`)
