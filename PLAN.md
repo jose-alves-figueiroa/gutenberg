@@ -289,7 +289,7 @@ Itens longos (capítulo inteiro, Sl 119, hinos de muitas estrofes) aparecem **um
 - [x] Registro da aba Conexão: os 8 mais recentes e "Ver todos"
 - [x] Grades (Catecismo Maior 196, Saltério 150, capítulos de Salmos) e listas laterais: cabem em 1280×820 (células de 52 px); na janela mínima (900×600) o Catecismo Maior ainda rola um pouco — sem paginação por ora
 
-### E12 — Busca na Biblioteca, cultos recentes e telas no README
+### E12 — Busca na Biblioteca, cultos recentes e telas no README ✓
 Pedidos do operador depois da 0.2.0: achar itens pelo número/título, o Sl 119 uma letra por seção, os cultos mais recentes primeiro e prints no README.
 
 **US12.1** Como operador, quero buscar na coleção aberta da Biblioteca por número, título ou referência (`42B`, `castelo`, `sl 119`, `1.2`).
@@ -303,5 +303,5 @@ Pedidos do operador depois da 0.2.0: achar itens pelo número/título, o Sl 119 
 - [x] `services` em ordem decrescente de id; `Pager`/`usePaging` extraídos de `List`; a página segue o culto selecionado
 
 **US12.4** README com prints de cada aba e do OBS
-- [~] `npm run screenshots` (playwright-core + Electron): perfil isolado e seed do protótipo (`GUTENBERG_USER_DATA`/`GUTENBERG_SEED`, só fora do app empacotado), OBS simulado por uma janela oculta em `/overlay`
+- [x] `npm run screenshots` (playwright-core + Electron): perfil isolado e seed do protótipo (`GUTENBERG_USER_DATA`/`GUTENBERG_SEED`, só fora do app empacotado), OBS simulado por uma janela oculta em `/overlay`
 

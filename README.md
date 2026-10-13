@@ -17,6 +17,19 @@ Projeção da liturgia para o OBS. O Gutenberg cadastra a liturgia do culto, man
 (Bíblia ARA, salmos, HNC, credos, Confissão de Westminster, catecismos) e envia telas limpas para
 o OBS de outro computador da rede local, por HTTP. Feito para a [IP Aliança](https://www.ipalianca.org/).
 
+## Telas
+
+| | |
+|---|---|
+| ![Liturgia](docs/images/liturgy.png) | ![Apresentar](docs/images/present.png) |
+| **Liturgia** — cultos (o mais recente primeiro) e a ordem do culto, com momento e número de telas de cada item. | **Apresentar** — o culto à esquerda, as telas do item à direita; ←/→ avançam, a tela no ar fica em destaque. |
+| ![Biblioteca](docs/images/library.png) | ![Busca na Biblioteca](docs/images/library-search.png) |
+| **Biblioteca** — Bíblia, hinários, credos, confissão e catecismos; selecione um trecho para ver as telas. | **Busca** — por número, título ou referência: `42B`, `castelo`, `sl 119`, `1.2`. |
+| ![Conexão](docs/images/connection.png) | ![No OBS](docs/images/obs.png) |
+| **Conexão** — estado do OBS, endereços das saídas para a Browser Source e registro de eventos. | **No OBS** — só o texto, sobre a câmera; o resto da composição fica no OBS. |
+
+Os prints usam os dados de exemplo do protótipo e são gerados com `npm run screenshots`.
+
 ## Instalar
 
 Baixe o instalador do seu sistema na **[página de versões](https://github.com/jose-alves-figueiroa/gutenberg/releases/latest)**,
@@ -69,6 +82,7 @@ npm install
 npm run dev        # app em modo desenvolvimento
 npm test           # testes
 npm run dist:mac   # instaladores: dist:mac, dist:win, dist:linux
+npm run screenshots # prints do README (feche o Gutenberg antes: usa a porta 8484)
 ```
 
 Os textos da biblioteca ficam cifrados no repositório (ver [docs/DATA.md](docs/DATA.md)). Regras
