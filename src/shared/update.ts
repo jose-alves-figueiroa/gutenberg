@@ -1,6 +1,7 @@
 /**
  * App updates (PLAN.md → E10). The app reads the published GitHub Releases; no server of our own.
- * - `auto`: Windows and Linux download in the background and install when the app quits;
+ * - `auto`: Windows, Linux and macOS signed with a Developer ID download in the background and
+ *   install when the app quits;
  * - `dmg`: macOS without a Developer ID can't use Squirrel.Mac, so the app downloads the `.dmg` itself
  *   and, on "Reiniciar e atualizar", swaps its own bundle (E13);
  * - `off`: development builds.
@@ -21,6 +22,14 @@ export interface UpdateState {
   error: string | null
   /** Last finished check (ms since epoch). */
   checkedAt: number | null
+}
+
+/**
+ * How a packaged build updates (PLAN.md → E14): macOS signed with a Developer ID
+ * (`GUTENBERG_MAC_SIGNING=developer-id`) updates like the others; an ad-hoc build downloads the `.dmg`.
+ */
+export function updateMode(platform: string, macSigning: string | undefined): UpdateMode {
+  return platform === 'darwin' && macSigning !== 'developer-id' ? 'dmg' : 'auto'
 }
 
 /** Checks again every 6 h while the app stays open. */

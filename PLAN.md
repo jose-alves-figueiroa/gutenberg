@@ -317,3 +317,13 @@ Pedidos do operador depois da 0.2.2.
 
 **US13.3** Aba Conexão sem rolagem em 1280×820
 - [x] Duas páginas (Estado e Saídas); saídas em cartões lado a lado, paginadas quando não cabem; registro paginado. Na janela mínima (900×600) ainda rolam a página Estado (125 a 240 px, conforme o estado da atualização) e o editor de saída (155 px)
+
+### E14 — Assinatura do macOS por flag ✓ (falta validar com a conta Apple)
+`GUTENBERG_MAC_SIGNING` escolhe o fluxo do Mac: `adhoc` (padrão, sem conta Apple) ou `developer-id` (produção, assinado e notarizado).
+
+**US14.1** Como mantenedor, quero gerar o app do Mac assinado só quando tiver a conta Apple, sem mudar o fluxo de hoje.
+- [x] `electron-builder.developer-id.yml` estende o `electron-builder.yml`: identidade Developer ID, hardened runtime, notarização e o `.zip` do Squirrel.Mac
+- [x] `scripts/builder.mjs` escolhe a configuração pela flag e falha cedo sem certificado/notarização
+- [x] A flag entra no build (`electron.vite.config.ts`): `developer-id` atualiza como o Windows (`auto`); `adhoc` baixa o `.dmg` (E13)
+- [x] Opção **mac_signing** nos workflows **installers** e **release**; `.zip` entre os arquivos da versão; segredos documentados em `docs/OBS.md`
+- [ ] Gerar e publicar uma versão `developer-id` com a conta Apple

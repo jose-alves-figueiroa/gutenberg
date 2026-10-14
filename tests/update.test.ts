@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createUpdateService } from '../src/main/update/service'
-import { UPDATE_INTERVAL_MS, hasUpdate } from '../src/shared/update'
+import { UPDATE_INTERVAL_MS, hasUpdate, updateMode } from '../src/shared/update'
 import { createFakeDmg, createFakeUpdater } from './helpers/fake-updater'
 import { createTestApi } from './helpers/test-api'
 
@@ -103,6 +103,14 @@ describe('update service (US10.2)', () => {
     stop()
     await vi.advanceTimersByTimeAsync(UPDATE_INTERVAL_MS)
     expect(updater.checks).toBe(2)
+  })
+
+  it('macOS updates by .dmg unless the build is signed with a Developer ID (E14)', () => {
+    expect(updateMode('darwin', 'adhoc')).toBe('dmg')
+    expect(updateMode('darwin', undefined)).toBe('dmg')
+    expect(updateMode('darwin', 'developer-id')).toBe('auto')
+    expect(updateMode('win32', 'adhoc')).toBe('auto')
+    expect(updateMode('linux', 'developer-id')).toBe('auto')
   })
 
   it('development builds (no updater) are off', async () => {

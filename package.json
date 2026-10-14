@@ -9,7 +9,7 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "dist:mac": "node scripts/dist-check.mjs && electron-vite build && electron-builder --mac --publish never",
+    "dist:mac": "node scripts/dist-check.mjs && electron-vite build && node scripts/builder.mjs --mac --publish never",
     "dist:win": "node scripts/dist-check.mjs && electron-vite build && electron-builder --win --publish never",
     "dist:linux": "node scripts/dist-check.mjs && electron-vite build && electron-builder --linux --publish never",
     "test": "vitest run",

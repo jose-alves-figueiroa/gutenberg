@@ -13,6 +13,11 @@ on:
         description: Create as draft (visible only to collaborators until published)
         type: boolean
         default: false
+      mac_signing:
+        description: macOS signing (adhoc = no Apple account; developer-id = signed and notarized)
+        type: choice
+        options: [adhoc, developer-id]
+        default: adhoc
 
 permissions:
   contents: read
@@ -43,6 +48,8 @@ jobs:
   installers:
     needs: notes
     uses: ./.github/workflows/installers.yml
+    with:
+      mac_signing: ${{ inputs.mac_signing }}
     secrets: inherit
 
   release:
@@ -68,7 +75,7 @@ jobs:
           DRAFT: ${{ inputs.draft }}
         run: |
           tag="v$VERSION"
-          files=$(find dist -type f \( -name '*.exe' -o -name '*.dmg' -o -name '*.deb' -o -name '*.AppImage' -o -name '*.blockmap' -o -name 'latest*.yml' \))
+          files=$(find dist -type f \( -name '*.exe' -o -name '*.dmg' -o -name '*.zip' -o -name '*.deb' -o -name '*.AppImage' -o -name '*.blockmap' -o -name 'latest*.yml' \))
           echo "$files"
           if gh release view "$tag" > /dev/null 2>&1; then
             gh release upload "$tag" $files --clobber

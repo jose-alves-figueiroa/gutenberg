@@ -36,6 +36,30 @@ Para publicar uma versão no GitHub (página de versões, links do README):
    Rodar de novo para a mesma versão substitui os arquivos. **A versão é pública** e leva os
    textos da biblioteca em claro.
 
+### Assinatura no macOS: desenvolvimento ou produção
+
+A flag `GUTENBERG_MAC_SIGNING` escolhe como o app do Mac é assinado (e, com isso, como ele se
+atualiza). No GitHub, é a opção **mac_signing** dos workflows **installers** e **release**.
+
+| Valor | Precisa de | Como o app se atualiza |
+|---|---|---|
+| `adhoc` (padrão) | nada | baixa o `.dmg` sozinho; instala em "Reiniciar e atualizar" |
+| `developer-id` | conta Apple Developer (US$ 99/ano) | baixa e instala ao fechar, como no Windows |
+
+Para usar `developer-id`:
+1. Em developer.apple.com → Certificates, crie um **Developer ID Application**, instale no Mac
+   e exporte como `.p12` (Acesso às Chaves → Exportar), com senha.
+2. Em account.apple.com → Senhas de app, crie uma senha para a notarização.
+3. Cadastre os segredos no GitHub (Settings → Secrets → Actions): `MAC_CSC_LINK`
+   (`base64 -i certificado.p12`), `MAC_CSC_KEY_PASSWORD`, `APPLE_ID`,
+   `APPLE_APP_SPECIFIC_PASSWORD` e `APPLE_TEAM_ID` (Membership, em developer.apple.com).
+4. Rode o **release** com **mac_signing = developer-id**. No Mac local:
+   `GUTENBERG_MAC_SIGNING=developer-id CSC_LINK=… CSC_KEY_PASSWORD=… APPLE_ID=… APPLE_APP_SPECIFIC_PASSWORD=… APPLE_TEAM_ID=… npm run dist:mac`.
+
+Quem tem uma versão `adhoc` passa para a assinada pela atualização normal (o `.dmg` serve aos
+dois). **Depois de publicar uma versão `developer-id`, mantenha `developer-id`**: o app assinado
+recusa atualizações de uma versão sem a mesma assinatura e mostra o erro na aba Conexão.
+
 ## 2. Instalar no computador do operador
 
 ### Windows

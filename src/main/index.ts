@@ -11,6 +11,7 @@ import { createServerApp } from './server/app'
 import type { NetworkControl } from './server/connection'
 import { startHttpServer } from './server/listen'
 import { createDmgInstaller } from './update/dmg'
+import { updateMode } from '../shared/update'
 import { createUpdateService } from './update/service'
 
 function createWindow(serverUrl: string): void {
@@ -93,20 +94,21 @@ app.whenReady().then(async () => {
       }
     }
     // Packaged only; macOS without a Developer ID can't use Squirrel.Mac: the app downloads the .dmg.
-    const mac = process.platform === 'darwin'
+    const mode = updateMode(process.platform, process.env.GUTENBERG_MAC_SIGNING)
     const updates = createUpdateService({
       version: app.getVersion(),
-      mode: mac ? 'dmg' : 'auto',
+      mode,
       updater: app.isPackaged ? electronUpdater.autoUpdater : undefined,
-      dmg: mac
-        ? createDmgInstaller({
-            dir: join(app.getPath('userData'), 'updates'),
-            exePath: app.getPath('exe'),
-            fetch: (url) => net.fetch(url),
-            openPath: (path) => shell.openPath(path),
-            quit: () => app.quit()
-          })
-        : undefined
+      dmg:
+        mode === 'dmg'
+          ? createDmgInstaller({
+              dir: join(app.getPath('userData'), 'updates'),
+              exePath: app.getPath('exe'),
+              fetch: (url) => net.fetch(url),
+              openPath: (path) => shell.openPath(path),
+              quit: () => app.quit()
+            })
+          : undefined
     })
     updates.start()
     const server = createServerApp(db, { network, updates })

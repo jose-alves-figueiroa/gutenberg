@@ -6,11 +6,25 @@
 # Secrets:
 #   GUTENBERG_DATA_PASSWORD  password of the git-crypt key (same as in .env)
 #   GUTENBERG_DATA_KEY_GPG   base64 of .secrets/gutenberg-data.key.gpg (`base64 -i .secrets/gutenberg-data.key.gpg`)
+# Only with mac_signing = developer-id (PLAN.md → E14, docs/OBS.md → Assinatura no macOS):
+#   MAC_CSC_LINK             base64 of the Developer ID Application certificate (.p12)
+#   MAC_CSC_KEY_PASSWORD     password of that .p12
+#   APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID   notarization
 name: installers
 
 on:
   workflow_dispatch:
+    inputs:
+      mac_signing:
+        description: macOS signing (adhoc = no Apple account; developer-id = signed and notarized)
+        type: choice
+        options: [adhoc, developer-id]
+        default: adhoc
   workflow_call:
+    inputs:
+      mac_signing:
+        type: string
+        default: adhoc
 
 permissions:
   contents: read
@@ -69,16 +83,27 @@ jobs:
         with:
           name: gutenberg-sqlite
           path: data/build
-      - run: npm run dist:${{ matrix.target }}
+      - if: matrix.target != 'mac' || inputs.mac_signing != 'developer-id'
+        run: npm run dist:${{ matrix.target }}
         env:
           # No Apple/Windows certificates: unsigned (macOS ad-hoc); the scripts never publish.
           CSC_IDENTITY_AUTO_DISCOVERY: false
+      - if: matrix.target == 'mac' && inputs.mac_signing == 'developer-id'
+        run: npm run dist:mac
+        env:
+          GUTENBERG_MAC_SIGNING: developer-id
+          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       - uses: actions/upload-artifact@v7
         with:
           name: gutenberg-${{ matrix.target }}
           path: |
             release/*/*.exe
             release/*/*.dmg
+            release/*/*.zip
             release/*/*.deb
             release/*/*.AppImage
             release/*/*.blockmap

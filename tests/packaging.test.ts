@@ -2,6 +2,7 @@ import { existsSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { DEFAULT_HTTP_PORT } from '../src/main/db/build'
+import { DEVELOPER_ID_ENV, builderArgs } from '../scripts/builder.mjs'
 
 const root = join(__dirname, '..')
 const read = (file: string) => readFileSync(join(root, file), 'utf8')
@@ -59,7 +60,7 @@ describe('packaging (E8)', () => {
 
   it('CI unlocks the data on Ubuntu only and keeps installers private and short-lived', () => {
     const wf = read('.github/workflows/installers.yml')
-    expect(wf).toMatch(/on:\s+workflow_dispatch:\s+workflow_call:/)
+    expect(wf).toMatch(/on:\s+workflow_dispatch:[\s\S]*\n {2}workflow_call:/)
     expect(wf).not.toMatch(/softprops|gh release/)
     expect(wf).toContain('retention-days: 3')
     expect(existsSync(join(root, 'docs/OBS.md'))).toBe(true)
@@ -79,5 +80,30 @@ describe('packaging (E8)', () => {
     expect(config).toMatch(/publish:\s+provider: github\s+owner: jose-alves-figueiroa\s+repo: gutenberg/)
     expect(read('.github/workflows/installers.yml')).toMatch(/release\/\*\/\*\.blockmap\s+release\/\*\/latest\*\.yml/)
     expect(read('.github/workflows/release.yml')).toContain("-name 'latest*.yml'")
+  })
+
+  it('macOS: ad-hoc by default, Developer ID behind GUTENBERG_MAC_SIGNING (E14)', () => {
+    const signed = read('electron-builder.developer-id.yml')
+    expect(signed).toMatch(/^extends: electron-builder\.yml$/m)
+    expect(signed).toMatch(/target: zip\s+arch: \[arm64\]/)
+    expect(signed).toMatch(/identity: Developer ID Application/)
+    expect(signed).toMatch(/notarize: true/)
+    expect(pkg.scripts['dist:mac']).toContain('node scripts/builder.mjs --mac')
+
+    const mac = ['--mac', '--publish', 'never']
+    const secrets = Object.fromEntries(DEVELOPER_ID_ENV.map((k) => [k, 'x']))
+    expect(builderArgs(mac, {})).toEqual(mac)
+    expect(builderArgs(mac, { GUTENBERG_MAC_SIGNING: 'adhoc' })).toEqual(mac)
+    expect(builderArgs(mac, { GUTENBERG_MAC_SIGNING: 'developer-id', ...secrets })).toEqual(['--config', 'electron-builder.developer-id.yml', ...mac])
+    expect(() => builderArgs(mac, { GUTENBERG_MAC_SIGNING: 'developer-id', CSC_LINK: 'x' })).toThrow(/needs CSC_KEY_PASSWORD, APPLE_ID/)
+    expect(() => builderArgs(mac, { GUTENBERG_MAC_SIGNING: 'prod' })).toThrow(/adhoc or developer-id/)
+
+    const installers = read('.github/workflows/installers.yml')
+    expect(installers).toMatch(/mac_signing:[\s\S]*options: \[adhoc, developer-id\][\s\S]*default: adhoc/)
+    expect(installers).toMatch(/GUTENBERG_MAC_SIGNING: developer-id\s+CSC_LINK: \$\{\{ secrets\.MAC_CSC_LINK \}\}/)
+    expect(installers).toContain('release/*/*.zip')
+    const release = read('.github/workflows/release.yml')
+    expect(release).toContain('mac_signing: ${{ inputs.mac_signing }}')
+    expect(release).toContain("-name '*.zip'")
   })
 })

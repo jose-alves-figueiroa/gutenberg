@@ -1,0 +1,15 @@
+# macOS production build (PLAN.md → E14): GUTENBERG_MAC_SIGNING=developer-id selects this file
+# (scripts/builder.mjs). Same as electron-builder.yml, but signed with the Apple Developer ID and
+# notarized, plus the .zip that Squirrel.Mac installs from; the app then updates on its own, like
+# Windows. Needs CSC_LINK, CSC_KEY_PASSWORD, APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID.
+extends: electron-builder.yml
+
+mac:
+  # Added to the base dmg (electron-builder concatenates lists).
+  target:
+    - target: zip
+      arch: [arm64]
+  # Any "Developer ID Application" certificate in the keychain (CSC_LINK imports it).
+  identity: Developer ID Application
+  hardenedRuntime: true
+  notarize: true
