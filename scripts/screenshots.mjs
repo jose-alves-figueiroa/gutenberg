@@ -107,6 +107,8 @@ try {
 
   await tab('Conexão')
   await shot('connection')
+  await page.getByRole('button', { name: /^Saídas/ }).click()
+  await shot('connection-outputs')
 } finally {
   await app.close()
 }

@@ -15,6 +15,10 @@ describe('i18n', () => {
     for (const key of Object.keys(ptBR)) expect(key, key).toMatch(/^[a-zA-Z.]+$/)
   })
 
+  it('has no em dash in any text (the operator asked for none)', () => {
+    for (const [key, value] of Object.entries(ptBR)) expect(value, key).not.toContain('\u2014')
+  })
+
   it('fills placeholders and leaves unknown ones untouched', () => {
     expect(t('slide.confession', { name: 'CFW', chapter: 1, section: 2 })).toBe('CFW 1.2')
     expect(t('slide.songLabeled', { label: 'Salmo', number: 133 })).toBe('Salmo 133{version}')

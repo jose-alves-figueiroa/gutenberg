@@ -1,10 +1,11 @@
 /**
  * App updates (PLAN.md → E10). The app reads the published GitHub Releases; no server of our own.
  * - `auto`: Windows and Linux download in the background and install when the app quits;
- * - `notify`: macOS without a Developer ID can't install updates, so it only tells there is one;
+ * - `dmg`: macOS without a Developer ID can't use Squirrel.Mac, so the app downloads the `.dmg` itself
+ *   and, on "Reiniciar e atualizar", swaps its own bundle (E13);
  * - `off`: development builds.
  */
-export type UpdateMode = 'auto' | 'notify' | 'off'
+export type UpdateMode = 'auto' | 'dmg' | 'off'
 
 export type UpdateStatus = 'idle' | 'checking' | 'current' | 'available' | 'downloading' | 'ready' | 'error'
 
@@ -25,8 +26,12 @@ export interface UpdateState {
 /** Checks again every 6 h while the app stays open. */
 export const UPDATE_INTERVAL_MS = 6 * 60 * 60 * 1000
 
-/** Where the operator downloads a version by hand (macOS). */
-export const RELEASES_URL = 'https://github.com/jose-alves-figueiroa/gutenberg/releases/latest'
+/** Files of the published GitHub Releases, by tag (`v<version>/<file>`). */
+export const RELEASES_DOWNLOAD_URL = 'https://github.com/jose-alves-figueiroa/gutenberg/releases/download'
+
+/** Where a release file is downloaded: `latest-mac.yml` lists it by name, relative to its release. */
+export const releaseFileUrl = (version: string, file: string): string =>
+  /^https?:\/\//.test(file) ? file : `${RELEASES_DOWNLOAD_URL}/v${version}/${encodeURIComponent(file)}`
 
 /** A newer version is known: shown in the nav. */
 export const hasUpdate = (s: Pick<UpdateState, 'status'>): boolean => s.status === 'available' || s.status === 'downloading' || s.status === 'ready'

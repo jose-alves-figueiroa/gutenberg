@@ -69,8 +69,8 @@ export function QuickSearch() {
     }))
   else if (parsed.type === 'collection')
     sugg = (search.data ?? []).slice(0, MAX_RESULTS).map((r) => {
-      const [label, ...rest] = r.title.split(' — ')
-      return { label, sub: rest.join(' — '), group: parsed.title, run: () => show(r.collection, r.itemRef) }
+      const [label, ...rest] = r.title.split(': ')
+      return { label, sub: rest.join(': '), group: parsed.title, run: () => show(r.collection, r.itemRef) }
     })
   const cur = Math.min(sel, Math.max(0, sugg.length - 1))
 

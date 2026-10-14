@@ -2,7 +2,7 @@ import type { Server } from 'node:http'
 import type { AddressInfo } from 'node:net'
 import { networkInterfaces } from 'node:os'
 import { join } from 'node:path'
-import { app, BrowserWindow, dialog, shell } from 'electron'
+import { app, BrowserWindow, dialog, net, shell } from 'electron'
 // CommonJS with a lazy getter: a named import isn't seen by Node's ESM loader.
 import electronUpdater from 'electron-updater'
 import { openAppDatabase } from './db/open'
@@ -10,6 +10,7 @@ import { httpPort, saveHttpPort } from './library/repository'
 import { createServerApp } from './server/app'
 import type { NetworkControl } from './server/connection'
 import { startHttpServer } from './server/listen'
+import { createDmgInstaller } from './update/dmg'
 import { createUpdateService } from './update/service'
 
 function createWindow(serverUrl: string): void {
@@ -91,11 +92,21 @@ app.whenReady().then(async () => {
         saveHttpPort(db, port)
       }
     }
-    // Packaged only; macOS without a Developer ID can't install updates, so it only tells.
+    // Packaged only; macOS without a Developer ID can't use Squirrel.Mac: the app downloads the .dmg.
+    const mac = process.platform === 'darwin'
     const updates = createUpdateService({
       version: app.getVersion(),
-      mode: process.platform === 'darwin' ? 'notify' : 'auto',
-      updater: app.isPackaged ? electronUpdater.autoUpdater : undefined
+      mode: mac ? 'dmg' : 'auto',
+      updater: app.isPackaged ? electronUpdater.autoUpdater : undefined,
+      dmg: mac
+        ? createDmgInstaller({
+            dir: join(app.getPath('userData'), 'updates'),
+            exePath: app.getPath('exe'),
+            fetch: (url) => net.fetch(url),
+            openPath: (path) => shell.openPath(path),
+            quit: () => app.quit()
+          })
+        : undefined
     })
     updates.start()
     const server = createServerApp(db, { network, updates })

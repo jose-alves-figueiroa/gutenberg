@@ -97,8 +97,11 @@ Atualizações** mostra a versão instalada e o estado; sem internet, nada acont
 - **Windows e Linux:** a versão nova é baixada em segundo plano e instalada **quando o app é
   fechado**, nunca no meio do culto. "Reiniciar e atualizar" instala na hora. O Windows pede
   permissão de administrador; o `.deb`, a senha.
-- **macOS:** sem conta de desenvolvedor da Apple o app não pode se atualizar sozinho; aparece um
-  aviso na barra e o botão **Baixar a nova versão**.
+- **macOS:** sem conta de desenvolvedor da Apple o instalador do sistema não serve; o próprio
+  Gutenberg baixa o `.dmg` da versão nova (conferindo o sha512) e, em **Reiniciar e atualizar**,
+  fecha, troca o app em `/Applications` e abre a versão nova. Se o app estiver fora de uma pasta
+  com permissão de escrita (ou aberto direto do `.dmg`), ele abre o `.dmg` para arrastar por cima.
+  Vale a partir da versão seguinte à 0.2.2; para chegar nela, instale uma vez à mão.
 
 Para instalar à mão, instale a versão nova por cima. O banco do operador (cultos, liturgias, saídas, edições da
 biblioteca) fica na pasta de dados do usuário e é mantido. Se a versão nova trouxer textos

@@ -79,10 +79,10 @@ export function PresentView() {
     nextHint =
       state.slide + 1 < current.slides.length
         ? nextSection && state.slide + 1 === nextSection.start
-          ? `${nextSection.title} — ${current.slides[state.slide + 1].lines[0]}`
+          ? `${nextSection.title} · ${current.slides[state.slide + 1].lines[0]}`
           : current.slides[state.slide + 1].lines[0]
         : following
-          ? `${following.adhoc ? t('present.adhoc') : following.moment || '—'} — ${following.title}`
+          ? `${following.adhoc ? t('present.adhoc') : following.moment || t('common.empty')} · ${following.title}`
           : t('present.end')
   }
 
@@ -95,7 +95,7 @@ export function PresentView() {
             <div key={`${i}:${it.collection}:${it.itemRef}`} className="pres-item" aria-current={i === viewed}>
               <button type="button" className="pres-item-pick" onClick={() => setPicked(i)}>
                 <span className="pres-item-top">
-                  <span className={it.adhoc ? 'pres-moment pres-moment--adhoc' : 'pres-moment'}>{it.adhoc ? t('present.adhoc') : it.moment || '—'}</span>
+                  <span className={it.adhoc ? 'pres-moment pres-moment--adhoc' : 'pres-moment'}>{it.adhoc ? t('present.adhoc') : it.moment || t('common.empty')}</span>
                   {i === live && !state?.blank && <span className="pres-live">{t('present.onAir')}</span>}
                 </span>
                 <span className="pres-item-title">{it.title}</span>
@@ -122,7 +122,7 @@ export function PresentView() {
         <section className="pres-main">
           <div className="pres-head">
             <div className="pres-head-text">
-              <div className="lit-kicker">{item ? `${item.adhoc ? t('present.adhoc') : item.moment || '—'} · ${item.collectionLabel}` : ''}</div>
+              <div className="lit-kicker">{item ? `${item.adhoc ? t('present.adhoc') : item.moment || t('common.empty')} · ${item.collectionLabel}` : ''}</div>
               <h2 className="pres-title">{item ? item.title : t('present.emptyLiturgy')}</h2>
             </div>
             <button type="button" className="btn btn-secondary" disabled={!state} onClick={() => state && command({ type: 'blank', blank: !state.blank })}>

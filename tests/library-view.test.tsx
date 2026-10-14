@@ -46,7 +46,7 @@ describe('Library — Bible (US4.4)', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Hebreus 12' })).toBeInTheDocument()
     const v14 = await screen.findByRole('button', { name: /^14\s*Segui a paz/ })
     const v15 = screen.getByRole('button', { name: /^15\s*atentando/ })
-    expect(screen.getByText('Clique no primeiro versículo — e depois no último, para um trecho')).toBeInTheDocument()
+    expect(screen.getByText('Clique no primeiro versículo e depois no último, para um trecho')).toBeInTheDocument()
 
     await userEvent.click(v14)
     expect(v14).toHaveAttribute('aria-pressed', 'true')

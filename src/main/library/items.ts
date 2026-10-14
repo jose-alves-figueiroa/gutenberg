@@ -99,7 +99,7 @@ export function resolveItem(db: SqlDatabase, coll: string, itemRef: string, max:
       if (!s) return missing()
       return {
         ...base,
-        title: `${short} ${chapter}.${section} — ${s.chapterTitle}`,
+        title: `${short} ${chapter}.${section}: ${s.chapterTitle}`,
         ...screens({ kind: 'confession', confession: { shortTitle: short }, chapter, item: { id: section, text: s.text } }, max),
         missing: false
       }
@@ -157,14 +157,14 @@ export function searchCollection(db: SqlDatabase, coll: string, query: string, l
     const index = repo.catechism(db, id)
     for (const qn of index.questions)
       if (!q || String(qn.number) === query.trim() || match(qn.question))
-        out.push({ collection: coll, itemRef: String(qn.number), title: `${index.shortTitle} · P. ${qn.number} — ${qn.question}` })
+        out.push({ collection: coll, itemRef: String(qn.number), title: `${index.shortTitle} · P. ${qn.number}: ${qn.question}` })
   } else if (kind === 'confession') {
     const short = repo.collections(db).find((c) => c.kind === 'confession' && c.id === id)?.shortTitle ?? id
     for (const ch of repo.confessionChapters(db, id))
       for (const sec of ch.sections) {
         const ref = `${ch.chapter}.${sec}`
         if (!q || ref === query.trim() || ref.startsWith(`${query.trim()}.`) || match(ch.title))
-          out.push({ collection: coll, itemRef: ref, title: `${short} ${ref} — ${ch.title}` })
+          out.push({ collection: coll, itemRef: ref, title: `${short} ${ref}: ${ch.title}` })
       }
   } else if (kind === 'creeds') {
     for (const c of repo.creeds(db)) if (match(c.title)) out.push({ collection: 'creeds', itemRef: c.id, title: c.title })

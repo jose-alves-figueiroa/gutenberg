@@ -27,7 +27,7 @@ describe('item resolution (stable item_ref)', () => {
     ['bible:ara', 'Hb:12:14', 'Hebreus 12.14', 'Bíblia ARA', 1],
     ['songbook:psalter', 'psalter-133B', 'Salmo 133B', 'Salmos genebrinos', 4],
     ['songbook:hnc', 'hnc-h1', 'Castelo forte', 'Hinário Novo Cântico', 2],
-    ['confession:wcf', '1.1', 'CFW 1.1 — Da Escritura Sagrada', 'Confissão de Westminster', 4],
+    ['confession:wcf', '1.1', 'CFW 1.1: Da Escritura Sagrada', 'Confissão de Westminster', 4],
     ['catechism:wsc', '1', 'Breve Catecismo · P. 1', 'Breve Catecismo', 2],
     ['creeds', 'apostles', 'Credo Apostólico', 'Credos', 7]
   ])('%s %s → %s', async (collection, itemRef, title, label, screens) => {
@@ -130,7 +130,7 @@ describe('picker search (US5.3)', () => {
   it('confessions by section, chapter or title; creeds by title', async () => {
     expect((await search('confession:wcf', '1.2')).map((r) => r.itemRef)).toEqual(['1.2'])
     expect((await search('confession:wcf', '1')).map((r) => r.itemRef)).toEqual(['1.1', '1.2'])
-    expect((await search('confession:wcf', 'escritura')).map((r) => r.title)).toEqual(['CFW 1.1 — Da Escritura Sagrada', 'CFW 1.2 — Da Escritura Sagrada'])
+    expect((await search('confession:wcf', 'escritura')).map((r) => r.title)).toEqual(['CFW 1.1: Da Escritura Sagrada', 'CFW 1.2: Da Escritura Sagrada'])
     expect((await search('creeds', 'apost')).map((r) => r.itemRef)).toEqual(['apostles'])
   })
 })

@@ -37,8 +37,8 @@ export function SongbookBrowser({ id, label, path, go }: Props) {
   const [step, arg] = path
   const songRow = (s: SongSummary) => ({
     key: s.id,
-    label: psalter ? `${s.number}${s.version}` : s.number || '—',
-    sub: psalter ? s.firstLine || '—' : s.title,
+    label: psalter ? `${s.number}${s.version}` : s.number || t('common.empty'),
+    sub: psalter ? s.firstLine || t('common.empty') : s.title,
     meta: s.author,
     go: () => go(['song', s.id])
   })

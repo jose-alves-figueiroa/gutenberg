@@ -17,6 +17,15 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 
 ## [Não lançado]
 
+### Adicionado
+- No Mac, o app baixa a versão nova sozinho e instala em "Reiniciar e atualizar", sem precisar
+  baixar o instalador no navegador (E13)
+
+### Alterado
+- Aba Conexão em duas páginas, Estado e Saídas, sem rolagem: as saídas em cartões lado a lado e
+  o registro paginado (E13)
+- Textos da interface sem travessão (E13)
+
 ## [0.2.2] - 2026-10-13
 
 ### Alterado

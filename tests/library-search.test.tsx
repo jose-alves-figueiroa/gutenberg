@@ -22,7 +22,7 @@ describe('Library search (E12)', () => {
   it('Bible: a reference opens the chapter, a name lists books', async () => {
     renderApp('library')
     await screen.findByRole('button', { name: 'Hebreus' })
-    expect(search()).toHaveAttribute('placeholder', 'Livro ou referência — ex.: sl 119')
+    expect(search()).toHaveAttribute('placeholder', 'Livro ou referência, ex.: sl 119')
     await userEvent.type(search(), 'hebr')
     expect(resultRows()).toEqual(['Hebreus'])
     await userEvent.clear(search())
@@ -34,7 +34,7 @@ describe('Library search (E12)', () => {
   it('songbook: number with version opens the song', async () => {
     renderApp('library')
     await userEvent.click(await screen.findByRole('button', { name: /Salmos genebrinos/ }))
-    expect(search()).toHaveAttribute('placeholder', 'Número ou título — ex.: 42B')
+    expect(search()).toHaveAttribute('placeholder', 'Número ou título, ex.: 42B')
     await userEvent.type(search(), '133b')
     await waitFor(() => expect(resultRows()).toEqual(['Salmo 133B']))
     await userEvent.click(screen.getByRole('button', { name: /Salmo 133B/ }))

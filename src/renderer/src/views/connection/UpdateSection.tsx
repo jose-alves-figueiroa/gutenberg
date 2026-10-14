@@ -1,8 +1,8 @@
-/** Updates in the Connection tab (PLAN.md → US10.3): installed version, check, progress, restart. */
-import { ArrowsClockwiseIcon, DownloadSimpleIcon } from '@phosphor-icons/react'
+/** Updates in the Connection tab (PLAN.md → US10.3, US13.1): installed version, check, progress, restart. */
+import { ArrowsClockwiseIcon } from '@phosphor-icons/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { t } from '@shared/i18n'
-import { RELEASES_URL, type UpdateState } from '@shared/update'
+import type { UpdateState } from '@shared/update'
 import { json, useApi } from '../../api'
 import { useUpdate } from '../../update'
 
@@ -15,11 +15,11 @@ export function updateText(s: UpdateState): string {
     case 'current':
       return t('update.status.current')
     case 'available':
-      return s.mode === 'notify' ? t('update.status.availableManual', { v: s.latest ?? '' }) : t('update.status.available', { v: s.latest ?? '' })
+      return s.error ? t('update.status.downloadError', { v: s.latest ?? '', message: s.error }) : t('update.status.available', { v: s.latest ?? '' })
     case 'downloading':
       return t('update.status.downloading', { v: s.latest ?? '', percent: s.percent ?? 0 })
     case 'ready':
-      return t('update.status.ready', { v: s.latest ?? '' })
+      return t(s.mode === 'dmg' ? 'update.status.readyDmg' : 'update.status.ready', { v: s.latest ?? '' })
     case 'error':
       return t('update.status.error', { message: s.error ?? '' })
   }
@@ -46,17 +46,11 @@ export function UpdateSection() {
       </dl>
       {update.mode !== 'off' && (
         <div className="con-actions">
-          {update.status === 'ready' && update.mode === 'auto' && (
+          {update.status === 'ready' && (
             <button type="button" className="btn btn-primary" disabled={install.isPending} onClick={() => install.mutate()}>
               <ArrowsClockwiseIcon size={16} weight="duotone" aria-hidden />
               {t('update.install')}
             </button>
-          )}
-          {update.status === 'available' && update.mode === 'notify' && (
-            <a className="btn btn-primary" href={RELEASES_URL} target="_blank" rel="noreferrer">
-              <DownloadSimpleIcon size={16} weight="duotone" aria-hidden />
-              {t('update.download')}
-            </a>
           )}
           <button
             type="button"
@@ -68,7 +62,7 @@ export function UpdateSection() {
           </button>
         </div>
       )}
-      {update.mode === 'auto' && <p className="text-muted con-foot">{t('update.foot')}</p>}
+      {update.mode !== 'off' && <p className="text-muted con-foot">{t(update.mode === 'dmg' ? 'update.footDmg' : 'update.foot')}</p>}
     </section>
   )
 }

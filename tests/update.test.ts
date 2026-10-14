@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createUpdateService } from '../src/main/update/service'
 import { UPDATE_INTERVAL_MS, hasUpdate } from '../src/shared/update'
-import { createFakeUpdater } from './helpers/fake-updater'
+import { createFakeDmg, createFakeUpdater } from './helpers/fake-updater'
 import { createTestApi } from './helpers/test-api'
 
 afterEach(() => vi.useRealTimers())
@@ -28,14 +28,42 @@ describe('update service (US10.2)', () => {
     expect(updater.installs).toEqual([[true, true]])
   })
 
-  it('macOS: only tells there is a new version, never downloads or installs', async () => {
-    const updater = createFakeUpdater((u) => u.emit('update-available', { version: '0.2.0' }))
-    const updates = createUpdateService({ version: '0.1.0', mode: 'notify', updater })
+  it('macOS: downloads the .dmg of the release and installs only on the button', async () => {
+    const files = [{ url: 'Gutenberg-0.2.0-mac-arm64.dmg', sha512: 'abc', size: 10 }]
+    const updater = createFakeUpdater((u) => u.emit('update-available', { version: '0.2.0', files }))
+    const dmg = createFakeDmg()
+    const updates = createUpdateService({ version: '0.1.0', mode: 'dmg', updater, dmg })
     expect(updater.autoDownload).toBe(false)
     expect(updater.autoInstallOnAppQuit).toBe(false)
-    expect(await updates.check()).toMatchObject({ mode: 'notify', status: 'available', latest: '0.2.0', percent: null })
+    expect(await updates.check()).toMatchObject({ mode: 'dmg', status: 'downloading', latest: '0.2.0', percent: 0 })
+    expect(dmg.downloads).toEqual([
+      { url: 'https://github.com/jose-alves-figueiroa/gutenberg/releases/download/v0.2.0/Gutenberg-0.2.0-mac-arm64.dmg', version: '0.2.0' }
+    ])
+    dmg.progress(41.7)
+    expect(updates.state()).toMatchObject({ status: 'downloading', percent: 42 })
     expect(updates.install()).toBe(false)
+    dmg.finish('/tmp/Gutenberg-0.2.0.dmg')
+    await vi.waitFor(() => expect(updates.state()).toMatchObject({ status: 'ready', percent: 100 }))
+    expect(updater.checks).toBe(1)
+    expect(updates.install()).toBe(true)
+    expect(dmg.installs).toEqual(['/tmp/Gutenberg-0.2.0.dmg'])
     expect(updater.installs).toEqual([])
+  })
+
+  it('macOS: a failed download keeps the version known and the next check tries again', async () => {
+    const files = [{ url: 'Gutenberg-0.2.0-mac-arm64.dmg', sha512: 'abc' }]
+    const updater = createFakeUpdater((u) => u.emit('update-available', { version: '0.2.0', files }))
+    const dmg = createFakeDmg()
+    const updates = createUpdateService({ version: '0.1.0', mode: 'dmg', updater, dmg })
+    await updates.check()
+    dmg.fail(new Error('sha512 checksum mismatch'))
+    await vi.waitFor(() => expect(updates.state()).toMatchObject({ status: 'available', latest: '0.2.0', error: 'sha512 checksum mismatch' }))
+    await updates.check()
+    expect(dmg.downloads).toHaveLength(2)
+    // A release without a .dmg can't be downloaded; without an installer the mode is off.
+    const none = createUpdateService({ version: '0.1.0', mode: 'dmg', updater: createFakeUpdater((u) => u.emit('update-available', { version: '0.2.0', files: [] })), dmg })
+    expect(await none.check()).toMatchObject({ status: 'available', error: 'no .dmg in latest-mac.yml' })
+    expect(createUpdateService({ version: '0.1.0', mode: 'dmg', updater }).state().mode).toBe('off')
   })
 
   it('up to date, offline and failed downloads', async () => {
@@ -59,7 +87,7 @@ describe('update service (US10.2)', () => {
     const updater = createFakeUpdater(() => {
       throw new Error(message)
     })
-    const updates = createUpdateService({ version: '0.1.0', mode: 'notify', updater })
+    const updates = createUpdateService({ version: '0.1.0', mode: 'auto', updater })
     expect(await updates.check()).toMatchObject({ status: 'current', error: null })
     message = 'HttpError: 503\n"method: GET url: https://github.com/…"\n    at stack'
     expect(await updates.check()).toMatchObject({ status: 'error', error: 'HttpError: 503' })

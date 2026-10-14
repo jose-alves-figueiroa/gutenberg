@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { App } from '@renderer/App'
+import { LOG_FALLBACK } from '@renderer/views/connection/ConnectionView'
 import { createTestApi } from './helpers/test-api'
 
 afterEach(() => {
@@ -16,8 +17,14 @@ async function renderConnection(health?: string) {
   const api = createTestApi()
   if (health) await api.app.request(`/api/v1/health?${health}`, {}, LAN)
   render(<App initialTab="connection" api={api.client} />)
-  await screen.findByRole('region', { name: 'Saídas' })
+  await screen.findByText('192.168.0.12')
   return api
+}
+
+/** The outputs are on their own page (US13.3: the tab never scrolls). */
+async function openOutputs() {
+  await userEvent.click(await screen.findByRole('button', { name: /^Saídas/ }))
+  return screen.findByRole('region', { name: 'Saídas' })
 }
 
 const outputs = () => screen.getByRole('region', { name: 'Saídas' })
@@ -45,6 +52,8 @@ describe('Connection tab (US7.2)', () => {
     const writeText = vi.fn().mockResolvedValue(undefined)
     Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
     await renderConnection('output=bible&rtt=18')
+    expect(screen.queryByRole('region', { name: 'Saídas' })).toBeNull()
+    await openOutputs()
     const bible = within(outputs()).getByRole('article', { name: 'Bíblia' })
     expect(bible).toHaveTextContent('http://192.168.0.12:8484/overlay/bible')
     expect(bible).toHaveTextContent('http://192.168.0.12:8484/overlay/resources/bible')
@@ -74,20 +83,20 @@ describe('Connection tab (US7.2)', () => {
     expect(await screen.findByText('Teste: nenhum overlay respondeu')).toBeInTheDocument()
   })
 
-  it('the log shows the 8 newest entries, then "Ver todos" (E11)', async () => {
+  it('the log pages its entries instead of growing (US13.3)', async () => {
     const { app } = await renderConnection()
     for (let i = 0; i < 10; i++) await app.request('/api/v1/connection/test', { method: 'POST' }, { incoming: { socket: { remoteAddress: '127.0.0.1' } } })
+    await userEvent.click(screen.getByRole('button', { name: /Testar/ }))
     const rows = () => document.querySelectorAll('.con-log-row')
-    const all = await screen.findByRole('button', { name: 'Ver todos (10)' })
-    expect(rows()).toHaveLength(8)
-    await userEvent.click(all)
-    expect(rows()).toHaveLength(10)
-    await userEvent.click(screen.getByRole('button', { name: 'Ver menos' }))
-    expect(rows()).toHaveLength(8)
+    expect(await screen.findByText('1 de 2')).toBeInTheDocument()
+    expect(rows()).toHaveLength(LOG_FALLBACK)
+    await userEvent.click(screen.getByRole('button', { name: 'Próxima página' }))
+    expect(rows()).toHaveLength(11 - LOG_FALLBACK)
   })
 
   it('creates an output, binding a single songbook taken from the kind', async () => {
     const { db } = await renderConnection()
+    await openOutputs()
     await userEvent.click(within(outputs()).getByRole('button', { name: /Nova saída/ }))
     const form = within(outputs()).getByRole('form')
     await userEvent.type(within(form).getByRole('textbox', { name: 'Nome' }), 'Salmos')
@@ -103,6 +112,7 @@ describe('Connection tab (US7.2)', () => {
 
   it('rejects a reserved or repeated slug', async () => {
     await renderConnection()
+    await openOutputs()
     await userEvent.click(within(outputs()).getByRole('button', { name: /Nova saída/ }))
     const form = within(outputs()).getByRole('form')
     await userEvent.type(within(form).getByRole('textbox', { name: 'Nome' }), 'X')
@@ -118,10 +128,11 @@ describe('Connection tab (US7.2)', () => {
   it('edits the style of an output and removes another', async () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true)
     const { db } = await renderConnection()
+    await openOutputs()
     const songs = within(outputs()).getByRole('article', { name: 'Salmos e hinos' })
     await userEvent.click(within(songs).getByRole('button', { name: 'Editar' }))
     const form = within(outputs()).getByRole('form')
-    await userEvent.selectOptions(within(form).getByRole('combobox', { name: 'Posição vertical — Músicas' }), 'bottom')
+    await userEvent.selectOptions(within(form).getByRole('combobox', { name: 'Posição vertical: Músicas' }), 'bottom')
     const font = within(form).getByRole('textbox', { name: 'Fonte' })
     await userEvent.clear(font)
     await userEvent.type(font, 'Source Serif 4')

@@ -24,11 +24,11 @@ const items = (db: ReturnType<typeof createTestApi>['db']) =>
 describe('Liturgy (US5.2)', () => {
   it('creates and renames a service', async () => {
     renderApp()
-    expect(await screen.findByText('Nenhum culto ainda — crie o primeiro.')).toBeInTheDocument()
+    expect(await screen.findByText('Nenhum culto ainda. Crie o primeiro.')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Novo culto' }))
     const name = await screen.findByRole('textbox', { name: 'Nome do culto' })
     expect(name).toHaveValue('Novo culto')
-    expect(screen.getByText('Nenhum item ainda — adicione abaixo.')).toBeInTheDocument()
+    expect(screen.getByText('Nenhum item ainda. Adicione abaixo.')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Apresentar este culto/ })).toBeEnabled()
     await userEvent.clear(name)
     await userEvent.type(name, 'Domingo 12/10 · manhã{enter}')
@@ -41,7 +41,7 @@ describe('Liturgy (US5.2)', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Novo culto' }))
     const picker = await screen.findByRole('region', { name: 'Adicionar à liturgia' })
     const search = within(picker).getByRole('textbox', { name: 'Buscar na coleção' })
-    expect(search).toHaveAttribute('placeholder', 'Referência — ex.: hb 12.14-15')
+    expect(search).toHaveAttribute('placeholder', 'Referência, ex.: hb 12.14-15')
 
     await userEvent.type(search, 'hebr')
     await userEvent.click(within(picker).getByRole('button', { name: 'Hebreus' }))
@@ -81,7 +81,7 @@ describe('Liturgy (US5.2)', () => {
     expect(db.prepare('SELECT count(*) AS n FROM services').get()).toEqual({ n: 1 })
     vi.spyOn(window, 'confirm').mockReturnValueOnce(true)
     await userEvent.click(screen.getByRole('button', { name: 'Excluir culto' }))
-    expect(await screen.findByText('Nenhum culto ainda — crie o primeiro.')).toBeInTheDocument()
+    expect(await screen.findByText('Nenhum culto ainda. Crie o primeiro.')).toBeInTheDocument()
     expect(db.prepare('SELECT count(*) AS n FROM services').get()).toEqual({ n: 0 })
   })
 })

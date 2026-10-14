@@ -25,8 +25,10 @@ o OBS de outro computador da rede local, por HTTP.
 | **Liturgia:** cultos (o mais recente primeiro) e a ordem do culto, com momento e número de telas de cada item. | **Apresentar:** o culto à esquerda, as telas do item à direita; ←/→ avançam, a tela no ar fica em destaque. |
 | ![Biblioteca](docs/images/library.png) | ![Busca na Biblioteca](docs/images/library-search.png) |
 | **Biblioteca:** Bíblia, hinários, credos, confissão e catecismos; selecione um trecho para ver as telas. | **Busca:** por número, título ou referência: `42B`, `castelo`, `sl 119`, `1.2`. |
-| ![Conexão](docs/images/connection.png) | ![No OBS](docs/images/obs.png) |
-| **Conexão:** estado do OBS, endereços das saídas para a Browser Source e registro de eventos. | **No OBS:** só o texto, sobre a câmera; o resto da composição fica no OBS. |
+| ![Conexão](docs/images/connection.png) | ![Saídas](docs/images/connection-outputs.png) |
+| **Conexão:** estado do OBS, endereço e porta, registro de eventos e atualizações. | **Saídas:** o endereço de cada saída para a Browser Source no OBS e as coleções ligadas a ela. |
+| ![No OBS](docs/images/obs.png) | |
+| **No OBS:** só o texto, sobre a câmera; o resto da composição fica no OBS. | |
 
 Os prints usam os dados de exemplo do protótipo e são gerados com `npm run screenshots`.
 
@@ -43,7 +45,7 @@ em **Assets**:
 | Outras distribuições Linux (x64) | `Gutenberg-<versão>-linux-x86_64.AppImage` |
 
 Depois de instalado, o Gutenberg se atualiza sozinho no Windows e no Linux (instala ao fechar o
-app); no macOS, avisa quando há versão nova.
+app); no macOS, baixa a versão nova sozinho e instala quando você clica em **Reiniciar e atualizar**.
 
 Versões anteriores: [todas as versões](https://github.com/jose-alves-figueiroa/gutenberg/releases).
 

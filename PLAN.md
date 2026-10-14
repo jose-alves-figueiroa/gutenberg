@@ -305,3 +305,15 @@ Pedidos do operador depois da 0.2.0: achar itens pelo número/título, o Sl 119 
 **US12.4** README com prints de cada aba e do OBS
 - [x] `npm run screenshots` (playwright-core + Electron): perfil isolado e seed do protótipo (`GUTENBERG_USER_DATA`/`GUTENBERG_SEED`, só fora do app empacotado), OBS simulado por uma janela oculta em `/overlay`
 
+
+### E13 — Atualização no Mac, textos sem travessão e Conexão sem rolagem ✓ (falta validar a troca do app com duas versões publicadas)
+Pedidos do operador depois da 0.2.2.
+
+**US13.1** Como operador no Mac, quero baixar e instalar a versão nova pelo próprio app.
+- [x] Sem Developer ID o Squirrel.Mac não instala: o app baixa o `.dmg` do GitHub (`latest-mac.yml`, confere o sha512) com progresso; "Reiniciar e atualizar" troca o `.app` em `/Applications` e reabre; fora de `/Applications` (ou sem permissão), abre o `.dmg`
+
+**US13.2** Nenhum travessão nos textos da interface
+- [x] `pt-BR.ts`, títulos da busca rápida e valores vazios; teste impede a volta
+
+**US13.3** Aba Conexão sem rolagem em 1280×820
+- [x] Duas páginas (Estado e Saídas); saídas em cartões lado a lado, paginadas quando não cabem; registro paginado. Na janela mínima (900×600) a página Estado e o editor de saída ainda rolam um pouco

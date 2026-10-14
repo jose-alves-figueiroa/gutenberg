@@ -1,9 +1,31 @@
 /**
  * Update service (PLAN.md → US10.2): wraps electron-updater's `autoUpdater` behind a small
  * interface, so the routes and tests don't depend on Electron. Never installs on its own while
- * the app is open: `auto` installs when the app quits (or on "Reiniciar e atualizar").
+ * the app is open: `auto` installs when the app quits (or on "Reiniciar e atualizar"); `dmg`
+ * (macOS, E13) downloads the `.dmg` through a `DmgInstaller` and installs only on that button.
  */
-import { UPDATE_INTERVAL_MS, type UpdateMode, type UpdateState } from '../../shared/update'
+import { UPDATE_INTERVAL_MS, releaseFileUrl, type UpdateMode, type UpdateState } from '../../shared/update'
+
+/** What `update-available` says about the new version (part of electron-updater's UpdateInfo). */
+export interface UpdateInfo {
+  version: string
+  files?: readonly { url: string; sha512: string; size?: number }[]
+}
+
+/** A release file to download: absolute URL and the sha512 (base64) from `latest-mac.yml`. */
+export interface ReleaseFile {
+  url: string
+  sha512: string
+  size?: number
+}
+
+/** The macOS side of `dmg` mode (see dmg.ts). */
+export interface DmgInstaller {
+  /** Downloads the file and checks its sha512; resolves with the local path. */
+  download(file: ReleaseFile, version: string, onProgress: (percent: number) => void): Promise<string>
+  /** Quits and swaps the app for the one in the `.dmg` (or opens the `.dmg` when it can't). */
+  install(path: string): void
+}
 
 /** The part of electron-updater's AppUpdater the service uses. */
 export interface Updater {
@@ -12,7 +34,8 @@ export interface Updater {
   checkForUpdates(): Promise<unknown>
   quitAndInstall(isSilent?: boolean, isForceRunAfter?: boolean): void
   on(event: 'checking-for-update', listener: () => void): unknown
-  on(event: 'update-available' | 'update-not-available' | 'update-downloaded', listener: (info: { version: string }) => void): unknown
+  on(event: 'update-available', listener: (info: UpdateInfo) => void): unknown
+  on(event: 'update-not-available' | 'update-downloaded', listener: (info: { version: string }) => void): unknown
   on(event: 'download-progress', listener: (progress: { percent: number }) => void): unknown
   on(event: 'error', listener: (error: Error) => void): unknown
 }
@@ -27,10 +50,17 @@ export interface UpdateService {
   start(): () => void
 }
 
-export function createUpdateService(opts: { version: string; mode: UpdateMode; updater?: Updater; now?: () => number }): UpdateService {
+export function createUpdateService(opts: {
+  version: string
+  mode: UpdateMode
+  updater?: Updater
+  /** Required by `dmg` mode; without it the mode is off. */
+  dmg?: DmgInstaller
+  now?: () => number
+}): UpdateService {
   const now = opts.now ?? Date.now
-  const { updater } = opts
-  const mode: UpdateMode = updater ? opts.mode : 'off'
+  const { updater, dmg } = opts
+  const mode: UpdateMode = !updater || (opts.mode === 'dmg' && !dmg) ? 'off' : opts.mode
   let state: UpdateState = { mode, version: opts.version, status: 'idle', latest: null, percent: null, error: null, checkedAt: null }
   const set = (patch: Partial<UpdateState>) => (state = { ...state, ...patch })
   const failed = (err: Error) => {
@@ -46,12 +76,27 @@ export function createUpdateService(opts: { version: string; mode: UpdateMode; u
     updater.autoInstallOnAppQuit = mode === 'auto'
     updater.on('checking-for-update', () => set({ status: 'checking', error: null }))
     updater.on('update-not-available', () => set({ status: 'current', latest: opts.version, checkedAt: now() }))
-    updater.on('update-available', (info) =>
-      set({ status: mode === 'auto' ? 'downloading' : 'available', latest: info.version, percent: mode === 'auto' ? 0 : null, checkedAt: now() })
-    )
+    updater.on('update-available', (info) => {
+      set({ status: 'downloading', latest: info.version, percent: 0, checkedAt: now() })
+      if (mode === 'dmg') downloadDmg(info)
+    })
     updater.on('download-progress', (p) => set({ status: 'downloading', percent: Math.round(p.percent) }))
     updater.on('update-downloaded', (info) => set({ status: 'ready', latest: info.version, percent: 100 }))
     updater.on('error', failed)
+  }
+
+  // macOS: the `.dmg` of the new version, once downloaded and checked.
+  let dmgFile: string | null = null
+  const downloadDmg = (info: UpdateInfo) => {
+    const file = info.files?.find((f) => f.url.endsWith('.dmg'))
+    if (!dmg || !file) return failed(new Error('no .dmg in latest-mac.yml'))
+    dmg
+      .download({ ...file, url: releaseFileUrl(info.version, file.url) }, info.version, (percent) => set({ percent: Math.round(percent) }))
+      .then((path) => {
+        dmgFile = path
+        set({ status: 'ready', percent: 100 })
+      })
+      .catch(failed)
   }
 
   let checking: Promise<UpdateState> | null = null
@@ -69,7 +114,13 @@ export function createUpdateService(opts: { version: string; mode: UpdateMode; u
     state: () => state,
     check,
     install() {
-      if (!updater || mode !== 'auto' || state.status !== 'ready') return false
+      if (!updater || state.status !== 'ready') return false
+      if (mode === 'dmg') {
+        if (!dmg || !dmgFile) return false
+        dmg.install(dmgFile)
+        return true
+      }
+      if (mode !== 'auto') return false
       // Silent on Windows (the installer already knows the options); runs the new version after.
       updater.quitAndInstall(true, true)
       return true
