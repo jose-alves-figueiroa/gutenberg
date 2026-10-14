@@ -32,8 +32,8 @@ export async function canReplace(bundle: string | null, writable = (path: string
 
 /**
  * Runs detached after the app quits: `$1` pid to wait for, `$2` the `.dmg`, `$3` the bundle.
- * Copies next to the bundle first, so a failed copy leaves the installed version in place, and
- * opens whichever version ends up there.
+ * Copies next to the bundle first and swaps by renaming, so a failure at any step leaves the
+ * installed version in place; then opens whichever version ends up there.
  */
 export const INSTALL_SCRIPT = `
 pid="$1"; dmg="$2"; app="$3"
@@ -43,9 +43,12 @@ if hdiutil attach -nobrowse -readonly -noautoopen -mountpoint "$mnt" "$dmg" >/de
   src="$(find "$mnt" -maxdepth 1 -name '*.app' | head -n 1)"
   if [ -n "$src" ] && rm -rf "$app.new" && ditto "$src" "$app.new"; then
     xattr -dr com.apple.quarantine "$app.new" 2>/dev/null
-    rm -rf "$app" && mv "$app.new" "$app" && rm -f "$dmg"
+    rm -rf "$app.old"
+    if mv "$app" "$app.old"; then
+      if mv "$app.new" "$app"; then rm -f "$dmg"; else mv "$app.old" "$app"; fi
+    fi
   fi
-  rm -rf "$app.new"
+  rm -rf "$app.new" "$app.old"
   hdiutil detach "$mnt" -quiet || hdiutil detach "$mnt" -force -quiet
 fi
 rmdir "$mnt" 2>/dev/null
@@ -60,7 +63,7 @@ export async function downloadVerified(
   onProgress: (percent: number) => void
 ): Promise<string> {
   const res = await fetchFn(file.url)
-  if (!res.ok || !res.body) throw new Error(`HttpError: ${res.status} ${file.url}`)
+  if (!res.ok || !res.body) throw new Error(`HttpError: ${res.status}`)
   const total = Number(res.headers.get('content-length')) || file.size || 0
   await mkdir(dirname(target), { recursive: true })
   const part = `${target}.part`

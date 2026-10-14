@@ -316,4 +316,4 @@ Pedidos do operador depois da 0.2.2.
 - [x] `pt-BR.ts`, títulos da busca rápida e valores vazios; teste impede a volta
 
 **US13.3** Aba Conexão sem rolagem em 1280×820
-- [x] Duas páginas (Estado e Saídas); saídas em cartões lado a lado, paginadas quando não cabem; registro paginado. Na janela mínima (900×600) a página Estado e o editor de saída ainda rolam um pouco
+- [x] Duas páginas (Estado e Saídas); saídas em cartões lado a lado, paginadas quando não cabem; registro paginado. Na janela mínima (900×600) ainda rolam a página Estado (125 a 240 px, conforme o estado da atualização) e o editor de saída (155 px)

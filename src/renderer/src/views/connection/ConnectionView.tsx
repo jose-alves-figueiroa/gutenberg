@@ -56,7 +56,7 @@ export function ConnectionView() {
   const [page, setPage] = useState<'status' | 'outputs'>('status')
   const logRef = useRef<HTMLDivElement>(null)
   const log = data?.log ?? []
-  const logSize = useCapacity(logRef, { reserve: LOG_RESERVE, key: log.length > 0, fallback: LOG_FALLBACK })
+  const logSize = useCapacity(logRef, { reserve: LOG_RESERVE, key: `${page}:${log.length > 0}:${portError}`, fallback: LOG_FALLBACK })
   const logPaging = usePaging(log.length, logSize)
   const applyPort = useMutation({
     mutationFn: async (p: number) => {
