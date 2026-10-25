@@ -361,7 +361,7 @@ cabe vira página ou seção. Especificação: `handoff/README.md` → "Regras g
 - [x] Paginador e faixa de seções no formato da v2 (`Pager`/`usePaging`)
 
 **US16.2** Telas existentes conforme a v2
-- [x] Liturgia: três colunas, itens paginados, coluna de ação com o seletor (o segmentado Adicionar item | Pregação entra com a Pregação, na E18)
+- [x] Liturgia:   três colunas, itens paginados, coluna de ação com o seletor (o segmentado Adicionar item | Pregação entra com a Pregação, na E18)
 - [x] Biblioteca: cabeçalho comum (busca, trilha, título, ação); o grupo FAIXAS da lateral entra na E18
 - [x] Bíblia: 66 livros (sem texto = esmaecido); capítulo com seções pela altura para qualquer capítulo, a seção da seleção primeiro, transmissão numa coluna à direita com cartões paginados
 - [x] Busca na coleção com trilha, título "Busca: …" e contagem; hinário com **s/nº**; hino com editor e prévia lado a lado e barra fixa
@@ -374,20 +374,20 @@ cabe vira página ou seção. Especificação: `handoff/README.md` → "Regras g
 - [x] `npm run design:check`: gera as telas nas 4 resoluções e falha se `document.scrollingElement` (ou uma caixa) rolar; precisa do app em Electron, por isso fica fora do Vitest
 - [x] Conferido contra o protótipo da v2 tela a tela; a foto `design/implemented/<versão>/` sai com a próxima versão (a `0.2.3` é a do pedido v2)
 
-### E17 — Controle remoto pelo celular
+### E17 — Controle remoto pelo celular ✓
 Um aparelho controla a transmissão de fora do desktop. Especificação: `handoff/README.md` →
 "Conexão › Controle remoto" e "Celular"; decisões 3 e 4 em `design/proposals/v2/decisions.md`.
 
 **US17.1** Como operador, quero parear um celular com segurança.
-- [ ] Conexão › Controle remoto: QR de `/control`, PIN de 6 dígitos válido por 5 minutos, "Gerar outro PIN"
-- [ ] Aparelhos pareados com nome, sistema, "visto agora" e Revogar (desconecta na hora)
-- [ ] Rotas de comando com token do pareamento; as demais continuam `localOnly`
+- [x] Conexão › Controle remoto: QR de `/control`, PIN de 6 dígitos válido por 5 minutos, "Gerar outro PIN"
+- [x] Aparelhos pareados com nome, sistema, "visto agora" e Revogar (desconecta na hora)
+- [x] Rotas de comando com token do pareamento; as demais continuam `localOnly`
 
 **US17.2** Como auxiliar, quero comandar a transmissão pelo celular.
-- [ ] Rota `/control` (HTML/CSS/JS empacotados, offline), 375–430 px, tema escuro com tokens, alvos ≥ 44 px
-- [ ] Parear: 6 caixas, teclado numérico próprio, estado de PIN incorreto ou vencido
-- [ ] Controle: tela **no ar** e **a seguir**, abas Itens | Faixas (só a lista rola), rodapé Anterior/Próximo/Limpar tela; nas Faixas, Tirar faixa
-- [ ] Estado ao vivo por SSE; um aparelho por vez, vale o último comando (celular ou desktop)
+- [x] Rota `/control` (HTML/CSS/JS empacotados, offline), 375–430 px, tema escuro com tokens, alvos ≥ 44 px
+- [x] Parear: 6 caixas, teclado numérico próprio, estado de PIN incorreto ou vencido
+- [x] Controle: tela **no ar** e **a seguir**, abas Itens | Faixas (só a lista rola), rodapé Anterior/Próximo/Limpar tela; nas Faixas, Tirar faixa
+- [x] Estado ao vivo por SSE; um aparelho por vez, vale o último comando (celular ou desktop)
 
 ### E18 — Faixas de culto, sacramentos e pregação
 Faixas que não são texto de apoio, enviadas a qualquer momento pela saída **Faixas**.

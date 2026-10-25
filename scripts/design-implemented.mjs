@@ -91,6 +91,11 @@ const SCREENS = [
     await tab('Conexão')
     await page.getByRole('button', { name: /^Saídas/ }).click()
   }],
+  ['connection-remote', async () => {
+    await tab('Conexão')
+    await page.getByRole('button', { name: 'Controle remoto' }).click()
+    await page.getByRole('img', { name: /Código QR/ }).waitFor()
+  }],
   ['connection-output-editor', async () => {
     await tab('Conexão')
     await page.getByRole('button', { name: /^Saídas/ }).click()

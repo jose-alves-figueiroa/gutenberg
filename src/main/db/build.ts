@@ -20,6 +20,8 @@ export const SETTINGS = {
   presentationState: 'presentation_state',
   /** Outputs for OBS: slug, name, collections and style of each (JSON, src/shared/outputs.ts). */
   outputs: 'outputs',
+  /** Paired phone for the remote control (JSON, hashed token; src/main/server/remote.ts). */
+  remoteDevices: 'remote_devices',
   /** Hash of the content the database was built from (`data:build`); see db/content.ts. */
   contentVersion: 'content_version'
 } as const

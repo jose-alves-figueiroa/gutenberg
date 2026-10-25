@@ -152,3 +152,26 @@ describe('Connection tab (US7.2)', () => {
     await waitFor(() => expect(stored(db).map((o: { slug: string }) => o.slug)).toEqual(['bible', 'songs']))
   })
 })
+
+describe('Controle remoto (US17.1)', () => {
+  const LOCAL = { incoming: { socket: { remoteAddress: '127.0.0.1' } } }
+
+  it('shows the PIN and the QR code; a paired phone can be revoked', async () => {
+    const api = await renderConnection()
+    await userEvent.click(screen.getByRole('button', { name: 'Controle remoto' }))
+    const pair = await screen.findByRole('region', { name: 'Parear um aparelho' })
+    await waitFor(() => expect(within(pair).getByText(/^\d{3} \d{3}$/)).toBeInTheDocument())
+    expect(within(pair).getByRole('img', { name: 'Código QR do endereço do controle' }).innerHTML).toMatch(/^<svg/)
+    expect(within(pair).getByText('http://192.168.0.12:8484/control')).toBeInTheDocument()
+    expect(screen.getByText('Nenhum aparelho pareado.')).toBeInTheDocument()
+
+    const { pin } = await (await api.app.request('/api/v1/remote', {}, LOCAL)).json()
+    await api.app.request('/control/api/pair', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ pin, name: 'Celular', platform: 'Android' }) }, LAN)
+    await userEvent.click(within(pair).getByRole('button', { name: 'Gerar outro PIN' }))
+    const devices = screen.getByRole('region', { name: 'Aparelhos pareados' })
+    expect(await within(devices).findByText('Celular')).toBeInTheDocument()
+    expect(within(devices).getByText('Android · visto agora')).toBeInTheDocument()
+    await userEvent.click(within(devices).getByRole('button', { name: 'Revogar' }))
+    expect(await within(devices).findByText('Nenhum aparelho pareado.')).toBeInTheDocument()
+  })
+})

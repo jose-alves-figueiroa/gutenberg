@@ -18,6 +18,9 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 ## [Não lançado]
 
 ### Adicionado
+- Controle remoto pelo celular: em Conexão › Controle remoto, aponte a câmera para o código e
+  digite o PIN; o celular mostra a tela no ar e a seguinte, os itens da liturgia e Anterior,
+  Próximo e Limpar tela. Um aparelho por vez, revogável na hora (E17)
 - Esc limpa a tela no Apresentar (E16)
 
 ### Alterado

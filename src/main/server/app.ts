@@ -1,6 +1,7 @@
 /**
  * Gutenberg's HTTP API (PLAN.md → "Stack e protocolo"). One Hono app, two kinds of routes:
  * - public on the LAN, for OBS (overlay, current screen, events, health) — E7;
+ * - public on the LAN, for a paired phone (`/control`, with its token) — E17;
  * - local only (`127.0.0.1` / `::1`): the library, liturgies, presentation commands (`/present`)
  *   and the connection with OBS (`/connection`).
  */
@@ -27,6 +28,7 @@ import { connectionRoutes, type NetworkControl } from './connection'
 import { localOnly, remoteIp } from './guards'
 import { createConnectionMonitor, type ConnectionMonitor } from './monitor'
 import { overlayFont, overlayHtml } from './overlay'
+import { controlRoutes, createRemote, remoteRoutes, type RemoteService } from './remote'
 import { updateRoutes } from './update'
 import { createUpdateService, type UpdateService } from '../update/service'
 import { PresentCommand } from '../../shared/presentation'
@@ -208,6 +210,8 @@ export interface ServerOptions {
   network?: NetworkControl
   /** App updates (E10); off in tests and development. */
   updates?: UpdateService
+  /** Remote control pairing (E17). */
+  remote?: RemoteService
 }
 
 /** For tests and tools: a fixed address, port changes only saved. */
@@ -222,6 +226,7 @@ export function createServerApp(db: SqlDatabase, options: ServerOptions = {}) {
   const monitor = options.monitor ?? createConnectionMonitor()
   const network = options.network ?? staticNetwork(db)
   const updates = options.updates ?? createUpdateService({ version: '0.0.0', mode: 'off' })
+  const remote = options.remote ?? createRemote(db)
   // An edit may change the text on the air: OBS gets the screen again (same seq).
   const notifyAfterEdit: MiddlewareHandler = async (c, next) => {
     await next()
@@ -241,7 +246,9 @@ export function createServerApp(db: SqlDatabase, options: ServerOptions = {}) {
     .route('/api/v1/present', presentRoutes(presenter))
     .route('/api/v1/connection', connectionRoutes(db, presenter, monitor, network))
     .route('/api/v1/update', updateRoutes(updates))
+    .route('/api/v1/remote', remoteRoutes(remote, network))
     .route('/', publicRoutes(presenter, monitor))
+    .route('/', controlRoutes(remote, presenter))
 }
 
 /** Route types for the renderer's typed client (`hono/client`). */

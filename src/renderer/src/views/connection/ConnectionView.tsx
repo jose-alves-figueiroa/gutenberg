@@ -16,6 +16,7 @@ import { CONN_VIEW } from '../../tabs'
 import { useCapacity } from '../../components/Sections'
 import { Pager, usePaging } from '../library/parts'
 import { OutputEditor, kindLabel, styleSummary } from './OutputEditor'
+import { RemoteSection } from './RemoteSection'
 import { UpdateSection } from './UpdateSection'
 
 /** Space kept below the log for its pager and the view's bottom padding. */
@@ -53,7 +54,7 @@ export function ConnectionView() {
   const refresh = () => qc.invalidateQueries({ queryKey: ['connection'] })
   const [port, setPort] = useState<string | null>(null)
   const [portError, setPortError] = useState('')
-  const [page, setPage] = useState<'status' | 'outputs'>('status')
+  const [page, setPage] = useState<'status' | 'outputs' | 'remote'>('status')
   const logRef = useRef<HTMLDivElement>(null)
   const log = data?.log ?? []
   const logSize = useCapacity(logRef, { reserve: LOG_RESERVE, key: `${page}:${log.length > 0}:${portError}`, fallback: LOG_FALLBACK })
@@ -87,14 +88,16 @@ export function ConnectionView() {
   return (
     <main className="view" role="tabpanel" id="view-connection" aria-labelledby="tab-connection">
       <nav className="sections" aria-label={t('connection.pages')}>
-        {(['status', 'outputs'] as const).map((p) => (
+        {(['status', 'outputs', 'remote'] as const).map((p) => (
           <button key={p} type="button" className="section-chip" aria-pressed={page === p} onClick={() => setPage(p)}>
-            {t(p === 'status' ? 'connection.page.status' : 'connection.page.outputs')}
+            {t(`connection.page.${p}`)}
             {p === 'outputs' && data && <span className="section-chip-detail">{data.outputs.length}</span>}
           </button>
         ))}
       </nav>
-      {page === 'outputs' ? (
+      {page === 'remote' ? (
+        <RemoteSection />
+      ) : page === 'outputs' ? (
         data && <OutputsSection outputs={data.outputs} base={base} onSaved={refresh} />
       ) : (
         <div className="view-grid view-grid--connection">
