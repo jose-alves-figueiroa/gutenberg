@@ -207,7 +207,7 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .editor { display: flex; flex-direction: column; gap: var(--space-3); max-width: 760px; }
 .editor-row { display: grid; gap: var(--space-3); }
 .editor-row--psalm { grid-template-columns: minmax(80px, 110px) minmax(80px, 110px) minmax(0, 1fr); }
-.editor-row--hymn { grid-template-columns: minmax(80px, 110px) minmax(0, 1fr); }
+.editor-row--hymn { grid-template-columns: 90px minmax(0, 1fr) minmax(0, 1fr); }
 .field { display: flex; flex-direction: column; }
 .field-label { display: block; font-size: 12px; margin-bottom: 5px; color: color-mix(in srgb, var(--color-text) 70%, transparent); }
 .editor-text { min-height: 150px; font-size: 15px; line-height: 1.5; resize: vertical; }
@@ -227,6 +227,13 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
   align-items: center; flex-wrap: wrap; padding: var(--space-3) 0;
 }
 .leaf-status { font-size: 13px; }
+/* Design v2 → hino aberto: editor (1fr) | preview (300 px), a 52 px bar across both. */
+.song-edit { display: grid; grid-template-columns: minmax(0, 1fr) 300px; grid-template-rows: minmax(0, 1fr) auto; gap: var(--space-3) var(--space-6); }
+.editor--fill { max-width: none; min-height: 0; }
+.field--fill { flex: 1; min-height: 0; }
+.field--fill .editor-text { flex: 1; min-height: 120px; resize: none; }
+.song-edit .leaf--aside { min-height: 0; }
+.song-bar { grid-column: 1 / -1; position: static; min-height: 52px; padding: 0; }
 /* Design v2: the preview as a column beside the content (Bible chapter, hymn). */
 .leaf--aside { gap: var(--space-2); min-height: 0; height: 100%; }
 .slide-cards--aside { grid-template-columns: minmax(0, 1fr); }

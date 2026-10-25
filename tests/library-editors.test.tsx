@@ -115,7 +115,7 @@ describe('Songbooks and creeds (US4.7)', () => {
     await userEvent.type(screen.getByRole('textbox', { name: /^Letra/ }), 'um{enter}dois{enter}três')
     expect(cardHeaders()).toEqual(['Salmo 133C', 'Salmo 133C'])
     expect(within(preview()).getByText('Estrofes definem as telas · 2 versos por tela')).toBeInTheDocument()
-    await userEvent.click(within(preview()).getByRole('button', { name: 'Salvar' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar' }))
     await screen.findByText('Salvo; vale para todas as liturgias')
     expect(db.prepare("SELECT title, lyrics FROM songs WHERE id = 'psalter-133C'").get()).toEqual({ title: 'Salmo 133C', lyrics: 'um\ndois\ntrês' })
     expect(screen.getByRole('heading', { level: 2, name: 'Salmo 133C' })).toBeInTheDocument()

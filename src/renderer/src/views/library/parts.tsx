@@ -96,6 +96,21 @@ export function useFitRows(list: RefObject<HTMLElement | null>, reserve = PAGER_
   return size
 }
 
+/** Height from an element's top down to the bottom of the window, minus `reserve` px (null until measured). */
+export function useFillHeight(ref: RefObject<HTMLElement | null>, reserve: number, key?: unknown) {
+  const [height, setHeight] = useState<number | null>(null)
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = ref.current
+      if (el) setHeight(Math.max(240, window.innerHeight - el.getBoundingClientRect().top - reserve))
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [ref, reserve, key])
+  return height
+}
+
 /** Page shown of `count` rows, `size` per page; `pageKey` remembers it while the list is away. */
 export function usePaging(count: number, size: number, pageKey?: string) {
   const pages = Math.max(1, Math.ceil(count / size))
@@ -162,18 +177,18 @@ export function List({ rows, pageKey, plain = false }: { rows: ListRow[]; pageKe
   )
 }
 
-export function TextField({ label, value, onChange, width }: { label: string; value: string; onChange: (v: string) => void; width?: string }) {
+export function TextField({ label, value, onChange, width, placeholder }: { label: string; value: string; onChange: (v: string) => void; width?: string; placeholder?: string }) {
   return (
     <label className="field" style={width ? { maxWidth: width } : undefined}>
       <span className="field-label">{label}</span>
-      <input className="input" value={value} onChange={(e) => onChange(e.target.value)} />
+      <input className="input" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
     </label>
   )
 }
 
-export function TextArea({ label, value, onChange, rows = 10 }: { label: string; value: string; onChange: (v: string) => void; rows?: number }) {
+export function TextArea({ label, value, onChange, rows = 10, fill = false }: { label: string; value: string; onChange: (v: string) => void; rows?: number; fill?: boolean }) {
   return (
-    <label className="field">
+    <label className={fill ? 'field field--fill' : 'field'}>
       <span className="field-label">{label}</span>
       <textarea className="input editor-text" rows={rows} value={value} onChange={(e) => onChange(e.target.value)} />
     </label>

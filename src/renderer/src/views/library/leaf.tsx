@@ -41,12 +41,7 @@ export function useScreenLimit(): number {
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 
-interface LeafProps {
-  slides: Slide[]
-  /** Where long previews may be cut into sections (E11). */
-  units?: SectionUnit[]
-  song?: boolean
-  max: number
+interface BarProps {
   editable: boolean
   dirty?: boolean
   status?: SaveStatus
@@ -54,33 +49,16 @@ interface LeafProps {
   onDiscard?: () => void
   /** The item as a liturgy reference; absent while it is not saved (cannot be added yet). */
   item?: { collection: string; itemRef: string }
-  /**
-   * Design v2: a column beside the content (Bible chapter, hymn) with one card per screen, the
-   * two real OBS lines each, paged to the column's height instead of cut into sections.
-   */
-  aside?: boolean
+  className?: string
 }
 
-/** Space for the sticky action bar and the strip, so one section fits the window. */
-const LEAF_RESERVE = 180
-/** Below the aside's cards: its pager and action bar, and the view's bottom padding. */
-const ASIDE_RESERVE = 150
-
-export function Leaf({ slides, units, song, max, editable, dirty = false, status = 'idle', onSave, onDiscard, item, aside = false }: LeafProps) {
+/** Present now · Add to the liturgy · status · (Discard · Save when editable). */
+export function LeafBar({ editable, dirty = false, status = 'idle', onSave, onDiscard, item, className = 'leaf-bar' }: BarProps) {
   const api = useApi()
   const qc = useQueryClient()
   const { current } = useServices()
   const present = usePresentAndOpen()
   const [added, setAdded] = useState<string | null>(null)
-  const cards = useRef<HTMLDivElement>(null)
-  const capacity = useCapacity(cards, aside ? { reserve: ASIDE_RESERVE, key: slides.length } : { reserve: LEAF_RESERVE, viewport: true })
-  const sections = units && !aside ? fitSections(units, capacity) : []
-  const paging = usePaging(slides.length, aside ? capacity : slides.length)
-  const [picked, setPicked] = useState(0)
-  const shown = picked < sections.length ? picked : 0
-  const section = aside
-    ? { start: paging.page * capacity, end: (paging.page + 1) * capacity }
-    : (sections[shown] ?? { start: 0, end: slides.length })
   const add = useMutation({
     mutationFn: () =>
       json(api.api.v1.liturgy.services[':id'].items.$post({ param: { id: String(current!.id) }, json: { ...item!, moment: '' } })),
@@ -99,12 +77,74 @@ export function Leaf({ slides, units, song, max, editable, dirty = false, status
         : added
           ? t('liturgy.added', { name: added })
           : ''
+  return (
+    <div className={className}>
+      <button type="button" className="btn btn-primary" disabled={!item || dirty || present.pending} onClick={() => item && void present.run({ type: 'adhoc', ...item })}>
+        {t('leaf.present')}
+      </button>
+      <button
+        type="button"
+        className="btn btn-secondary"
+        disabled={!item || !current || dirty || add.isPending}
+        title={current ? undefined : t('liturgy.chooseService')}
+        onClick={() => add.mutate()}
+      >
+        {t('leaf.addToLiturgy')}
+      </button>
+      <span className="leaf-status text-muted" role="status">
+        {note}
+      </span>
+      {editable && (
+        <span className="leaf-edit">
+          <button type="button" className="btn btn-secondary" disabled={!dirty || status === 'saving'} onClick={onDiscard}>
+            {t('leaf.discard')}
+          </button>
+          <button type="button" className="btn btn-primary" disabled={!dirty || status === 'saving'} onClick={onSave}>
+            {t('leaf.save')}
+          </button>
+        </span>
+      )}
+    </div>
+  )
+}
+
+interface LeafProps extends BarProps {
+  slides: Slide[]
+  /** Where long previews may be cut into sections (E11). */
+  units?: SectionUnit[]
+  song?: boolean
+  max: number
+  /**
+   * Design v2: a column beside the content (Bible chapter, hymn) with one card per screen, the
+   * two real OBS lines each, paged to the column's height instead of cut into sections.
+   */
+  aside?: boolean
+  /** Without its own action bar (the hymn editor puts one across both columns). */
+  bar?: boolean
+}
+
+/** Space for the sticky action bar and the strip, so one section fits the window. */
+const LEAF_RESERVE = 180
+/** Below the aside's cards: its pager and action bar, and the view's bottom padding. */
+const ASIDE_RESERVE = 150
+
+export function Leaf({ slides, units, song, max, aside = false, bar = true, ...actions }: LeafProps) {
+  const cards = useRef<HTMLDivElement>(null)
+  const capacity = useCapacity(cards, aside ? { reserve: ASIDE_RESERVE, key: slides.length } : { reserve: LEAF_RESERVE, viewport: true })
+  const sections = units && !aside ? fitSections(units, capacity) : []
+  const paging = usePaging(slides.length, aside ? capacity : slides.length)
+  const [picked, setPicked] = useState(0)
+  const shown = picked < sections.length ? picked : 0
+  const section = aside
+    ? { start: paging.page * capacity, end: (paging.page + 1) * capacity }
+    : (sections[shown] ?? { start: 0, end: slides.length })
   const label = t(slides.length === 1 ? 'leaf.preview.one' : 'leaf.preview.other', { n: slides.length })
+  const note = song ? t('leaf.breakSong') : t('leaf.breakProse', { max })
   if (aside)
     return (
       <section className="leaf leaf--aside" aria-label={label}>
         <span className="leaf-label text-muted">{label}</span>
-        <span className="leaf-note text-muted">{song ? t('leaf.breakSong') : t('leaf.breakProse', { max })}</span>
+        <span className="leaf-note text-muted">{note}</span>
         <div className="slide-cards slide-cards--aside" ref={cards}>
           {slides.slice(section.start, section.end).map((s, i) => (
             <div key={section.start + i} className="slide-card slide-card--aside">
@@ -118,30 +158,14 @@ export function Leaf({ slides, units, song, max, editable, dirty = false, status
           ))}
         </div>
         <Pager {...paging} compact />
-        <div className="leaf-bar leaf-bar--aside">
-          <button type="button" className="btn btn-primary" disabled={!item || dirty || present.pending} onClick={() => item && void present.run({ type: 'adhoc', ...item })}>
-            {t('leaf.present')}
-          </button>
-          <button
-            type="button"
-            className="btn btn-secondary"
-            disabled={!item || !current || dirty || add.isPending}
-            title={current ? undefined : t('liturgy.chooseService')}
-            onClick={() => add.mutate()}
-          >
-            {t('leaf.addToLiturgy')}
-          </button>
-          <span className="leaf-status text-muted" role="status">
-            {note}
-          </span>
-        </div>
+        {bar && <LeafBar {...actions} className="leaf-bar leaf-bar--aside" />}
       </section>
     )
   return (
-    <section className="leaf" aria-label={t(slides.length === 1 ? 'leaf.preview.one' : 'leaf.preview.other', { n: slides.length })}>
+    <section className="leaf" aria-label={label}>
       <div className="leaf-head">
-        <span className="leaf-label text-muted">{t(slides.length === 1 ? 'leaf.preview.one' : 'leaf.preview.other', { n: slides.length })}</span>
-        <span className="leaf-note text-muted">{song ? t('leaf.breakSong') : t('leaf.breakProse', { max })}</span>
+        <span className="leaf-label text-muted">{label}</span>
+        <span className="leaf-note text-muted">{note}</span>
       </div>
       <SectionStrip sections={sections} current={shown} onPick={setPicked} />
       <div className="slide-cards" ref={cards}>
@@ -152,38 +176,7 @@ export function Leaf({ slides, units, song, max, editable, dirty = false, status
           </div>
         ))}
       </div>
-      <div className="leaf-bar">
-        <button
-          type="button"
-          className="btn btn-primary"
-          disabled={!item || dirty || present.pending}
-          onClick={() => item && void present.run({ type: 'adhoc', ...item })}
-        >
-          {t('leaf.present')}
-        </button>
-        <button
-          type="button"
-          className="btn btn-secondary"
-          disabled={!item || !current || dirty || add.isPending}
-          title={current ? undefined : t('liturgy.chooseService')}
-          onClick={() => add.mutate()}
-        >
-          {t('leaf.addToLiturgy')}
-        </button>
-        <span className="leaf-status text-muted" role="status">
-          {note}
-        </span>
-        {editable && (
-          <span className="leaf-edit">
-            <button type="button" className="btn btn-secondary" disabled={!dirty || status === 'saving'} onClick={onDiscard}>
-              {t('leaf.discard')}
-            </button>
-            <button type="button" className="btn btn-primary" disabled={!dirty || status === 'saving'} onClick={onSave}>
-              {t('leaf.save')}
-            </button>
-          </span>
-        )}
-      </div>
+      {bar && <LeafBar {...actions} />}
     </section>
   )
 }

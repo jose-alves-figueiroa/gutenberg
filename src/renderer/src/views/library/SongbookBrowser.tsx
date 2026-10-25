@@ -4,17 +4,16 @@
  * ['new'] / ['new', n].
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { Song } from '@shared/data-model'
 import { t } from '@shared/i18n'
 import { lyricsToStanzas } from '@shared/lyrics'
 import type { SongRecord, SongbookInfo, SongSummary } from '@shared/library-schemas'
 import { REQUIRED } from '@shared/requirements'
-import { sectionUnits } from '@shared/sections'
 import { slidesOf, songHeader } from '@shared/slides'
 import { json, jsonOrNull, useApi } from '../../api'
-import { Leaf, useDraft, useScreenLimit, type SaveStatus } from './leaf'
-import { Grid, LevelHeader, List, Loading, TextArea, TextField, type Crumb } from './parts'
+import { Leaf, LeafBar, useDraft, useScreenLimit, type SaveStatus } from './leaf'
+import { Grid, LevelHeader, List, Loading, TextArea, TextField, useFillHeight, type Crumb } from './parts'
 
 interface Props {
   id: string
@@ -147,6 +146,9 @@ function toSong(r: SongRecord): Song {
   }
 }
 
+/** Below the editor: the view's bottom padding. */
+const SONG_RESERVE = 20
+
 interface EditorProps {
   info: SongbookInfo
   songId?: string
@@ -169,6 +171,9 @@ function SongEditor({ info, songId, template, crumbs, initialStatus, onCreated }
   const { draft, set, dirty, reset } = useDraft(original, songId ?? 'new')
   const [status, setStatus] = useState<SaveStatus>(initialStatus)
   const psalter = Boolean(info.itemLabel)
+  // Design v2: editor | preview, filling the window down to its bottom padding.
+  const box = useRef<HTMLDivElement>(null)
+  const height = useFillHeight(box, SONG_RESERVE, Boolean(original))
   const save = useMutation({
     mutationFn: () => {
       const d = draft!
@@ -195,36 +200,34 @@ function SongEditor({ info, songId, template, crumbs, initialStatus, onCreated }
   return (
     <>
       <LevelHeader crumbs={trail} title={header || t('library.newSong')} hint={draft.author} />
-      <div className="editor">
-        {psalter ? (
-          <div className="editor-row editor-row--psalm">
-            <TextField label={t('field.psalm')} value={draft.number} onChange={(number) => edit({ number })} />
-            <TextField label={t('field.version')} value={draft.version} onChange={(version) => edit({ version: version.toUpperCase() })} />
-            <TextField label={t('field.versification')} value={draft.versification} onChange={(versification) => edit({ versification })} />
-          </div>
-        ) : (
-          <>
-            <div className="editor-row editor-row--hymn">
-              <TextField label={t('field.number')} value={draft.number} onChange={(number) => edit({ number })} />
-              <TextField label={t('field.title')} value={draft.title} onChange={(title) => edit({ title })} />
+      <div className="song-edit" ref={box} style={height ? { height } : undefined}>
+        <div className="editor editor--fill">
+          {psalter ? (
+            <div className="editor-row editor-row--psalm">
+              <TextField label={t('field.psalm')} value={draft.number} onChange={(number) => edit({ number })} />
+              <TextField label={t('field.version')} value={draft.version} onChange={(version) => edit({ version: version.toUpperCase() })} />
+              <TextField label={t('field.versification')} value={draft.versification} onChange={(versification) => edit({ versification })} />
             </div>
-            <TextField label={t('field.author')} value={draft.author} onChange={(author) => edit({ author })} />
-          </>
-        )}
-        <TextArea label={t('field.lyrics')} value={draft.lyrics} rows={14} onChange={(lyrics) => edit({ lyrics })} />
+          ) : (
+            <div className="editor-row editor-row--hymn">
+              <TextField label={t('field.number')} value={draft.number} placeholder={t('field.noNumber')} onChange={(number) => edit({ number })} />
+              <TextField label={t('field.title')} value={draft.title} onChange={(title) => edit({ title })} />
+              <TextField label={t('field.author')} value={draft.author} onChange={(author) => edit({ author })} />
+            </div>
+          )}
+          <TextArea label={t('field.lyrics')} value={draft.lyrics} fill onChange={(lyrics) => edit({ lyrics })} />
+        </div>
+        <Leaf aside bar={false} slides={slidesOf({ kind: 'song', songbook: info, item: song }, max)} song max={max} editable />
+        <LeafBar
+          className="leaf-bar song-bar"
+          editable
+          dirty={dirty}
+          status={status}
+          onSave={() => save.mutate()}
+          onDiscard={reset}
+          item={songId ? { collection: `songbook:${info.id}`, itemRef: songId } : undefined}
+        />
       </div>
-      <Leaf
-        slides={slidesOf({ kind: 'song', songbook: info, item: song }, max)}
-        units={sectionUnits({ kind: 'song', songbook: info, item: song }, max)}
-        song
-        max={max}
-        editable
-        dirty={dirty}
-        status={status}
-        onSave={() => save.mutate()}
-        onDiscard={reset}
-        item={songId ? { collection: `songbook:${info.id}`, itemRef: songId } : undefined}
-      />
     </>
   )
 }

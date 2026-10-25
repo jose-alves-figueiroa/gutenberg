@@ -236,6 +236,7 @@ export const ptBR = {
   'field.versification': 'Versificação',
   'field.lyrics': 'Letra: cada estrofe vira telas de 2 versos (separe as estrofes com linha em branco)',
   'field.number': 'Número',
+  'field.noNumber': 's/nº',
   'field.title': 'Título',
   'field.author': 'Autoria',
   'field.text': 'Texto corrido',
