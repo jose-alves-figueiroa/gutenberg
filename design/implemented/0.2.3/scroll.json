@@ -1,0 +1,270 @@
+{
+  "1920x1200": {
+    "liturgy": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-bible-books": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-bible-chapter": {
+      "page": 408,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-search": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-songbook": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-song": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-confession": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-catechism": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-creeds": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "present": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "connection": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "connection-outputs": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "connection-output-editor": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    }
+  },
+  "1920x1080": {
+    "liturgy": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-bible-books": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-bible-chapter": {
+      "page": 267,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-search": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-songbook": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-song": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-confession": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-catechism": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-creeds": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "present": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "connection": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "connection-outputs": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "connection-output-editor": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    }
+  },
+  "1536x864": {
+    "liturgy": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-bible-books": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-bible-chapter": {
+      "page": 219,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-search": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-songbook": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-song": {
+      "page": 173,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-confession": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-catechism": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-creeds": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "present": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "connection": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "connection-outputs": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "connection-output-editor": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    }
+  },
+  "1280x720": {
+    "liturgy": {
+      "page": 120,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-bible-books": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-bible-chapter": {
+      "page": 219,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-search": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-songbook": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-song": {
+      "page": 317,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-confession": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-catechism": {
+      "page": 135,
+      "pageX": 0,
+      "boxes": []
+    },
+    "library-creeds": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "present": {
+      "page": 29,
+      "pageX": 0,
+      "boxes": []
+    },
+    "connection": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "connection-outputs": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    },
+    "connection-output-editor": {
+      "page": 0,
+      "pageX": 0,
+      "boxes": []
+    }
+  }
+}
