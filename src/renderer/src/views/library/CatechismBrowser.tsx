@@ -5,7 +5,7 @@ import { t } from '@shared/i18n'
 import { slidesOf } from '@shared/slides'
 import { json, jsonOrNull, useApi } from '../../api'
 import { Leaf, useDraft, useScreenLimit, type SaveStatus } from './leaf'
-import { Grid, LevelHeader, Loading, TextArea, TextField, type Crumb } from './parts'
+import { LevelHeader, Loading, NumberGrid, TextArea, TextField, type Crumb } from './parts'
 
 interface Props {
   id: string
@@ -27,8 +27,7 @@ export function CatechismBrowser({ id, label, path, go }: Props) {
       <>
         <LevelHeader crumbs={crumbs} title={label} hint={t('library.chooseQuestion')} />
         <div className="lib-grids">
-          <Grid
-            kind="num"
+          <NumberGrid
             title={t('library.questionCount', { n: index.data.size })}
             items={Array.from({ length: index.data.size }, (_, i) => {
               const n = i + 1

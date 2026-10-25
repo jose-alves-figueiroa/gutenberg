@@ -1,6 +1,6 @@
 /** Bible (read only): books (OT/NT) → chapters → verses, with passage selection. */
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { t } from '@shared/i18n'
 import { bibleUnits, fitSections } from '@shared/sections'
 import { slidesOf, type BiblePassage } from '@shared/slides'
@@ -8,7 +8,7 @@ import { SectionStrip } from '../../components/Sections'
 import { bibleItemRef } from '@shared/bible-ref'
 import { json, useApi } from '../../api'
 import { Leaf, useScreenLimit } from './leaf'
-import { Grid, LevelHeader, Loading, type Crumb } from './parts'
+import { Grid, LevelHeader, Loading, useBox, type Crumb } from './parts'
 
 /** Column size before it can be measured (tests, first paint): most chapters fit in one section. */
 const COLUMN_FALLBACK = { width: 600, height: 4000 }
@@ -23,23 +23,6 @@ const STRIP_HEIGHT = 47
  */
 export const verseHeight = (text: string, columnWidth: number): number =>
   12 + 24 * Math.max(1, Math.ceil(text.length / Math.max(10, (columnWidth - 52) / 8.4)))
-
-/** Width of a column and the height left for it down to the bottom of the window. */
-function useColumn(ref: RefObject<HTMLElement | null>, key: string) {
-  const [box, setBox] = useState(COLUMN_FALLBACK)
-  useLayoutEffect(() => {
-    const measure = () => {
-      const el = ref.current
-      if (!el) return
-      const r = el.getBoundingClientRect()
-      if (r.width > 0) setBox({ width: r.width, height: window.innerHeight - r.top - VERSES_RESERVE })
-    }
-    measure()
-    window.addEventListener('resize', measure)
-    return () => window.removeEventListener('resize', measure)
-  }, [ref, key])
-  return box
-}
 
 export interface Passage {
   book: string
@@ -76,7 +59,7 @@ export function BibleBrowser({ version, label, path, go, onSelect }: Props) {
   // Chapters one section at a time (E11, design v2): as many verses as fit the column's height.
   const list = useRef<HTMLDivElement>(null)
   // Measured again once the verses arrive (the list mounts with them).
-  const column = useColumn(list, `${book}:${chapter}:${verses.data ? 'ready' : 'loading'}`)
+  const column = useBox(list, VERSES_RESERVE, `${book}:${chapter}:${verses.data ? 'ready' : 'loading'}`, COLUMN_FALLBACK)
   const [shown, setShown] = useState({ key: '', section: 0 })
   // Report the passage after each change (functional updates keep rapid clicks consistent).
   useEffect(() => {

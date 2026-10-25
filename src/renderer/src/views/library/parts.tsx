@@ -1,5 +1,6 @@
 /** Building blocks shared by the library browsers (prototype: breadcrumb, header, grids). */
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
+import { SectionStrip } from '../../components/Sections'
 import { t } from '@shared/i18n'
 
 export interface Crumb {
@@ -47,6 +48,48 @@ export function Grid({ title, kind, items }: { title: string; kind: 'num' | 'nam
       <span className="lib-grid-title text-muted">{title}</span>
       <div className={`lib-grid lib-grid--${kind}`}>
         {items.map((it) => (
+          <button key={it.key} type="button" className={`cell${it.filled ? '' : ' cell--empty'}`} title={it.tip} onClick={it.go}>
+            {it.label}
+          </button>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+/** Design v2 → catecismos: 54×38 px cells, 4 px apart; what does not fit becomes sections. */
+const CELL = { width: 54, height: 38, gap: 4 }
+const MAX_COLUMNS = 20
+const STRIP = 47
+
+/** Columns and rows of fixed cells in a box, and the numbers per section (design v2 formulas). */
+export function gridSections(count: number, box: { width: number; height: number }) {
+  const columns = Math.max(1, Math.min(MAX_COLUMNS, Math.floor((box.width + CELL.gap) / (CELL.width + CELL.gap))))
+  const rows = (height: number) => Math.max(1, Math.floor((height - 42) / (CELL.height + CELL.gap)))
+  let size = columns * rows(box.height)
+  if (size < count) size = columns * rows(box.height - STRIP)
+  const sections = []
+  for (let start = 0; start < count; start += size) {
+    const end = Math.min(count, start + size)
+    sections.push({ title: `${start + 1}–${end}`, detail: '', start, end })
+  }
+  return { columns, sections }
+}
+
+/** Numbered cells (questions) that fit the space below, in sections when they don't. */
+export function NumberGrid({ title, items }: { title: string; items: GridItem[] }) {
+  const ref = useRef<HTMLElement>(null)
+  const box = useBox(ref, 24, items.length)
+  const { columns, sections } = gridSections(items.length, box)
+  const [picked, setPicked] = useState(0)
+  const current = picked < sections.length ? picked : 0
+  const section = sections[current] ?? { start: 0, end: items.length }
+  return (
+    <section className="lib-grid-group" ref={ref}>
+      <span className="lib-grid-title text-muted">{title}</span>
+      <SectionStrip sections={sections} current={current} onPick={setPicked} />
+      <div className="lib-grid lib-grid--fixed" style={{ gridTemplateColumns: `repeat(${columns}, ${CELL.width}px)` }}>
+        {items.slice(section.start, section.end).map((it) => (
           <button key={it.key} type="button" className={`cell${it.filled ? '' : ' cell--empty'}`} title={it.tip} onClick={it.go}>
             {it.label}
           </button>
@@ -109,6 +152,23 @@ export function useFillHeight(ref: RefObject<HTMLElement | null>, reserve: numbe
     return () => window.removeEventListener('resize', measure)
   }, [ref, reserve, key])
   return height
+}
+
+/** Width of an element and the height left below its top down to the window's bottom, minus `reserve` px. */
+export function useBox(ref: RefObject<HTMLElement | null>, reserve: number, key?: unknown, fallback = { width: 600, height: 4000 }) {
+  const [box, setBox] = useState(fallback)
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = ref.current
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      if (r.width > 0) setBox({ width: r.width, height: window.innerHeight - r.top - reserve })
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [ref, reserve, key])
+  return box
 }
 
 /** Page shown of `count` rows, `size` per page; `pageKey` remembers it while the list is away. */

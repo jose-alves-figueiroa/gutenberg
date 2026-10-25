@@ -169,6 +169,8 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--cell-min), 1fr)); gap: var(--space-1); }
 .lib-grid--num { --cell-min: 52px; }
 .lib-grid--name { --cell-min: 150px; }
+.lib-grid--fixed { gap: 4px; }
+.lib-grid--fixed .cell { height: 38px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 0; }
 .cell {
   all: unset; cursor: pointer; border-radius: var(--radius-md); font-size: 14px; font-feature-settings: 'tnum' 1;
   background: var(--color-surface); color: var(--color-text);
