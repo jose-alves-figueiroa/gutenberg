@@ -1,8 +1,8 @@
 # Gutenberg — Plano de implementação
 
 Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito · ⛔ bloqueado
-Fonte: a proposta em vigor (`design/README.md`); hoje a v1, `design/proposals/v1/README.md` + protótipo `design/proposals/v1/design/Gutenberg.dc.html` (classe `Component`).
-Concluídos: E0–E14. Pendente: **US8.4**, **US10.4** e **US14.1** (validação em campo). Planejados: **E15–E19** (E18 bloqueado pelo design).
+Fonte: a proposta em vigor (`design/README.md`); hoje a v2, `design/proposals/v2/handoff/README.md` + `decisions.md`. A v1 (`design/proposals/v1/`) segue como referência do que a v2 não redefine (autobreak, busca rápida).
+Concluídos: E0–E14. Pendente: **US8.4**, **US10.4** e **US14.1** (validação em campo). Planejados: **E15–E19**, pela proposta de design v2 (`design/proposals/v2/`); E19 aguarda a escolha do serviço.
 
 ## Stack e protocolo (decisão)
 O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP** — o protocolo já em uso (substitui o JSON do Holyrics). Isso substitui o obs-websocket sugerido no README do handoff.
@@ -328,64 +328,92 @@ Pedidos do operador depois da 0.2.2.
 - [x] Opção **mac_signing** nos workflows **installers** e **release**; `.zip` entre os arquivos da versão; segredos documentados em `docs/OBS.md`
 - [ ] Gerar e publicar uma versão `developer-id` com a conta Apple
 
-### E15 — Estilo do overlay configurável por saída
+### E15 — Overlay e editor de saída (design v2)
 O operador usou o overlay no OBS e a letra do lower third ficou pequena: a página fixa o tamanho
-(`#text` 5,2vh, `#header` 2,6vh em `src/main/server/overlay.ts`) e ignora o `font_max_rows` que a
-saída já envia. Como vh é relativo à altura da Browser Source, uma fonte com altura menor que a
-da cena, ou reduzida no canvas do OBS, também encolhe a letra.
+(`#text` 5,2vh em `src/main/server/overlay.ts`) e ignora `font_max_rows` e `background`.
+Especificação: `design/proposals/v2/handoff/README.md` → "Overlay no OBS", "Conexão › Saídas" e
+"Conexão › editor de saída"; protótipo `GutenbergOverlay.dc.html`.
 
-**US15.1** Como operador, quero ajustar o tamanho da letra de cada saída pelo Gutenberg.
-- [ ] O overlay usa `font_max_rows`: `font-size = 100vh / (linhas × 1,3)`; 15 linhas ≈ tamanho de hoje, e menos linhas deixam a letra maior. Header com metade do tamanho do texto
-- [ ] Rever os padrões (`DEFAULT_STYLE` em `src/shared/payload.ts`): hinos usam 24 linhas, o que deixaria a letra menor que hoje
-- [ ] Teste do overlay com `font_max_rows` (jsdom)
+**US15.1** Como operador, quero a letra do lower third legível na transmissão.
+- [ ] Overlay em Source Serif 4 local; `font-size = 100vh / (font_max_rows × 1,3)`, cabeçalho com metade e 80 % de opacidade
+- [ ] Faixa na base: margem lateral, distância da base, fundo (`background`) com opacidade, espaçamento `0,35em 0,7em`, no máximo 2 linhas `nowrap`; hino centralizado na vertical
+- [ ] Opções da saída: cor, negrito, alinhamento, contorno (nenhum/fino/grosso), sombra, largura (inteira/ajustada)
+- [ ] Payload: extras `band_opacity`, `band_margin_x`, `band_margin_y`, `band_width`, `text_stroke`, `text_shadow`; o formato do Holyrics não muda
+- [ ] `DEFAULT_STYLE`: 12 linhas para textos, 10 para músicas, margem 6 %, base 5 %, fundo a 78 %
+- [ ] Testes do overlay (jsdom) e do payload
 
-**US15.2** Como operador, quero configurar o restante do visual da saída: margens/posição da faixa, contorno/sombra e cor de fundo da faixa (hoje `background` vai no payload e é ignorado).
-- [ ] Campos no editor de saída (`OutputEditor.tsx`), schema `PayloadStyle` e chaves no payload. O que um overlay do Holyrics não conhece entra como extra, como `seq`
-- [ ] Prévia do overlay no editor, com a proporção da cena (16:9)
+**US15.2** Como operador, quero configurar o visual de cada saída vendo o resultado.
+- [ ] Editor em duas colunas (formulário 500 px | prévia), segmentado Coleções | Letra | Faixa, com os campos da especificação ("12 linhas · letra de 69 px", controles deslizantes)
+- [ ] Prévia ao vivo 16:9 ("Prévia ao vivo · cena 1920×1080", exemplo Bíblia | Hino), usando o mesmo componente do overlay, com a legenda da conta
+- [ ] Cartões de Saídas com o resumo do estilo; saídas padrão Bíblia, Salmos e hinos, Doutrina e **Faixas** (`/faixas`); "Restaurar saídas padrão"
 
 **US15.3** Documentação
-- [ ] `docs/OBS.md`: Browser Source do tamanho da cena, sem redimensionar no canvas; o tamanho da letra vem de "Linhas máximas". Linha "Texto pequeno" na tabela de problemas
+- [ ] `docs/OBS.md`: Browser Source do tamanho da cena, sem redimensionar no canvas; a letra vem de "Linhas máximas"; a saída Faixas; linha "Texto pequeno" na tabela de problemas
 
-### E16 — Telas sem rolagem em notebooks de 14–16"
-O app roda em notebooks de 14 a 16 polegadas com tela de ~1920×1080/1200 e escala do sistema de
-100 a 150%, ou seja, janelas úteis entre ~1280×720 e 1920×1200. Nenhuma página pode rolar: o que
-não cabe vira página (como na E9 e na E13).
+### E16 — Telas sem rolagem e ajustes da v2
+O app roda em notebooks de 14 a 16" (1920×1200 a 1280×720 úteis). Nenhuma página rola: o que não
+cabe vira página ou seção. Especificação: `handoff/README.md` → "Regras gerais", cada tela em
+"Telas" e "O que muda em relação ao app atual"; medidas atuais em `design/implemented/0.2.3/NOTES.md`.
 
-**US16.1** Levantamento
-- [ ] Percorrer cada aba e estado (Liturgia, Biblioteca e cada coleção, Apresentar, Conexão/Estado/Saídas/editor, atualização) nas dimensões 1920×1200, 1920×1080, 1536×864 (125%) e 1280×720 (150%), com o `npm run screenshots` (E12), e registrar aqui onde rola e quantos px
+**US16.1** Escala e regras comuns
+- [ ] Zoom da interface: `limitar(min(largura/1440, altura/810), 1, 1,333)` com `webContents.setZoomFactor`, recalculado no `resize`
+- [ ] Altura fixa (área = altura lógica − 72), nenhum `overflow: auto`; alturas fixas de linha (44/60/70/140/112/200/38 px) para a paginação exata
+- [ ] Paginador e faixa de seções no formato da v2 (`Pager`/`usePaging`)
 
-**US16.2** Paginação no lugar da rolagem
-- [ ] Corrigir cada ponto do levantamento com `Pager`/`usePaging` (E12) ou cartões paginados (E13); incluir os restos registrados na E11 (Catecismo Maior) e na E13 (Estado e editor de saída)
-- [ ] Teste/screenshot que falha se `document.scrollingElement` rolar nessas dimensões
+**US16.2** Telas existentes conforme a v2
+- [ ] Liturgia: três colunas, itens paginados, coluna de ação com segmentado Adicionar item | Pregação (a Pregação é da E18)
+- [ ] Biblioteca: lateral em quatro grupos (com FAIXAS, da E18), cabeçalho comum (busca, trilha, título, ação)
+- [ ] Bíblia: 66 livros; capítulo com seções pela altura para qualquer capítulo, a seção da seleção primeiro, transmissão numa coluna à direita com cartões paginados
+- [ ] Busca na coleção com trilha, título "Busca: …" e contagem; hinário com **s/nº**; hino com editor e prévia lado a lado e barra fixa
+- [ ] CFW com os 33 capítulos (sem seções = esmaecido, abre o editor); catecismos com grade calculada e seções
+- [ ] Apresentar: itens e telas paginados, cartão com as 2 linhas reais e a posição (1/8), rodapé fixo Anterior/Próximo
+- [ ] Conexão: sub-abas Estado · Saídas · Controle remoto; versão na lista do Estado
+- [ ] Teclado: **Esc limpa a tela** (da v1, ainda não existe); ←/→, PageUp/PageDown e Shift+←/→ continuam
 
-### E17 — Controle mobile da transmissão
-Uma página servida pelo Gutenberg, pensada primeiro para o celular, para mandar comandos à
-transmissão: próximo/anterior, limpar tela, escolher item da liturgia e os lower thirds da E18.
+**US16.3** Verificação
+- [ ] Teste que falha se `document.scrollingElement` rolar em qualquer tela nas 4 resoluções (base: `npm run design:implemented` e o `scroll.json`)
+- [ ] Gerar `design/implemented/<versão>/` ao final e comparar com o protótipo da v2
 
-**US17.1** Como operador auxiliar, quero controlar a transmissão pelo celular.
-- [ ] Rota `/control` (HTML/CSS/JS empacotados, offline, mobile first, alvos de toque ≥ 44 px) com o culto do dia, o item e a tela no ar, e os botões Próximo/Anterior/Limpar
-- [ ] Os comandos reaproveitam as rotas de apresentação, hoje `localOnly`. Precisam de autenticação (token/PIN pareado por QR code na aba Conexão), revogável
-- [ ] Estado ao vivo por SSE, como o overlay
-- [ ] Funciona pela LAN e pelo túnel da E19 (quando existir)
+### E17 — Controle remoto pelo celular
+Um aparelho controla a transmissão de fora do desktop. Especificação: `handoff/README.md` →
+"Conexão › Controle remoto" e "Celular"; decisões 3 e 4 em `design/proposals/v2/decisions.md`.
 
-### E18 — Lower thirds de culto, sacramentos e pregação ⛔ bloqueado (aguarda o design do operador)
-Faixas que não são texto de apoio:
-- **Culto/reunião:** Culto Matutino, Culto Vespertino, EBD, Reunião de Doutrina etc. (lista como dado, não código)
-- **Sacramentos:** Batismo e Santa Ceia do Senhor
-- **Pregação:** nome do pregador, título da pregação e texto pregado
+**US17.1** Como operador, quero parear um celular com segurança.
+- [ ] Conexão › Controle remoto: QR de `/control`, PIN de 6 dígitos válido por 5 minutos, "Gerar outro PIN"
+- [ ] Aparelhos pareados com nome, sistema, "visto agora" e Revogar (desconecta na hora)
+- [ ] Rotas de comando com token do pareamento; as demais continuam `localOnly`
 
-- [ ] ⛔ Design das faixas (operador)
-- [ ] Modelo de dados (tipo de item da liturgia ou coleção nova), payload e overlay
-- [ ] Envio pela Liturgia/Apresentar e pelo controle mobile (E17)
+**US17.2** Como auxiliar, quero comandar a transmissão pelo celular.
+- [ ] Rota `/control` (HTML/CSS/JS empacotados, offline), 375–430 px, tema escuro com tokens, alvos ≥ 44 px
+- [ ] Parear: 6 caixas, teclado numérico próprio, estado de PIN incorreto ou vencido
+- [ ] Controle: tela **no ar** e **a seguir**, abas Itens | Faixas (só a lista rola), rodapé Anterior/Próximo/Limpar tela; nas Faixas, Tirar faixa
+- [ ] Estado ao vivo por SSE; um aparelho por vez, vale o último comando (celular ou desktop)
+
+### E18 — Faixas de culto, sacramentos e pregação
+Faixas que não são texto de apoio, enviadas a qualquer momento pela saída **Faixas**.
+Especificação: `handoff/README.md` → "Liturgia" (Pregação), "Biblioteca › Faixas", "Apresentar"
+(modo Faixas) e "Overlay no OBS" (`o-culto`, `o-sacramento`, `o-pregacao`); decisões 1 e 2.
+
+**US18.1** Como operador, quero cadastrar as faixas.
+- [ ] Biblioteca › Faixas: Cultos e reuniões (nome e linha de apoio; vazia = data do culto), Sacramentos (Batismo, Santa Ceia do Senhor, linha de apoio editável) e Pregadores — como dado, não código
+- [ ] Liturgia › Pregação: pregador (da lista), título e texto pregado, por culto, com prévia
+
+**US18.2** Como operador, quero enviar e tirar uma faixa.
+- [ ] Apresentar › segmentado Liturgia | Faixas: cartões de 112 px com tipo, título e linha de apoio; clicar envia; "Tirar faixa"
+- [ ] Faixa e texto **nunca juntos**: enviar uma faixa limpa a tela de texto no ar, e uma tela de texto tira a faixa
+- [ ] A faixa só sai por outra faixa, uma tela de texto ou "Tirar faixa" (sem tempo)
+- [ ] Payload com `kind` (`culto`, `sacramento`, `pregacao`), `kicker`, `title`, `subtitle`; overlay da faixa (bloco à esquerda, tipo 26 px, título 64 px, apoio 36 px itálico)
 
 ### E19 — Acesso fora da rede local sem IP fixo
-Hoje o OBS precisa estar na mesma LAN e apontar para o IP do operador, que muda. O próprio app
-deve publicar o servidor num endereço estável em Windows, macOS e Linux, de graça.
+Hoje o celular e o OBS precisam estar na mesma rede do operador. O app deve publicar o servidor
+num endereço estável, de graça, em Windows, macOS e Linux. A tela já está desenhada
+(`handoff/README.md` → "Conexão › Controle remoto" → "Fora da rede da igreja"); o serviço está
+em aberto (decisão 5).
 
-**US19.1** Decisão do túnel
-- [ ] Comparar e decidir, registrando aqui: **Tailscale** (rede privada, gratuito até 3 usuários/100 dispositivos; exige instalar e entrar na conta nos dois PCs), **Cloudflare Tunnel** (`cloudflared` empacotado no app; o *quick tunnel* é grátis e sem conta, mas a URL muda a cada execução; URL fixa exige domínio próprio na Cloudflare) e **ngrok** (grátis com conta e 1 domínio fixo; limites de tráfego e página de aviso no plano gratuito, que pode atrapalhar a Browser Source). Critérios: custo zero, URL estável, empacotável nos 3 sistemas, latência, funcionar com o SSE, segurança
-- [ ] Por ora a LAN continua sendo o caminho principal: o túnel é opcional
+**US19.1** Decisão do serviço (em aberto)
+- [ ] Comparar e decidir, registrando aqui: **Tailscale** (rede privada, gratuito até 3 usuários/100 dispositivos; exige instalar e entrar na conta nos dois aparelhos), **Cloudflare Tunnel** (`cloudflared` empacotado; o *quick tunnel* é grátis e sem conta, mas a URL muda a cada execução e o QR precisa ser refeito; URL fixa exige domínio próprio) e **ngrok** (grátis com conta e 1 domínio fixo; limites de tráfego e página de aviso no plano gratuito). Critérios: custo zero, URL estável, empacotável nos 3 sistemas, latência, SSE, segurança
 
 **US19.2** Integração (depois da decisão)
-- [ ] Binário/serviço empacotado no `electron-builder` para os 3 sistemas, iniciado e parado pelo app; endereço público na aba Conexão
-- [ ] Rotas públicas continuam só `/overlay` e `/api/v1/health`; o controle remoto (E17) só com autenticação
+- [ ] Chave Desligado | Ligado com os estados Desligado, Conectando, No ar e Erro; endereço público com Copiar; o QR passa a abrir o endereço público e o PIN continua obrigatório
+- [ ] Binário/serviço empacotado no `electron-builder` para os 3 sistemas, iniciado e parado pelo app
+- [ ] Públicas continuam só `/overlay`, `/api/v1/health` e `/control` com token

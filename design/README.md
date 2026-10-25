@@ -2,14 +2,15 @@
 
 O que o Claude Design propôs e o que o app de fato é, lado a lado.
 
-**Proposta em vigor: [v1](proposals/v1/README.md).**
+**Proposta em vigor: [v2](proposals/v2/handoff/README.md)**, com as [decisões do operador](proposals/v2/decisions.md).
+A v1 continua valendo no que a v2 não redefine (autobreak, busca rápida).
 
 ## Propostas
 
 | Proposta | Pedido | Retorno | Estado |
 | --- | --- | --- | --- |
-| [v1](proposals/v1/README.md) | (anterior a esta estrutura) | `proposals/v1/` | Em vigor; implementada até a 0.2.3 |
-| [v2](proposals/v2/handoff/README.md) | [brief](proposals/v2/brief/BRIEF.md), app [0.2.3](implemented/0.2.3/NOTES.md) | `proposals/v2/handoff/`, recebido em 2026-10-25 | Recebida; aguarda aceite (ver "Em aberto" no README dela) |
+| [v1](proposals/v1/README.md) | (anterior a esta estrutura) | `proposals/v1/` | Implementada até a 0.2.3; vale no que a v2 não redefine |
+| [v2](proposals/v2/handoff/README.md) | [brief](proposals/v2/brief/BRIEF.md), app [0.2.3](implemented/0.2.3/NOTES.md) | `proposals/v2/handoff/`, recebido em 2026-10-25 | **Em vigor** desde 2026-10-25; [decisões](proposals/v2/decisions.md); épicos E15–E19 |
 
 Para abrir um protótipo, sirva a pasta `design/` dele por HTTP (`npx serve proposals/v2/handoff/design`)
 e abra o `.dc.html` principal.
@@ -20,6 +21,7 @@ e abra o `.dc.html` principal.
 | --- | --- | --- |
 | `proposals/vN/` | Uma proposta do Claude Design. Não é editada depois de entregue: correções entram na próxima. | Claude Design |
 | `proposals/vN/brief/` | O pedido que gerou a proposta: o que mudar, épicos do `PLAN.md`, restrições e a pasta de `implemented/` usada. | Nós |
+| `proposals/vN/decisions.md` | Respostas do operador às dúvidas em aberto do handoff; valem por cima dele. | Nós |
 | `proposals/vN/handoff/` | O que voltou do Claude Design, como veio: `README.md` (especificação, "O que muda" e "Decisões e dúvidas") e `design/` (protótipos `.dc.html`, `support.js`, `_ds/`), o mesmo formato da v1. | Claude Design |
 | `implemented/<versão>/` | O app real na versão do `package.json`, gerado por script: para cada tela, um HTML autocontido e um PNG por resolução, mais um `NOTES.md` com o que difere da proposta e onde a tela rola. | Script |
 

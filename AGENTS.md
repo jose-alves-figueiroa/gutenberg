@@ -6,9 +6,10 @@ e envia telas limpas para o OBS via obs-websocket.
 
 ## Fontes de verdade
 - **Especificação:** a proposta em vigor, indicada em `design/README.md` (propostas do Claude Design
-  em `design/proposals/`, telas reais do app em `design/implemented/`). O protótipo da v1
-  `design/proposals/v1/design/Gutenberg.dc.html` (classe `Component`) é a referência de
-  comportamento — **não é código de produção**. Propostas entregues não são editadas.
+  em `design/proposals/`, telas reais do app em `design/implemented/`). Protótipos (`*.dc.html`) são
+  referência de comportamento — **não são código de produção**. O da v1
+  (`design/proposals/v1/design/Gutenberg.dc.html`, classe `Component`) segue como oráculo do
+  autobreak. Propostas entregues não são editadas; as decisões do operador ficam em `decisions.md`.
 - **Histórico de versões:** `CHANGELOG.md` (formato descrito no topo do arquivo).
 - **Plano e progresso:** `PLAN.md` (épicos) e `docs/DATA.md` → Progresso (tasks da E3). Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito.
   - Marque `[~]` ao começar uma task e `[x]` só quando ela estiver pronta **e** com testes passando.

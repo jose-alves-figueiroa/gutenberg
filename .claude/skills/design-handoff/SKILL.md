@@ -46,6 +46,8 @@ Os pedidos de design **não** iniciam trabalho no `PLAN.md`: épicos citados no 
 2. Compare com o brief: cada item pedido tem resposta? As restrições foram respeitadas (tokens,
    sem rolagem nas resoluções, 2 linhas no OBS, pt-BR sem travessão)? Liste as lacunas para o
    operador antes de aceitar.
-3. Aceita: atualize "Proposta em vigor" em `design/README.md`, ajuste os épicos no `PLAN.md`
+3. Leve ao operador as dúvidas "Em aberto" do handoff e registre as respostas em
+   `design/proposals/vN/decisions.md` (o handoff não muda).
+4. Aceita: atualize "Proposta em vigor" em `design/README.md`, ajuste os épicos no `PLAN.md`
    (critérios vindos da proposta; tire o ⛔ dos que dependiam dela) e faça o commit
    `docs(repo): recebe a proposta de design vN`.
