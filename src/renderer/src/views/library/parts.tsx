@@ -110,6 +110,8 @@ export interface ListRow {
   meta?: string
   /** Faded (nothing registered yet). */
   faded?: boolean
+  /** Only the label faded (a hymn without a number: "s/nº"). */
+  mutedLabel?: boolean
   go: () => void
 }
 
@@ -226,7 +228,7 @@ export function List({ rows, pageKey, plain = false }: { rows: ListRow[]; pageKe
       <div className={plain ? 'lib-list lib-list--plain' : 'lib-list'} ref={ref}>
         {rows.slice(page * size, (page + 1) * size).map((r) => (
           <button key={r.key} type="button" className={`lib-row${r.faded ? ' lib-row--faded' : ''}`} onClick={r.go}>
-            <span className="lib-row-label">{r.label}</span>
+            <span className={r.mutedLabel ? 'lib-row-label lib-row-label--muted' : 'lib-row-label'}>{r.label}</span>
             <span className="lib-row-sub">{r.sub}</span>
             <span className="lib-row-meta text-muted">{r.meta}</span>
           </button>

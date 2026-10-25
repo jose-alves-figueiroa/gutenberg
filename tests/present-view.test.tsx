@@ -84,6 +84,14 @@ describe('Present (US6.2)', () => {
     await waitFor(() => expect(liveCard()).not.toBeNull())
   })
 
+  it('Esc clears the screen (design v2, decision 7)', async () => {
+    const { db } = renderApp()
+    await within(aside()).findByText('Credo Apostólico')
+    await userEvent.keyboard('{Escape}')
+    await screen.findByRole('button', { name: 'Mostrar texto' })
+    expect(stored(db).blank).toBe(true)
+  })
+
   it('the last screen says "Fim da liturgia"', async () => {
     renderApp()
     await userEvent.click(await within(aside()).findByText('Credo Apostólico'))

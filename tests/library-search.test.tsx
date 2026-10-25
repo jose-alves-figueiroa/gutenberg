@@ -37,6 +37,8 @@ describe('Library search (E12)', () => {
     expect(search()).toHaveAttribute('placeholder', 'Número ou título, ex.: 42B')
     await userEvent.type(search(), '133b')
     await waitFor(() => expect(resultRows()).toEqual(['Salmo 133B']))
+    expect(screen.getByRole('heading', { level: 2, name: 'Busca: 133b' })).toBeInTheDocument()
+    expect(screen.getByText('1 resultado em Salmos genebrinos')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: /Salmo 133B/ }))
     expect(await screen.findByRole('heading', { level: 2, name: 'Salmo 133B' })).toBeInTheDocument()
     expect(search()).toHaveValue('')
@@ -50,6 +52,23 @@ describe('Library search (E12)', () => {
     await userEvent.keyboard('{Escape}')
     expect(search()).toHaveValue('')
     expect(screen.getByText('150 salmos')).toBeInTheDocument()
+  })
+})
+
+describe('Library v2 (E16)', () => {
+  it('the Bible lists the 66 books; those without text are faded', async () => {
+    renderApp('library')
+    await screen.findByRole('button', { name: 'Hebreus' })
+    expect(document.querySelectorAll('.lib-grid--name .cell')).toHaveLength(66)
+    expect(screen.getByRole('button', { name: 'Gênesis' })).toHaveClass('cell--empty')
+    expect(screen.getByRole('button', { name: 'Hebreus' })).not.toHaveClass('cell--empty')
+  })
+
+  it('a hymn without a number shows "s/nº"', async () => {
+    renderApp('library')
+    await userEvent.click(await screen.findByRole('button', { name: /Hinário Novo Cântico/ }))
+    const labels = await screen.findAllByText('s/nº')
+    for (const l of labels) expect(l).toHaveClass('lib-row-label--muted')
   })
 })
 

@@ -85,7 +85,7 @@ function Collection({ c, path, go, query, setQuery }: { c: CollectionSummary; pa
   return (
     <>
       <SearchField c={c} query={query} setQuery={setQuery} rows={search.rows} />
-      {query.trim() ? <SearchResults {...search} /> : <Browser c={c} path={path} go={go} />}
+      {query.trim() ? <SearchResults {...search} title={collectionLabel(c)} query={query} clear={() => setQuery('')} /> : <Browser c={c} path={path} go={go} />}
     </>
   )
 }

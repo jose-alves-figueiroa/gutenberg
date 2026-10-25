@@ -6,6 +6,7 @@ import { bibleUnits, fitSections } from '@shared/sections'
 import { slidesOf, type BiblePassage } from '@shared/slides'
 import { SectionStrip } from '../../components/Sections'
 import { bibleItemRef } from '@shared/bible-ref'
+import { BOOKS } from '@shared/collections'
 import { json, useApi } from '../../api'
 import { Leaf, useScreenLimit } from './leaf'
 import { Grid, LevelHeader, Loading, useBox, type Crumb } from './parts'
@@ -92,9 +93,11 @@ export function BibleBrowser({ version, label, path, go, onSelect }: Props) {
               key={testament}
               kind="name"
               title={t(testament === 'OT' ? 'library.oldTestament' : 'library.newTestament')}
-              items={books.data
-                .filter((b) => b.testament === testament)
-                .map((b) => ({ key: b.book, label: b.name, tip: b.book, filled: true, go: () => goPath([b.book]) }))}
+              items={(testament === 'OT' ? BOOKS.slice(0, 39) : BOOKS.slice(39)).map(([abbrev, name]) => {
+                const has = books.data.some((b) => b.book === abbrev)
+                // Design v2: all 66 books; one without text in this Bible is faded and does nothing.
+                return { key: abbrev, label: name, tip: abbrev, filled: has, go: () => has && goPath([abbrev]) }
+              })}
             />
           ))}
         </div>

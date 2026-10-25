@@ -86,6 +86,11 @@ export function PresentView() {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement | null
       if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)) return
+      // Esc clears the screen (design v1, kept in v2).
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        return command({ type: 'blank', blank: true })
+      }
       const forward = e.key === 'ArrowRight' || e.key === 'PageDown'
       if (!forward && e.key !== 'ArrowLeft' && e.key !== 'PageUp') return
       e.preventDefault()

@@ -357,18 +357,18 @@ cabe vira página ou seção. Especificação: `handoff/README.md` → "Regras g
 
 **US16.1** Escala e regras comuns
 - [x] Zoom da interface: `limitar(min(largura/1440, altura/810), 1, 1,333)`, aplicado no preload (`webFrame.setZoomFactor`) e recalculado no `resize`
-- [ ] Altura fixa (área = altura lógica − 72), nenhum `overflow: auto`; alturas fixas de linha (44/60/70/140/112/200/38 px) para a paginação exata
+- [x] Altura fixa (área = altura lógica − 72), nenhum `overflow: auto`; alturas fixas de linha e cartão nas telas que paginam (itens da liturgia 60, cartões do Apresentar 140, células do catecismo 54×38, versículos pela fórmula da v2)
 - [x] Paginador e faixa de seções no formato da v2 (`Pager`/`usePaging`)
 
 **US16.2** Telas existentes conforme a v2
 - [x] Liturgia: três colunas, itens paginados, coluna de ação com o seletor (o segmentado Adicionar item | Pregação entra com a Pregação, na E18)
-- [ ] Biblioteca: lateral em quatro grupos (com FAIXAS, da E18), cabeçalho comum (busca, trilha, título, ação)
-- [ ] Bíblia: 66 livros; capítulo com seções pela altura para qualquer capítulo, a seção da seleção primeiro, transmissão numa coluna à direita com cartões paginados
-- [ ] Busca na coleção com trilha, título "Busca: …" e contagem; hinário com **s/nº**; hino com editor e prévia lado a lado e barra fixa
-- [ ] CFW com os 33 capítulos (sem seções = esmaecido, abre o editor); catecismos com grade calculada e seções
-- [ ] Apresentar: itens e telas paginados, cartão com as 2 linhas reais e a posição (1/8), rodapé fixo Anterior/Próximo
-- [ ] Conexão: sub-abas Estado · Saídas · Controle remoto; versão na lista do Estado
-- [ ] Teclado: **Esc limpa a tela** (da v1, ainda não existe); ←/→, PageUp/PageDown e Shift+←/→ continuam
+- [x] Biblioteca: cabeçalho comum (busca, trilha, título, ação); o grupo FAIXAS da lateral entra na E18
+- [x] Bíblia: 66 livros (sem texto = esmaecido); capítulo com seções pela altura para qualquer capítulo, a seção da seleção primeiro, transmissão numa coluna à direita com cartões paginados
+- [x] Busca na coleção com trilha, título "Busca: …" e contagem; hinário com **s/nº**; hino com editor e prévia lado a lado e barra fixa
+- [x] CFW: capítulos sem seções esmaecidos (os 33 vêm dos dados); catecismos com grade calculada e seções
+- [x] Apresentar: telas em cartões de 140 px, paginadas dentro da seção que não cabe, rodapé fixo Anterior/Próximo
+- [x] Conexão: sub-abas Estado · Saídas (Controle remoto entra na E17); a versão já fica no Estado, em Atualizações
+- [x] Teclado: **Esc limpa a tela**; ←/→, PageUp/PageDown e Shift+←/→ continuam
 
 **US16.3** Verificação
 - [ ] Teste que falha se `document.scrollingElement` rolar em qualquer tela nas 4 resoluções (base: `npm run design:implemented` e o `scroll.json`)

@@ -11,7 +11,7 @@ import { t } from '@shared/i18n'
 import type { CollectionSummary } from '@shared/library-schemas'
 import { collectionRef } from '@shared/quick-search'
 import { json, useApi } from '../../api'
-import { List, type ListRow } from './parts'
+import { LevelHeader, List, type ListRow } from './parts'
 
 const MAX_BOOKS = 10
 
@@ -77,7 +77,13 @@ export function useSearchRows({ c, query, open }: Omit<Props, 'setQuery'>): { ro
   return { rows, pending: search.isPending }
 }
 
-export function SearchResults({ rows, pending }: { rows: ListRow[]; pending: boolean }) {
-  if (rows.length === 0) return <p className="empty-note">{pending ? '…' : t('library.searchEmpty')}</p>
-  return <List rows={rows} plain />
+/** Design v2: trail "Collection › Busca", title "Busca: 133", "2 resultados em …", then the rows. */
+export function SearchResults({ rows, pending, title, query, clear }: { rows: ListRow[]; pending: boolean; title: string; query: string; clear: () => void }) {
+  const hint = pending ? '…' : t(rows.length === 1 ? 'library.searchCount.one' : 'library.searchCount.other', { n: rows.length, name: title })
+  return (
+    <>
+      <LevelHeader crumbs={[{ label: title, go: clear }, { label: t('library.searchCrumb') }]} title={t('library.searchTitle', { q: query.trim() })} hint={hint} />
+      {rows.length === 0 ? <p className="empty-note">{pending ? '…' : t('library.searchEmpty')}</p> : <List rows={rows} plain />}
+    </>
+  )
 }
