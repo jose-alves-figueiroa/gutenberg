@@ -104,6 +104,7 @@ export function Leaf({ slides, units, song, max, editable, dirty = false, status
     return (
       <section className="leaf leaf--aside" aria-label={label}>
         <span className="leaf-label text-muted">{label}</span>
+        <span className="leaf-note text-muted">{song ? t('leaf.breakSong') : t('leaf.breakProse', { max })}</span>
         <div className="slide-cards slide-cards--aside" ref={cards}>
           {slides.slice(section.start, section.end).map((s, i) => (
             <div key={section.start + i} className="slide-card slide-card--aside">
