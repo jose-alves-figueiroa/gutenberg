@@ -17,6 +17,11 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 
 ## [Não lançado]
 
+### Alterado
+- Letra maior no OBS: o tamanho vem de "Linhas máximas" da saída (padrão 12 linhas para textos e
+  10 para músicas), em Source Serif 4, numa faixa escura na base da cena; saídas que ainda usavam
+  os padrões do Holyrics passam para os novos (E15)
+
 ## [0.2.3] - 2026-10-14
 
 ### Adicionado

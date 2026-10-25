@@ -26,7 +26,7 @@ import { createPresenter, type Presenter } from '../present/presenter'
 import { connectionRoutes, type NetworkControl } from './connection'
 import { localOnly, remoteIp } from './guards'
 import { createConnectionMonitor, type ConnectionMonitor } from './monitor'
-import { overlayHtml } from './overlay'
+import { overlayFont, overlayHtml } from './overlay'
 import { updateRoutes } from './update'
 import { createUpdateService, type UpdateService } from '../update/service'
 import { PresentCommand } from '../../shared/presentation'
@@ -181,6 +181,12 @@ function publicRoutes(presenter: Presenter, monitor: ConnectionMonitor) {
     .get('/overlay/resources/:output', open, (c) => json(c, c.req.param('output')))
     .get('/overlay/resources/:output/events', open, (c) => events(c, c.req.param('output')))
     .get('/overlay/:output', (c) => c.html(page(c.req.param('output'))))
+    .get('/overlay/fonts/:file', (c) => {
+      const font = overlayFont(c.req.param('file')) ?? notFound()
+      c.header('Content-Type', 'font/woff2')
+      c.header('Cache-Control', 'public, max-age=86400')
+      return c.body(font)
+    })
     .get('/api/v1/health', open, zValidator('query', HealthQuery), (c) => {
       const { output, rtt } = c.req.valid('query')
       monitor.seen(output, remoteIp(c), rtt)

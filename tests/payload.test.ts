@@ -14,12 +14,16 @@ const holyrics = readFileSync(join(__dirname, '../design/proposals/v1/reference/
 const [bibleExample, musicExample] = holyrics
 
 const HTML = /<[a-z/]|&nbsp;|text-force-update|\(RA\)/i
+/** Extras of design v2, ignored by a Holyrics overlay. */
+const V2_KEYS = ['band_opacity', 'band_margin_x', 'band_margin_y', 'band_width', 'text_stroke', 'text_shadow']
+/** Holyrics values that design v2 redefines (Source Serif 4, a dark band, 12/10 rows). */
+const V2_VALUES = ['font', 'background', 'font_max_rows']
 const slide = { header: 'Hebreus 12.15 (2/2)', lines: ['nem haja alguma raiz de amargura que, brotando,', 'vos perturbe, e, por meio dela, muitos sejam contaminados;'] }
 
 describe('payload (US7.1)', () => {
   it('has every key of the Holyrics Bible example, plus seq and lines', () => {
     const p = toPayload({ collection: 'bible:ara', slide }, DEFAULT_STYLE, 128)
-    expect(Object.keys(p.map).sort()).toEqual([...Object.keys(bibleExample.map), 'lines', 'seq'].sort())
+    expect(Object.keys(p.map).sort()).toEqual([...Object.keys(bibleExample.map), 'lines', 'seq', ...V2_KEYS].sort())
     expect(p.map).toMatchObject({
       type: 'BIBLE',
       header: 'Hebreus 12.15 (2/2)',
@@ -29,16 +33,18 @@ describe('payload (US7.1)', () => {
     })
   })
 
-  it('uses the Holyrics example values as the default style', () => {
+  it('uses the Holyrics example values as the default style, except what design v2 redefines', () => {
     const p = toPayload({ collection: 'bible:ara', slide }, DEFAULT_STYLE, 1)
-    for (const [k, v] of Object.entries(bibleExample.map)) if (k !== 'header' && k !== 'text') expect(p.map[k], k).toEqual(v)
+    for (const [k, v] of Object.entries(bibleExample.map)) if (!['header', 'text', ...V2_VALUES].includes(k)) expect(p.map[k], k).toEqual(v)
+    expect(p.map).toMatchObject({ font: 'Source Serif 4', background: '#141212', font_max_rows: '12', band_opacity: 78, band_width: 'full', text_shadow: true })
   })
 
   it('music: the example keys (with credits), valign middle and its row count', () => {
     const credits = { title: 'Salmo 133B', artist: 'Comissão Brasileira de Salmodia', author: '', copyright: '' }
     const p = toPayload({ collection: 'songbook:psalter', slide: { header: 'Salmo 133B', lines: ['Oh! Como é bom e agradável,', 'bem suave, sim,'] }, credits }, DEFAULT_STYLE, 2)
-    expect(Object.keys(p.map).sort()).toEqual([...Object.keys(musicExample.map), 'header', 'lines', 'seq'].sort())
-    for (const [k, v] of Object.entries(musicExample.map)) if (k !== 'text') expect(p.map[k], k).toEqual(v)
+    expect(Object.keys(p.map).sort()).toEqual([...Object.keys(musicExample.map), 'header', 'lines', 'seq', ...V2_KEYS].sort())
+    for (const [k, v] of Object.entries(musicExample.map)) if (!['text', ...V2_VALUES].includes(k)) expect(p.map[k], k).toEqual(v)
+    expect(p.map.font_max_rows).toBe('10')
     expect(p.map.text).toBe('Oh! Como é bom e agradável,\nbem suave, sim,')
   })
 
@@ -62,6 +68,27 @@ describe('payload (US7.1)', () => {
   ])('%s → %s', (collection, type) => expect(payloadType(collection)).toBe(type))
 
   it('the default style is valid', () => expect(PayloadStyle.parse(DEFAULT_STYLE)).toEqual(DEFAULT_STYLE))
+
+  /** The default style as saved before design v2: no band, stroke or shadow. */
+  const beforeV2 = () => {
+    const rest: Partial<typeof DEFAULT_STYLE> = { ...DEFAULT_STYLE }
+    delete rest.band
+    delete rest.stroke
+    delete rest.shadow
+    return rest
+  }
+
+  it('a style saved before design v2 gets the band, and its Holyrics defaults move to v2', () => {
+    const rest = beforeV2()
+    const old = { ...rest, background: '#ffffff', font: 'Open Sans', text: { valign: 'bottom', fontMaxRows: '15' }, music: { valign: 'middle', fontMaxRows: '24' } }
+    expect(PayloadStyle.parse(old)).toEqual(DEFAULT_STYLE)
+  })
+
+  it('keeps what the operator changed in a style saved before design v2', () => {
+    const rest = beforeV2()
+    const old = { ...rest, background: '#003366', font: 'Arial', text: { valign: 'top', fontMaxRows: '8' }, music: { valign: 'middle', fontMaxRows: '24' } }
+    expect(PayloadStyle.parse(old)).toMatchObject({ background: '#003366', font: 'Arial', text: { valign: 'top', fontMaxRows: '8' }, music: { fontMaxRows: '10' }, band: DEFAULT_STYLE.band })
+  })
 })
 
 describe('public routes for OBS (US7.1)', () => {

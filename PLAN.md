@@ -335,12 +335,12 @@ Especificação: `design/proposals/v2/handoff/README.md` → "Overlay no OBS", "
 "Conexão › editor de saída"; protótipo `GutenbergOverlay.dc.html`.
 
 **US15.1** Como operador, quero a letra do lower third legível na transmissão.
-- [ ] Overlay em Source Serif 4 local; `font-size = 100vh / (font_max_rows × 1,3)`, cabeçalho com metade e 80 % de opacidade
-- [ ] Faixa na base: margem lateral, distância da base, fundo (`background`) com opacidade, espaçamento `0,35em 0,7em`, no máximo 2 linhas `nowrap`; hino centralizado na vertical
-- [ ] Opções da saída: cor, negrito, alinhamento, contorno (nenhum/fino/grosso), sombra, largura (inteira/ajustada)
-- [ ] Payload: extras `band_opacity`, `band_margin_x`, `band_margin_y`, `band_width`, `text_stroke`, `text_shadow`; o formato do Holyrics não muda
-- [ ] `DEFAULT_STYLE`: 12 linhas para textos, 10 para músicas, margem 6 %, base 5 %, fundo a 78 %
-- [ ] Testes do overlay (jsdom) e do payload
+- [x] Overlay em Source Serif 4 local; `font-size = 100vh / (font_max_rows × 1,3)`, cabeçalho com metade e 80 % de opacidade
+- [x] Faixa na base: margem lateral, distância da base, fundo (`background`) com opacidade, espaçamento `0,35em 0,7em`, no máximo 2 linhas `nowrap`; hino centralizado na vertical
+- [x] Opções da saída: cor, negrito, alinhamento, contorno (nenhum/fino/grosso), sombra, largura (inteira/ajustada)
+- [x] Payload: extras `band_opacity`, `band_margin_x`, `band_margin_y`, `band_width`, `text_stroke`, `text_shadow`; o formato do Holyrics não muda
+- [x] `DEFAULT_STYLE`: 12 linhas para textos, 10 para músicas, margem 6 %, base 5 %, fundo a 78 %
+- [x] Testes do overlay (jsdom) e do payload
 
 **US15.2** Como operador, quero configurar o visual de cada saída vendo o resultado.
 - [ ] Editor em duas colunas (formulário 500 px | prévia), segmentado Coleções | Letra | Faixa, com os campos da especificação ("12 linhas · letra de 69 px", controles deslizantes)

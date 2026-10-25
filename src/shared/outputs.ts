@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { DEFAULT_STYLE, PayloadStyle, toPayload, type Payload, type PayloadSource } from './payload'
 
 /** Path words used by the routes themselves. */
-export const RESERVED_SLUGS: readonly string[] = ['resources', 'events', 'health']
+export const RESERVED_SLUGS: readonly string[] = ['resources', 'events', 'health', 'fonts']
 
 /** `songbook:hnc` (exact), `songbook:*` (every document of a kind) or `creeds`. */
 export const CollectionBinding = z.string().regex(/^(?:(?:bible|songbook|confession|catechism):(?:[a-z0-9-]{1,40}|\*)|creeds)$/)
