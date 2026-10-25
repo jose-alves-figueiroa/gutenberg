@@ -96,7 +96,11 @@ a porta na aba Conexão: `sudo ufw allow <porta>/tcp`. Sem instalar: `chmod +x` 
    - **URL:** o endereço `/overlay/<saída>`;
    - **Largura/Altura:** a da cena (ex.: 1920 × 1080);
    - marque **Atualizar o navegador quando a cena ficar ativa**.
-   O fundo é transparente: posicione e recorte a fonte como a faixa da transmissão.
+   O fundo é transparente e a faixa já vem desenhada na posição certa: deixe a fonte ocupando a
+   cena inteira, **sem redimensionar nem recortar no canvas** (isso encolhe a letra).
+   O visual de cada saída (tamanho da letra, cor, faixa, margens, contorno e sombra) fica no
+   Gutenberg, em **Conexão → Saídas → Editar**, com prévia ao vivo. O tamanho da letra vem de
+   **Linhas máximas**: menos linhas, letra maior (12 linhas = 69 px numa cena de 1080).
 3. Quem já usa um overlay próprio que lê o JSON do Holyrics só troca o endereço para
    `/overlay/resources/<saída>` (ou `/overlay/resources`, com tudo numa só fonte).
 4. Volte ao Gutenberg: a bolinha da barra fica **OBS conectado** quando a página do OBS responde.
@@ -109,6 +113,7 @@ Cada saída só mostra as coleções dela: quando entra um hino, a fonte da Bíb
 | Sintoma | O que fazer |
 |---|---|
 | "OBS sem resposta" | Os dois computadores estão na mesma rede? Abra a URL do overlay no navegador do PC do OBS. Confira o firewall (seção 2). |
+| Texto pequeno no OBS | A fonte do navegador tem o tamanho da cena e não foi reduzida no canvas? Depois, diminua **Linhas máximas** da saída (Conexão → Saídas → Editar). |
 | A página abre, mas não muda | Veja se o item no ar pertence a essa saída (aba Conexão → coleções da saída). |
 | "Conexão instável" | Resposta acima de 500 ms: rede Wi-Fi fraca. Prefira cabo no PC do operador. |
 | Porta ocupada | Troque a porta na aba Conexão e atualize a URL no OBS. |

@@ -24,6 +24,8 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 - Editor de saída com prévia ao vivo da cena 1920×1080 e as partes Coleções, Letra e Faixa:
   linhas máximas com o tamanho da letra em px, cor, alinhamento, fundo e opacidade da faixa,
   largura, margens, contorno e sombra; o cartão de cada saída mostra o resumo do estilo (E15)
+- Guia do OBS: a fonte do navegador ocupa a cena inteira, sem redimensionar; como ajustar o
+  tamanho da letra e o que fazer com texto pequeno (E15)
 
 ## [0.2.3] - 2026-10-14
 

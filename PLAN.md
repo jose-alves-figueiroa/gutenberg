@@ -328,7 +328,7 @@ Pedidos do operador depois da 0.2.2.
 - [x] Opção **mac_signing** nos workflows **installers** e **release**; `.zip` entre os arquivos da versão; segredos documentados em `docs/OBS.md`
 - [ ] Gerar e publicar uma versão `developer-id` com a conta Apple
 
-### E15 — Overlay e editor de saída (design v2)
+### E15 — Overlay e editor de saída (design v2) ✓
 O operador usou o overlay no OBS e a letra do lower third ficou pequena: a página fixa o tamanho
 (`#text` 5,2vh em `src/main/server/overlay.ts`) e ignora `font_max_rows` e `background`.
 Especificação: `design/proposals/v2/handoff/README.md` → "Overlay no OBS", "Conexão › Saídas" e
@@ -348,7 +348,7 @@ Especificação: `design/proposals/v2/handoff/README.md` → "Overlay no OBS", "
 - [x] Cartões de Saídas com o resumo do estilo e "Restaurar saídas padrão" (a saída padrão **Faixas** entra com as faixas, na E18)
 
 **US15.3** Documentação
-- [ ] `docs/OBS.md`: Browser Source do tamanho da cena, sem redimensionar no canvas; a letra vem de "Linhas máximas"; a saída Faixas; linha "Texto pequeno" na tabela de problemas
+- [x] `docs/OBS.md`: Browser Source do tamanho da cena, sem redimensionar no canvas; a letra vem de "Linhas máximas"; a saída Faixas; linha "Texto pequeno" na tabela de problemas
 
 ### E16 — Telas sem rolagem e ajustes da v2
 O app roda em notebooks de 14 a 16" (1920×1200 a 1280×720 úteis). Nenhuma página rola: o que não
