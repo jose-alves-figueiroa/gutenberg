@@ -1,4 +1,4 @@
-/** Liturgy tab: services on the left; the current service's items and the picker on the right. */
+/** Liturgy tab (design v2): services | the current service's items, paged | the picker. */
 import { CaretDownIcon, CaretUpIcon, PlusIcon, PresentationIcon, XIcon } from '@phosphor-icons/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
@@ -11,6 +11,8 @@ import { Picker } from './Picker'
 
 /** Space below the services: pager and "Novo culto". */
 const ASIDE_RESERVE = 120
+/** Space below the items: the pager and the view's bottom padding. */
+const ITEMS_RESERVE = 64
 
 export function LiturgyView() {
   const api = useApi()
@@ -51,7 +53,7 @@ export function LiturgyView() {
             {t('liturgy.newService')}
           </button>
         </aside>
-        <section className="view-main lit-main">
+        <section className="lit-main" aria-label={current?.name}>
           {!current ? (
             <p className="empty-note">{services ? t('liturgy.noServices') : '…'}</p>
           ) : (
@@ -65,11 +67,11 @@ export function LiturgyView() {
                   if (window.confirm(t('liturgy.confirmDelete', { name: current.name }))) remove.mutate(current.id)
                 }}
               />
-              {detail.data && <ItemRows serviceId={current.id} items={detail.data.items} onChange={refresh} />}
-              <Picker serviceId={current.id} onAdded={refresh} />
+              {detail.data && <ItemRows key={current.id} serviceId={current.id} items={detail.data.items} onChange={refresh} />}
             </>
           )}
         </section>
+        <aside className="lit-action">{current && <Picker serviceId={current.id} onAdded={refresh} />}</aside>
       </div>
     </main>
   )
@@ -164,10 +166,14 @@ function ItemRows({ serviceId, items, onChange }: { serviceId: number; items: It
     mutationFn: ({ position, moment }: { position: number; moment: string }) => json(items$.$patch({ param: param(position), json: { moment } })),
     onSuccess: onChange
   })
+  const list = useRef<HTMLOListElement>(null)
+  const size = useFitRows(list, ITEMS_RESERVE)
+  const paging = usePaging(items.length, size)
   if (items.length === 0) return <p className="empty-note">{t('liturgy.noItems')}</p>
   return (
-    <ol className="lit-rows">
-      {items.map((it) => (
+    <>
+    <ol className="lit-rows" ref={list}>
+      {items.slice(paging.page * size, (paging.page + 1) * size).map((it) => (
         <li key={`${it.position}:${it.title}`} className={`lit-row${it.missing ? ' lit-row--missing' : ''}`}>
           <span className="lit-n text-muted">{String(it.position).padStart(2, '0')}</span>
           <MomentInput key={it.moment} value={it.moment} onCommit={(moment) => setMoment.mutate({ position: it.position, moment })} />
@@ -191,6 +197,8 @@ function ItemRows({ serviceId, items, onChange }: { serviceId: number; items: It
         </li>
       ))}
     </ol>
+    <Pager {...paging} />
+    </>
   )
 }
 

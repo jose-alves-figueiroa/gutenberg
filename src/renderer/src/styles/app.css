@@ -71,7 +71,7 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 /* — views — */
 .view { flex: 1; padding: var(--space-4) var(--space-6); }
 .view-grid { display: grid; gap: var(--space-8); }
-.view-grid--liturgy { grid-template-columns: minmax(190px, 240px) minmax(0, 1fr); }
+.view-grid--liturgy { grid-template-columns: 200px minmax(0, 1fr) 340px; }
 .view-grid--library { grid-template-columns: minmax(170px, 210px) minmax(0, 1fr); }
 .view-grid--present { grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); }
 .view-grid--connection { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
@@ -93,7 +93,8 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .lit-service-name { font-size: 16px; font-weight: 600; }
 .lit-service-count { font-size: 12px; }
 .lit-new { justify-content: flex-start; margin-top: var(--space-2); }
-.lit-main { display: flex; flex-direction: column; gap: var(--space-6); }
+.lit-main { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+.lit-action { min-width: 0; }
 .lit-head { display: flex; align-items: flex-end; gap: var(--space-4); flex-wrap: wrap; }
 .lit-head-text { margin-right: auto; min-width: 0; flex: 1 1 320px; }
 .lit-kicker { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
@@ -104,8 +105,9 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .lit-name:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
 .lit-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .lit-row {
-  display: grid; grid-template-columns: 28px minmax(110px, 180px) minmax(0, 1fr) auto; align-items: center;
-  gap: var(--space-3); padding: var(--space-2) 0;
+  /* Design v2: fixed 60 px rows, so the items page exactly. */
+  display: grid; grid-template-columns: 28px minmax(100px, 150px) minmax(0, 1fr) auto; align-items: center;
+  gap: var(--space-3); height: 60px; box-sizing: border-box;
 }
 .lit-n { font-size: 13px; font-feature-settings: 'tnum' 1; }
 .lit-moment { min-height: 32px; font-size: 13px; background: transparent; border-color: transparent; }
@@ -113,13 +115,14 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .lit-item { display: flex; flex-direction: column; min-width: 0; }
 .lit-title { font-size: 17px; font-weight: 600; line-height: 1.3; }
 .lit-meta { font-size: 12px; }
+.lit-title, .lit-meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lit-row--missing .lit-title { color: var(--color-neutral-600); font-style: italic; }
 .lit-actions { display: flex; gap: 2px; }
 .lit-icon { width: 32px; height: 32px; }
 .lit-icon--remove { color: var(--color-neutral-700); }
 .picker { display: flex; flex-direction: column; gap: var(--space-3); }
 .picker h4 { margin: 0; }
-.picker-groups { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); }
+.picker-groups { display: flex; flex-direction: column; gap: var(--space-3); }
 .picker-group { display: flex; flex-direction: column; gap: var(--space-1); }
 .picker-group-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
 .picker-chips { display: flex; flex-wrap: wrap; gap: var(--space-1); }
@@ -127,10 +130,10 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .chip:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
 .chip[aria-pressed='true'] { background: var(--color-accent); color: var(--color-bg); }
 .picker-search { max-width: 420px; }
-.picker-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 var(--space-6); }
+.picker-results { display: flex; flex-direction: column; }
 .picker-result {
-  all: unset; cursor: pointer; display: flex; align-items: center; gap: var(--space-2); padding: 7px var(--space-2);
-  border-radius: var(--radius-md); font-size: 14px;
+  all: unset; cursor: pointer; display: flex; align-items: center; gap: var(--space-2); padding: 0 var(--space-2);
+  height: 36px; border-radius: var(--radius-md); font-size: 14px;
 }
 .picker-result:hover { background: var(--color-accent-100); }
 .picker-result svg { color: var(--color-accent); flex: none; }

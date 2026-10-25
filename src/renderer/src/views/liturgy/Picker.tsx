@@ -1,13 +1,17 @@
 /** "Adicionar à liturgia": collection chips (Bíblia | Hinário e salmos | Doutrina), search and results. */
 import { BookOpenIcon, PlusCircleIcon } from '@phosphor-icons/react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { bibleItemRef, bibleRefTitle, booksFor, parseBibleRef } from '@shared/bible-ref'
 import { GROUPS, groupLabel, groupOf } from '@shared/collections'
 import { t } from '@shared/i18n'
 import type { CollectionSummary } from '@shared/library-schemas'
 import { json, useApi } from '../../api'
 import { collectionLabel } from '../library/LibraryView'
+import { useFitRows } from '../library/parts'
+
+/** Below the results: the view's bottom padding. */
+const RESULTS_RESERVE = 24
 
 /** `bible:ara`, `songbook:hnc`, `confession:wcf`, `catechism:wsc` or `creeds`. */
 export const collectionRef = (c: Pick<CollectionSummary, 'kind' | 'id'>): string => (c.kind === 'creeds' ? 'creeds' : `${c.kind}:${c.id}`)
@@ -24,6 +28,8 @@ export function Picker({ serviceId, onAdded }: { serviceId: number; onAdded: () 
   const collections = useQuery({ queryKey: ['collections'], queryFn: () => json(api.api.v1.library.collections.$get()) })
   const [picked, setPicked] = useState<string>('bible:ara')
   const [q, setQ] = useState('')
+  const box = useRef<HTMLDivElement>(null)
+  const fit = useFitRows(box, RESULTS_RESERVE)
   const current = collections.data?.find((c) => collectionRef(c) === picked)
   const search = useQuery({
     queryKey: ['search', picked, q],
@@ -84,8 +90,8 @@ export function Picker({ serviceId, onAdded }: { serviceId: number; onAdded: () 
         ))}
       </div>
       <input className="input picker-search" aria-label={t('liturgy.search')} placeholder={placeholder} value={q} onChange={(e) => setQ(e.target.value)} />
-      <div className="picker-results">
-        {results.map((r) => (
+      <div className="picker-results" ref={box}>
+        {results.slice(0, fit).map((r) => (
           <button key={r.key} type="button" className="picker-result" onClick={r.action}>
             {r.icon === 'add' ? <PlusCircleIcon size={18} weight="duotone" aria-hidden /> : <BookOpenIcon size={18} weight="duotone" aria-hidden />}
             <span>{r.title}</span>

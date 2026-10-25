@@ -361,7 +361,7 @@ cabe vira página ou seção. Especificação: `handoff/README.md` → "Regras g
 - [x] Paginador e faixa de seções no formato da v2 (`Pager`/`usePaging`)
 
 **US16.2** Telas existentes conforme a v2
-- [ ] Liturgia: três colunas, itens paginados, coluna de ação com segmentado Adicionar item | Pregação (a Pregação é da E18)
+- [x] Liturgia: três colunas, itens paginados, coluna de ação com o seletor (o segmentado Adicionar item | Pregação entra com a Pregação, na E18)
 - [ ] Biblioteca: lateral em quatro grupos (com FAIXAS, da E18), cabeçalho comum (busca, trilha, título, ação)
 - [ ] Bíblia: 66 livros; capítulo com seções pela altura para qualquer capítulo, a seção da seleção primeiro, transmissão numa coluna à direita com cartões paginados
 - [ ] Busca na coleção com trilha, título "Busca: …" e contagem; hinário com **s/nº**; hino com editor e prévia lado a lado e barra fixa
