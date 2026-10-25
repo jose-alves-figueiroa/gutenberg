@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-ad3333d4-6458-49dd-850f-83cc08eb6c11/styles.css">
+<script src="_ds/broadsheet-ad3333d4-6458-49dd-850f-83cc08eb6c11/_ds_bundle.js"></script>
+<meta name="design_doc_mode" content="canvas">
+<style>html,body{margin:0;background:var(--color-bg)}a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-600)}</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:var(--space-8);padding:var(--space-8);font-family:var(--font-body);color:var(--color-text)">
+  <div style="display:flex;flex-direction:column;gap:var(--space-1)">
+    <h1 style="margin:0;font-size:40px">Gutenberg v2 · todas as telas</h1>
+    <p class="text-muted" style="margin:0;font-size:15px">Desktop nas 4 resoluções, celular e overlay 1920×1080. Versão navegável: <a href="GutenbergV2.dc.html">GutenbergV2</a>.</p>
+  </div>
+  <sc-for list="{{ groups }}" as="g" hint-placeholder-count="6">
+    <section style="display:flex;flex-direction:column;gap:var(--space-4)">
+      <h2 style="margin:0;font-size:28px">{{ g.title }}</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:var(--space-6) var(--space-4);align-items:flex-start">
+        <sc-for list="{{ g.tiles }}" as="t" hint-placeholder-count="6">
+          <div style="display:flex;flex-direction:column;gap:var(--space-1)">
+            <span style="font-size:13px;color:var(--color-neutral-800)">{{ t.label }}</span>
+            <div style="width:{{ t.w }}px;height:{{ t.h }}px;overflow:hidden;position:relative;box-shadow:var(--shadow-md)">
+              <div style="position:absolute;left:0;top:0;width:{{ t.W }}px;height:{{ t.H }}px;transform:scale({{ t.s }});transform-origin:0 0">
+                <dc-import name="GutenbergV2" tela="{{ t.id }}" res="{{ t.res }}" embed="{{ true }}" hint-size="100%,100%"></dc-import>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="">
+const D = [['liturgia','Liturgia'],['liturgia-pregacao','Liturgia · pregação'],['bib-livros','Bíblia · livros'],['bib-cap','Hebreus 12'],['bib-busca','Busca'],['hinario','Hinário'],['hino','Hino aberto'],['cfw','CFW'],['catecismo','Catecismo Maior'],['credos','Credos'],['faixas-lib','Faixas de culto'],['apresentar','Apresentar'],['apr-faixas','Apresentar · faixas'],['con-estado','Conexão · Estado'],['con-saidas','Saídas'],['con-editor','Editor de saída'],['con-celular','Controle remoto']];
+const RES = { '1920x1200': [1920, 1200], '1920x1080': [1920, 1080], '1536x864': [1536, 864], '1280x720': [1280, 720] };
+class Component extends DCLogic {
+  renderVals() {
+    const tile = (id, label, res, W, H, w) => ({ id, label, res, W, H, w, h: Math.round(H * w / W), s: w / W });
+    const groups = Object.entries(RES).map(([r, [W, H]]) => ({ title: 'Desktop ' + r.replace('x', '×'), tiles: D.map(([id, l]) => tile(id, l, r, W, H, 420)) }));
+    groups.push({ title: 'Celular 390×844', tiles: [['m-parear', 'Parear'], ['m-controle', 'Controle · itens'], ['m-faixas', 'Controle · faixas']].map(([id, l]) => tile(id, l, '1920x1080', 390, 844, 300)) });
+    groups.push({ title: 'Overlay no OBS 1920×1080', tiles: [['o-biblia', 'Bíblia'], ['o-doutrina', 'Catecismo'], ['o-hino', 'Hino (centralizado)'], ['o-culto', 'Faixa · culto'], ['o-sacramento', 'Faixa · sacramento'], ['o-pregacao', 'Faixa · pregação']].map(([id, l]) => tile(id, l, '1920x1080', 1920, 1080, 640)) });
+    return { groups };
+  }
+}
+</script>
+</body></html>

@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-ad3333d4-6458-49dd-850f-83cc08eb6c11/styles.css">
+<script src="_ds/broadsheet-ad3333d4-6458-49dd-850f-83cc08eb6c11/_ds_bundle.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+<style>html,body{margin:0}a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-600)}</style>
+</helmet>
+<div style="min-height:{{ rootMinH }};background:{{ rootBg }};display:flex;flex-direction:column;align-items:center;gap:var(--space-3);padding:{{ rootPad }};box-sizing:border-box;font-family:var(--font-body);color:var(--color-text)">
+
+  <sc-if value="{{ standalone }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;justify-content:center;font-size:14px">
+      <span style="font-weight:600">Gutenberg v2</span>
+      <select class="input" value="{{ tela }}" onChange="{{ pickTela }}" style="width:auto;min-height:34px">
+        <sc-for list="{{ telas }}" as="t" hint-placeholder-count="6"><option value="{{ t.id }}">{{ t.label }}</option></sc-for>
+      </select>
+      <sc-if value="{{ isDesk }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;gap:2px">
+          <sc-for list="{{ resList }}" as="r" hint-placeholder-count="4">
+            <button onClick="{{ r.go }}" style="all:unset;cursor:pointer;padding:6px 10px;border-radius:var(--radius-md);font-size:13px;background:{{ r.bg }};color:{{ r.fg }}">{{ r.label }}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+      <a href="GutenbergV2Folha.dc.html">Folha com todas as telas</a>
+    </div>
+  </sc-if>
+
+  <div style="width:{{ fw }}px;height:{{ fh }}px;position:relative;flex:none;box-shadow:{{ frameShadow }}">
+    <div data-screen-label="{{ telaLabel }}" style="position:absolute;left:0;top:0;width:{{ W }}px;height:{{ H }}px;transform:scale({{ sc }});transform-origin:0 0;overflow:hidden;background:var(--color-bg)">
+
+      <sc-if value="{{ isDesk }}" hint-placeholder-val="{{ true }}">
+        <div style="width:100%;height:100%;display:grid;grid-template-rows:72px minmax(0,1fr)">
+          <nav style="display:flex;align-items:center;gap:var(--space-4);padding:0 var(--space-6);min-width:0">
+            <span style="font-family:var(--font-heading);font-weight:600;font-size:22px;letter-spacing:-0.02em;margin-right:var(--space-2);flex:none">Gutenberg</span>
+            <div style="display:flex;gap:var(--space-1);flex:none">
+              <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+                <button onClick="{{ t.go }}" style="all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:var(--radius-md);font-size:15px;background:{{ t.bg }};color:{{ t.fg }}" style-hover="color:var(--color-accent-700)"><i class="ph-duotone {{ t.icon }}" style="font-size:18px"></i>{{ t.label }}</button>
+              </sc-for>
+            </div>
+            <div style="flex:0 1 440px;min-width:160px;margin-left:auto;display:flex;align-items:center;gap:var(--space-2);background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:0 var(--space-2);height:40px;box-sizing:border-box">
+              <i class="ph-duotone ph-magnifying-glass" style="font-size:16px;color:var(--color-neutral-700)"></i>
+              <span style="font-size:14px;color:var(--color-neutral-600);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Apresentar rápido: 1co · hb 12.14 · bc 1 · cfw 1.1</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:var(--space-2);font-size:13px;flex:none">
+              <span style="width:9px;height:9px;border-radius:50%;background:var(--color-accent)"></span>
+              <span>OBS conectado</span>
+              <span class="text-muted">192.168.1.6 · 3 ms</span>
+            </div>
+          </nav>
+
+          <div style="min-height:0;overflow:hidden;padding:var(--space-4) var(--space-6);box-sizing:border-box">
+
+            <sc-if value="{{ sLit }}" hint-placeholder-val="{{ true }}">
+              <div style="height:100%;display:grid;grid-template-columns:200px minmax(0,1fr) 340px;gap:var(--space-8)">
+                <aside style="display:flex;flex-direction:column;gap:var(--space-1);min-height:0">
+                  <h6 class="text-muted" style="margin:0 0 var(--space-2)">Cultos</h6>
+                  <sc-for list="{{ cultos }}" as="c" hint-placeholder-count="3">
+                    <div style="height:58px;display:flex;flex-direction:column;justify-content:center;padding:0 var(--space-2);border-radius:var(--radius-md);background:{{ c.bg }};flex:none">
+                      <span style="font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.name }}</span>
+                      <span class="text-muted" style="font-size:12px">{{ c.count }}</span>
+                    </div>
+                  </sc-for>
+                  <button class="btn btn-ghost" style="justify-content:flex-start;margin-top:var(--space-2)"><i class="ph-duotone ph-plus"></i>Novo culto</button>
+                </aside>
+                <section style="display:flex;flex-direction:column;min-width:0;min-height:0">
+                  <div style="display:flex;align-items:flex-end;gap:var(--space-4);height:90px;flex:none">
+                    <div style="margin-right:auto;min-width:0">
+                      <div class="text-muted" style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase">Liturgia</div>
+                      <h2 style="margin:4px 0 0;font-size:34px;white-space:nowrap">Culto matutino · 12/10</h2>
+                    </div>
+                    <button class="btn btn-ghost">Excluir culto</button>
+                    <button class="btn btn-primary" onClick="{{ goApr }}"><i class="ph-duotone ph-presentation"></i>Apresentar este culto</button>
+                  </div>
+                  <div style="display:flex;flex-direction:column;margin-top:var(--space-3)">
+                    <sc-for list="{{ litRows }}" as="r" hint-placeholder-count="7">
+                      <div style="height:60px;display:grid;grid-template-columns:28px minmax(100px,150px) minmax(0,1fr) auto;align-items:center;gap:var(--space-3)">
+                        <span class="text-muted" style="font-size:13px">{{ r.n }}</span>
+                        <span style="font-size:14px">{{ r.mom }}</span>
+                        <span style="display:flex;flex-direction:column;min-width:0">
+                          <span style="font-size:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</span>
+                          <span class="text-muted" style="font-size:12px">{{ r.col }} · {{ r.count }}</span>
+                        </span>
+                        <span style="display:flex;gap:2px">
+                          <button class="btn btn-ghost btn-icon" title="Subir" style="width:32px;height:32px"><i class="ph-duotone ph-caret-up"></i></button>
+                          <button class="btn btn-ghost btn-icon" title="Descer" style="width:32px;height:32px"><i class="ph-duotone ph-caret-down"></i></button>
+                          <button class="btn btn-ghost btn-icon" title="Remover" style="width:32px;height:32px;color:var(--color-neutral-700)"><i class="ph-duotone ph-x"></i></button>
+                        </span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="margin-top:auto">
+                    <sc-if value="{{ litPg.show }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:var(--space-2);height:36px;font-size:13px">
+                        <button class="btn btn-ghost btn-icon" onClick="{{ litPg.prev }}" style="width:32px;height:32px;opacity:{{ litPg.prevOp }}"><i class="ph-duotone ph-caret-left"></i></button>
+                        <span class="text-muted">{{ litPg.label }}</span>
+                        <button class="btn btn-ghost btn-icon" onClick="{{ litPg.next }}" style="width:32px;height:32px;opacity:{{ litPg.nextOp }}"><i class="ph-duotone ph-caret-right"></i></button>
+                      </div>
+                    </sc-if>
+                  </div>
+                </section>
+                <aside style="display:flex;flex-direction:column;gap:var(--space-3);min-height:0">
+                  <div class="seg" style="align-self:flex-start">
+                    <sc-for list="{{ litTabs }}" as="t" hint-placeholder-count="2">
+                      <button onClick="{{ t.go }}" style="all:unset;cursor:pointer;padding:7px 14px;font-size:13px;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</button>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{ litAdd }}" hint-placeholder-val="{{ true }}">
+                    <div style="display:flex;flex-direction:column;gap:var(--space-3);min-height:0">
+                      <sc-for list="{{ pickGroups }}" as="g" hint-placeholder-count="3">
+                        <div style="display:flex;flex-direction:column;gap:4px">
+                          <span class="text-muted" style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase">{{ g.label }}</span>
+                          <div style="display:flex;flex-wrap:wrap;gap:4px">
+                            <sc-for list="{{ g.cols }}" as="p" hint-placeholder-count="2">
+                              <span style="font-size:13px;padding:4px 10px;border-radius:var(--radius-md);background:{{ p.bg }};color:{{ p.fg }}">{{ p.label }}</span>
+                            </sc-for>
+                          </div>
+                        </div>
+                      </sc-for>
+                      <input class="input" placeholder="Referência, ex.: hb 12.14-15" value="sl 23">
+                      <div style="display:flex;flex-direction:column">
+                        <sc-for list="{{ pickList }}" as="e" hint-placeholder-count="4">
+                          <div style="height:36px;display:flex;align-items:center;gap:var(--space-2);font-size:14px">
+                            <i class="ph-duotone ph-plus-circle" style="font-size:18px;color:var(--color-accent)"></i>{{ e }}
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ litPreg }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+                      <div class="field"><label>Pregador</label>
+                        <select class="input"><option>Rev. Ashbel Green Simonton</option><option>Rev. Antônio Trajano</option></select>
+                      </div>
+                      <div class="field"><label>Título da pregação</label><input class="input" value="A graça que educa"></div>
+                      <div class="field"><label>Texto pregado</label><input class="input" value="Tt 2.11-14"></div>
+                      <dc-import name="GutenbergOverlay" largura="{{ 340 }}" dados="{{ ovPreg }}" estilo="{{ ovStyle }}" hint-size="340px,191px"></dc-import>
+                      <span class="text-muted" style="font-size:13px">A faixa sai em Apresentar › Faixas. Os pregadores ficam em Biblioteca › Faixas.</span>
+                    </div>
+                  </sc-if>
+                </aside>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ sLib }}" hint-placeholder-val="{{ false }}">
+              <div style="height:100%;display:grid;grid-template-columns:210px minmax(0,1fr);gap:var(--space-8)">
+                <aside style="display:flex;flex-direction:column;gap:var(--space-4)">
+                  <sc-for list="{{ libGroups }}" as="g" hint-placeholder-count="4">
+                    <div style="display:flex;flex-direction:column;gap:2px">
+                      <h6 class="text-muted" style="margin:0 0 var(--space-1)">{{ g.label }}</h6>
+                      <sc-for list="{{ g.cols }}" as="c" hint-placeholder-count="2">
+                        <button onClick="{{ c.go }}" style="all:unset;cursor:pointer;display:flex;justify-content:space-between;gap:var(--space-2);padding:6px var(--space-2);border-radius:var(--radius-md);font-size:14px;background:{{ c.bg }};color:{{ c.fg }}" style-hover="background:var(--color-accent-100);color:var(--color-accent-800)">
+                          <span>{{ c.label }}</span><span style="opacity:0.6;font-size:12px">{{ c.n }}</span>
+                        </button>
+                      </sc-for>
+                    </div>
+                  </sc-for>
+                </aside>
+                <section style="display:flex;flex-direction:column;min-width:0;min-height:0">
+                  <div style="height:42px;max-width:420px;display:flex;align-items:center;gap:var(--space-2);background:var(--color-surface);border:1px solid {{ lib.searchBorder }};border-radius:var(--radius-md);padding:0 var(--space-3);box-sizing:border-box;flex:none">
+                    <i class="ph-duotone ph-magnifying-glass" style="font-size:16px;color:var(--color-neutral-700)"></i>
+                    <span style="flex:1;font-size:14px;color:{{ lib.searchFg }}">{{ lib.search }}</span>
+                  </div>
+                  <div style="height:24px;margin-top:var(--space-3);display:flex;align-items:center;gap:var(--space-1);font-size:14px;flex:none">
+                    <sc-for list="{{ lib.crumbs }}" as="c" hint-placeholder-count="2">
+                      <span style="display:flex;gap:var(--space-1)"><span class="text-muted">{{ c.sep }}</span><span style="color:{{ c.fg }}">{{ c.label }}</span></span>
+                    </sc-for>
+                  </div>
+                  <div style="height:62px;margin-top:var(--space-3);display:flex;align-items:flex-end;gap:var(--space-4);flex:none">
+                    <div style="margin-right:auto;min-width:0">
+                      <h2 style="margin:0;font-size:32px;line-height:1.15;white-space:nowrap">{{ lib.title }}</h2>
+                      <div class="text-muted" style="font-size:14px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ lib.hint }}</div>
+                    </div>
+                    <sc-if value="{{ lib.hasAction }}" hint-placeholder-val="{{ false }}">
+                      <button class="btn btn-secondary"><i class="ph-duotone ph-plus"></i>{{ lib.action }}</button>
+                    </sc-if>
+                  </div>
+                  <div style="flex:1;min-height:0;margin-top:var(--space-4);overflow:hidden">
+
+                    <sc-if value="{{ sLivros }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+                        <sc-for list="{{ books }}" as="g" hint-placeholder-count="2">
+                          <div style="display:flex;flex-direction:column;gap:6px">
+                            <span class="text-muted" style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase">{{ g.title }}</span>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:4px">
+                              <sc-for list="{{ g.items }}" as="b" hint-placeholder-count="12">
+                                <span style="height:32px;display:flex;align-items:center;padding:0 10px;font-size:14px;background:var(--color-surface);border-radius:var(--radius-md);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b }}</span>
+                              </sc-for>
+                            </div>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+
+                    <sc-if value="{{ sCap }}" hint-placeholder-val="{{ false }}">
+                      <div style="height:100%;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-8)">
+                        <div style="display:flex;flex-direction:column;min-height:0">
+                          <div style="display:flex;gap:4px;height:32px;flex:none">
+                            <sc-for list="{{ capSecs }}" as="s" hint-placeholder-count="3">
+                              <span style="display:flex;align-items:center;padding:0 10px;font-size:13px;border-radius:var(--radius-md);background:{{ s.bg }};border:1px solid {{ s.bd }}">{{ s.label }}</span>
+                            </sc-for>
+                          </div>
+                          <div style="display:flex;flex-direction:column;margin-top:var(--space-2)">
+                            <sc-for list="{{ verses }}" as="v" hint-placeholder-count="8">
+                              <div style="display:grid;grid-template-columns:36px minmax(0,1fr);padding:6px var(--space-2);background:{{ v.bg }}">
+                                <span style="font-size:13px;font-weight:600;color:var(--color-accent-700);padding-top:2px">{{ v.n }}</span>
+                                <span style="font-size:16px;line-height:24px;color:{{ v.fg }}">{{ v.t }}</span>
+                              </div>
+                            </sc-for>
+                          </div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:var(--space-2);min-height:0">
+                          <span class="text-muted" style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase">Como fica na transmissão · {{ capPrevCount }}</span>
+                          <sc-for list="{{ capPrev }}" as="s" hint-placeholder-count="3">
+                            <div style="height:78px;box-sizing:border-box;display:flex;flex-direction:column;gap:4px;padding:var(--space-2) var(--space-3);background:var(--color-surface);border-radius:var(--radius-md);flex:none">
+                              <span class="text-muted" style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase">{{ s.h }}</span>
+                              <sc-for list="{{ s.lines }}" as="l" hint-placeholder-count="2"><span style="font-size:13px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l }}</span></sc-for>
+                            </div>
+                          </sc-for>
+                          <sc-if value="{{ capPg.show }}" hint-placeholder-val="{{ false }}">
+                            <div style="display:flex;align-items:center;gap:var(--space-2);height:32px;font-size:13px">
+                              <button class="btn btn-ghost btn-icon" onClick="{{ capPg.prev }}" style="width:32px;height:32px;opacity:{{ capPg.prevOp }}"><i class="ph-duotone ph-caret-left"></i></button>
+                              <span class="text-muted">{{ capPg.label }}</span>
+                              <button class="btn btn-ghost btn-icon" onClick="{{ capPg.next }}" style="width:32px;height:32px;opacity:{{ capPg.nextOp }}"><i class="ph-duotone ph-caret-right"></i></button>
+                            </div>
+                          </sc-if>
+                          <div style="margin-top:auto;display:flex;gap:var(--space-2);flex-wrap:wrap">
+                            <button class="btn btn-primary"><i class="ph-duotone ph-presentation"></i>Apresentar agora</button>
+                            <button class="btn btn-secondary">Adicionar à liturgia</button>
+                          </div>
+                        </div>
+                      </div>
+                    </sc-if>
+
+                    <sc-if value="{{ sList }}" hint-placeholder-val="{{ false }}">
+                      <div style="height:100%;display:flex;flex-direction:column;max-width:980px">
+                        <sc-for list="{{ listRows }}" as="r" hint-placeholder-count="6">
+                          <div style="height:44px;display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;gap:var(--space-3);padding:0 var(--space-2);border-radius:var(--radius-md);flex:none">
+                            <span style="font-size:15px;font-weight:600;color:{{ r.numFg }}">{{ r.num }}</span>
+                            <span style="font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:{{ r.fg }}">{{ r.title }}</span>
+                            <span class="text-muted" style="font-size:12px">{{ r.meta }}</span>
+                          </div>
+                        </sc-for>
+                        <div style="margin-top:auto">
+                          <sc-if value="{{ listPg.show }}" hint-placeholder-val="{{ false }}">
+                            <div style="display:flex;align-items:center;gap:var(--space-2);height:36px;font-size:13px">
+                              <button class="btn btn-ghost btn-icon" onClick="{{ listPg.prev }}" style="width:32px;height:32px;opacity:{{ listPg.prevOp }}"><i class="ph-duotone ph-caret-left"></i></button>
+                              <span class="text-muted">{{ listPg.label }}</span>
+                              <button class="btn btn-ghost btn-icon" onClick="{{ listPg.next }}" style="width:32px;height:32px;opacity:{{ listPg.nextOp }}"><i class="ph-duotone ph-caret-right"></i></button>
+                            </div>
+                          </sc-if>
+                        </div>
+                      </div>
+                    </sc-if>
+
+                    <sc-if value="{{ sCat }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+                        <div style="display:flex;gap:4px;height:32px">
+                          <sc-for list="{{ catSecs }}" as="s" hint-placeholder-count="2">
+                            <button onClick="{{ s.go }}" style="all:unset;cursor:pointer;display:flex;align-items:center;padding:0 10px;font-size:13px;border-radius:var(--radius-md);background:{{ s.bg }};border:1px solid {{ s.bd }}">{{ s.label }}</button>
+                          </sc-for>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat({{ catCols }},54px);gap:4px">
+                          <sc-for list="{{ catNums }}" as="q" hint-placeholder-count="40">
+                            <span style="height:38px;display:flex;align-items:center;justify-content:center;font-size:14px;border-radius:var(--radius-md);background:{{ q.bg }};color:{{ q.fg }}">{{ q.n }}</span>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-if>
+
+                    <sc-if value="{{ sHino }}" hint-placeholder-val="{{ false }}">
+                      <div style="height:100%;display:grid;grid-template-columns:minmax(0,1fr) 300px;grid-template-rows:minmax(0,1fr) 52px;gap:var(--space-3) var(--space-8)">
+                        <div style="display:flex;flex-direction:column;gap:var(--space-3);min-height:0">
+                          <div style="display:grid;grid-template-columns:90px minmax(0,1fr) minmax(0,1fr);gap:var(--space-3)">
+                            <div class="field"><label>Número</label><input class="input" placeholder="s/nº"></div>
+                            <div class="field"><label>Título</label><input class="input" value="Castelo forte"></div>
+                            <div class="field"><label>Autoria</label><input class="input" value="Martinho Lutero"></div>
+                          </div>
+                          <div class="field" style="flex:1;min-height:0;display:flex;flex-direction:column">
+                            <label>Letra: cada estrofe vira telas de 2 versos (separe as estrofes com linha em branco)</label>
+                            <textarea class="input" style="flex:1;min-height:0;resize:none;font-size:15px;line-height:1.5">Castelo forte é nosso Deus,
+espada e bom escudo;
+
+com seu poder defende os seus
+em todo transe agudo.</textarea>
+                          </div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:var(--space-2);min-height:0">
+                          <span class="text-muted" style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase">Como fica na transmissão · 2 telas</span>
+                          <sc-for list="{{ hinoPrev }}" as="s" hint-placeholder-count="2">
+                            <div style="height:78px;box-sizing:border-box;display:flex;flex-direction:column;gap:4px;padding:var(--space-2) var(--space-3);background:var(--color-surface);border-radius:var(--radius-md);flex:none">
+                              <span class="text-muted" style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase">{{ s.h }}</span>
+                              <sc-for list="{{ s.lines }}" as="l" hint-placeholder-count="2"><span style="font-size:13px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l }}</span></sc-for>
+                            </div>
+                          </sc-for>
+                          <span class="text-muted" style="font-size:12px;font-style:italic">Estrofes definem as telas · 2 versos por tela</span>
+                        </div>
+                        <div style="grid-column:1 / -1;display:flex;gap:var(--space-2);align-items:center">
+                          <button class="btn btn-primary"><i class="ph-duotone ph-presentation"></i>Apresentar agora</button>
+                          <button class="btn btn-secondary">Adicionar à liturgia</button>
+                          <span style="margin-left:auto;display:flex;gap:var(--space-2)">
+                            <button class="btn btn-secondary" disabled="{{ true }}">Descartar</button>
+                            <button class="btn btn-primary" disabled="{{ true }}">Salvar</button>
+                          </span>
+                        </div>
+                      </div>
+                    </sc-if>
+
+                    <sc-if value="{{ sFaixasLib }}" hint-placeholder-val="{{ false }}">
+                      <div style="height:100%;display:grid;grid-template-columns:minmax(0,1fr) {{ flPrevW }}px;gap:var(--space-8)">
+                        <div style="display:flex;flex-direction:column;gap:var(--space-2);min-height:0">
+                          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 32px;gap:var(--space-3);font-size:12px;color:var(--color-neutral-700)"><span>Nome na faixa</span><span>Linha de apoio (opcional)</span><span></span></div>
+                          <sc-for list="{{ flRows }}" as="r" hint-placeholder-count="5">
+                            <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 32px;gap:var(--space-3);align-items:center;padding:3px;border-radius:var(--radius-md);background:{{ r.bg }}">
+                              <input class="input" value="{{ r.name }}">
+                              <input class="input" value="{{ r.sub }}" placeholder="Data do culto">
+                              <button class="btn btn-ghost btn-icon" title="Remover" style="width:32px;height:32px;color:var(--color-neutral-700)"><i class="ph-duotone ph-x"></i></button>
+                            </div>
+                          </sc-for>
+                          <label style="display:flex;align-items:center;gap:var(--space-2);font-size:14px;margin-top:var(--space-2)"><input type="checkbox" checked="{{ true }}">Sem linha de apoio, usar a data do culto</label>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+                          <span class="text-muted" style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase">Prévia · saída Faixas</span>
+                          <dc-import name="GutenbergOverlay" largura="{{ flPrevW }}" dados="{{ ovCulto }}" estilo="{{ ovStyle }}" hint-size="400px,225px"></dc-import>
+                          <div style="display:flex;gap:var(--space-2);margin-top:var(--space-2)">
+                            <button class="btn btn-primary">Salvar</button>
+                            <button class="btn btn-secondary" disabled="{{ true }}">Descartar</button>
+                          </div>
+                        </div>
+                      </div>
+                    </sc-if>
+                  </div>
+                </section>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ sApr }}" hint-placeholder-val="{{ false }}">
+              <div style="height:100%;display:grid;grid-template-columns:250px minmax(0,1fr);gap:var(--space-8)">
+                <aside style="display:flex;flex-direction:column;gap:4px;min-height:0">
+                  <h6 class="text-muted" style="margin:0 0 var(--space-1)">Culto matutino · 12/10</h6>
+                  <sc-for list="{{ aprItems }}" as="it" hint-placeholder-count="6">
+                    <div style="height:70px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;padding:0 var(--space-2);border-radius:var(--radius-md);background:{{ it.bg }};flex:none">
+                      <span style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:0.08em;text-transform:uppercase"><span class="text-muted">{{ it.mom }}</span><span style="color:var(--color-accent-2-700)">{{ it.live }}</span></span>
+                      <span style="font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ it.title }}</span>
+                      <span class="text-muted" style="font-size:12px">{{ it.col }}</span>
+                    </div>
+                  </sc-for>
+                  <div style="margin-top:auto">
+                    <sc-if value="{{ aprItPg.show }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:var(--space-2);height:36px;font-size:13px">
+                        <button class="btn btn-ghost btn-icon" onClick="{{ aprItPg.prev }}" style="width:32px;height:32px;opacity:{{ aprItPg.prevOp }}"><i class="ph-duotone ph-caret-left"></i></button>
+                        <span class="text-muted">{{ aprItPg.label }}</span>
+                        <button class="btn btn-ghost btn-icon" onClick="{{ aprItPg.next }}" style="width:32px;height:32px;opacity:{{ aprItPg.nextOp }}"><i class="ph-duotone ph-caret-right"></i></button>
+                      </div>
+                    </sc-if>
+                  </div>
+                </aside>
+                <section style="display:flex;flex-direction:column;min-width:0;min-height:0">
+                  <div style="height:90px;display:flex;align-items:flex-end;gap:var(--space-3);flex:none">
+                    <div style="margin-right:auto;min-width:0">
+                      <div class="text-muted" style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase">{{ aprKicker }}</div>
+                      <h2 style="margin:4px 0 0;font-size:34px;white-space:nowrap">{{ aprTitle }}</h2>
+                    </div>
+                    <div class="seg">
+                      <sc-for list="{{ aprModes }}" as="m" hint-placeholder-count="2">
+                        <button onClick="{{ m.go }}" style="all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;font-size:14px;background:{{ m.bg }};color:{{ m.fg }}"><i class="ph-duotone {{ m.icon }}"></i>{{ m.label }}</button>
+                      </sc-for>
+                    </div>
+                    <button class="btn btn-secondary"><i class="ph-duotone ph-eye-slash"></i>Limpar tela</button>
+                  </div>
+                  <sc-if value="{{ aprLit }}" hint-placeholder-val="{{ true }}">
+                    <div style="flex:1;min-height:0;display:flex;flex-direction:column;margin-top:var(--space-3)">
+                      <div style="display:grid;grid-template-columns:repeat({{ aprCols }},minmax(0,1fr));gap:var(--space-3)">
+                        <sc-for list="{{ aprSlides }}" as="s" hint-placeholder-count="6">
+                          <div style="height:140px;box-sizing:border-box;display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border-radius:var(--radius-md);background:{{ s.bg }}">
+                            <span style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:0.08em;text-transform:uppercase"><span class="text-muted">{{ s.h }}</span><span style="color:{{ s.stFg }}">{{ s.st }}</span></span>
+                            <div style="display:flex;flex-direction:column;gap:4px">
+                              <sc-for list="{{ s.lines }}" as="l" hint-placeholder-count="2"><span style="font-size:17px;line-height:1.3">{{ l }}</span></sc-for>
+                            </div>
+                          </div>
+                        </sc-for>
+                      </div>
+                      <sc-if value="{{ aprPg.show }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;align-items:center;gap:var(--space-2);height:36px;font-size:13px;margin-top:var(--space-2)">
+                          <button class="btn btn-ghost btn-icon" onClick="{{ aprPg.prev }}" style="width:32px;height:32px;opacity:{{ aprPg.prevOp }}"><i class="ph-duotone ph-caret-left"></i></button>
+                          <span class="text-muted">{{ aprPg.label }}</span>
+                          <button class="btn btn-ghost btn-icon" onClick="{{ aprPg.next }}" style="width:32px;height:32px;opacity:{{ aprPg.nextOp }}"><i class="ph-duotone ph-caret-right"></i></button>
+                        </div>
+                      </sc-if>
+                      <div style="margin-top:auto;display:flex;gap:var(--space-2);padding-top:var(--space-3)">
+                        <button class="btn btn-secondary" style="min-height:56px;padding-inline:var(--space-6)"><i class="ph-duotone ph-arrow-left"></i>Anterior</button>
+                        <button class="btn btn-primary" style="min-height:56px;flex:1;flex-direction:column;gap:2px;min-width:0">
+                          <span style="display:flex;align-items:center;gap:8px;font-size:16px">Próximo<i class="ph-duotone ph-arrow-right"></i></span>
+                          <span style="font-size:12px;font-weight:400;opacity:0.85">Creio em Jesus Cristo, seu único Filho,</span>
+                        </button>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ aprFx }}" hint-placeholder-val="{{ false }}">
+                    <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-3)">
+                      <div style="display:grid;grid-template-columns:repeat({{ aprCols }},minmax(0,1fr));gap:var(--space-3)">
+                        <sc-for list="{{ fxCards }}" as="f" hint-placeholder-count="7">
+                          <div style="height:112px;box-sizing:border-box;display:flex;flex-direction:column;gap:4px;padding:var(--space-3);border-radius:var(--radius-md);background:{{ f.bg }}">
+                            <span style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:0.08em;text-transform:uppercase"><span class="text-muted">{{ f.kind }}</span><span style="color:{{ f.stFg }}">{{ f.st }}</span></span>
+                            <span style="font-size:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.title }}</span>
+                            <span style="font-size:13px;font-style:italic;color:var(--color-neutral-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.sub }}</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                      <p class="text-muted" style="margin:0;font-size:13px">Clique numa faixa para enviá-la. As faixas saem na saída Faixas e não mudam a tela da liturgia que está no ar.</p>
+                      <div style="margin-top:auto;display:flex;gap:var(--space-2)">
+                        <button class="btn btn-secondary" style="min-height:56px;padding-inline:var(--space-6)"><i class="ph-duotone ph-eye-slash"></i>Tirar faixa</button>
+                      </div>
+                    </div>
+                  </sc-if>
+                </section>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ sCon }}" hint-placeholder-val="{{ false }}">
+              <div style="height:100%;display:flex;flex-direction:column;gap:var(--space-4);min-height:0">
+                <div style="display:flex;gap:4px;flex:none">
+                  <sc-for list="{{ conTabs }}" as="t" hint-placeholder-count="4">
+                    <button onClick="{{ t.go }}" style="all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:5px 10px;font-size:14px;border-radius:var(--radius-md);background:{{ t.bg }};border:1px solid {{ t.bd }}">{{ t.label }} <span class="text-muted" style="font-size:12px">{{ t.n }}</span></button>
+                  </sc-for>
+                </div>
+
+                <sc-if value="{{ sEstado }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-8);max-width:1100px">
+                    <section style="display:flex;flex-direction:column;gap:var(--space-4)">
+                      <div>
+                        <div class="text-muted" style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase">Computador do OBS</div>
+                        <h2 style="margin:4px 0 0;font-size:34px">Conectado</h2>
+                        <p style="margin:var(--space-2) 0 0;font-size:15px;max-width:44ch">Os textos chegam ao OBS limpos: só referência e linhas, sem HTML.</p>
+                      </div>
+                      <dl style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--space-2) var(--space-6);margin:0;font-size:15px">
+                        <dt class="text-muted">Endereço IP</dt><dd style="margin:0">127.0.0.1</dd>
+                        <dt class="text-muted">Latência</dt><dd style="margin:0">3 ms</dd>
+                        <dt class="text-muted">Último envio</dt><dd style="margin:0">Credo Apostólico · 13:15</dd>
+                        <dt class="text-muted">Versão</dt><dd style="margin:0">0.2.3 · atualização desligada nesta versão de desenvolvimento</dd>
+                      </dl>
+                    </section>
+                    <section style="display:flex;flex-direction:column;gap:var(--space-4)">
+                      <div style="display:flex;gap:var(--space-6);align-items:flex-end">
+                        <div class="field"><label>Endereço deste computador</label><span style="font-size:20px;font-weight:600;padding:4px 0">192.168.1.6</span></div>
+                        <div class="field" style="width:110px"><label>Porta</label><input class="input" value="8484"></div>
+                      </div>
+                      <div style="display:flex;gap:var(--space-2)">
+                        <button class="btn btn-primary"><i class="ph-duotone ph-arrows-clockwise"></i>Reconectar</button>
+                        <button class="btn btn-secondary"><i class="ph-duotone ph-pulse"></i>Testar</button>
+                      </div>
+                      <p class="text-muted" style="margin:0;font-size:13px;max-width:46ch">O IP é detectado automaticamente na rede da igreja. Se a conexão cair, o OBS continua com o último texto até reconectar.</p>
+                      <h6 class="text-muted" style="margin:var(--space-2) 0 0">Registro</h6>
+                      <sc-for list="{{ logRows }}" as="l" hint-placeholder-count="3">
+                        <div style="display:grid;grid-template-columns:52px minmax(0,1fr);gap:var(--space-3);font-size:14px"><span class="text-muted">{{ l.t }}</span><span>{{ l.m }}</span></div>
+                      </sc-for>
+                    </section>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ sSaidas }}" hint-placeholder-val="{{ false }}">
+                  <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:var(--space-3);max-width:1100px">
+                    <div style="display:flex;align-items:flex-end;gap:var(--space-3)">
+                      <p class="text-muted" style="margin:0 auto 0 0;font-size:13px;max-width:52ch">Cada saída é uma Browser Source no OBS, do tamanho da cena, e mostra só as coleções ligadas a ela; nas outras, a tela fica limpa.</p>
+                      <button class="btn btn-secondary"><i class="ph-duotone ph-plus"></i>Nova saída</button>
+                      <button class="btn btn-ghost">Restaurar saídas padrão</button>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)">
+                      <sc-for list="{{ saidas }}" as="o" hint-placeholder-count="4">
+                        <div class="card" style="height:200px;box-sizing:border-box;display:flex;flex-direction:column;gap:var(--space-2)">
+                          <div style="display:flex;align-items:baseline;gap:var(--space-2)">
+                            <span style="width:8px;height:8px;border-radius:50%;background:var(--color-accent);align-self:center"></span>
+                            <span style="font-size:17px;font-weight:600">{{ o.name }}</span>
+                            <span class="text-muted">/{{ o.slug }}</span>
+                            <span class="text-muted" style="margin-left:auto;font-size:13px">{{ o.state }}</span>
+                          </div>
+                          <span style="font-size:13px;font-family:ui-monospace,monospace;display:flex;align-items:center;gap:var(--space-2)">http://192.168.1.6:8484/overlay/{{ o.slug }}<i class="ph-duotone ph-copy" style="color:var(--color-accent)"></i></span>
+                          <span class="text-muted" style="font-size:13px">{{ o.cols }}</span>
+                          <span class="text-muted" style="font-size:13px">{{ o.style }}</span>
+                          <div style="margin-top:auto;display:flex;gap:var(--space-2)">
+                            <button class="btn btn-secondary" onClick="{{ goEditor }}">Editar</button>
+                            <button class="btn btn-ghost">Remover</button>
+                          </div>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <sc-if value="{{ saidaPg.show }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:var(--space-2);height:36px;font-size:13px">
+                        <button class="btn btn-ghost btn-icon" onClick="{{ saidaPg.prev }}" style="width:32px;height:32px;opacity:{{ saidaPg.prevOp }}"><i class="ph-duotone ph-caret-left"></i></button>
+                        <span class="text-muted">{{ saidaPg.label }}</span>
+                        <button class="btn btn-ghost btn-icon" onClick="{{ saidaPg.next }}" style="width:32px;height:32px;opacity:{{ saidaPg.nextOp }}"><i class="ph-duotone ph-caret-right"></i></button>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ sEditor }}" hint-placeholder-val="{{ false }}">
+                  <div style="flex:1;min-height:0;display:grid;grid-template-columns:500px minmax(0,1fr);gap:var(--space-8)">
+                    <div style="display:flex;flex-direction:column;gap:var(--space-3);min-height:0">
+                      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-3)">
+                        <div class="field"><label>Nome</label><input class="input" value="Bíblia"></div>
+                        <div class="field"><label>Endereço (/overlay/...)</label><input class="input" value="bible"></div>
+                      </div>
+                      <div class="seg" style="align-self:flex-start">
+                        <sc-for list="{{ edTabs }}" as="t" hint-placeholder-count="3">
+                          <button onClick="{{ t.go }}" style="all:unset;cursor:pointer;padding:7px 16px;font-size:14px;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</button>
+                        </sc-for>
+                      </div>
+                      <sc-if value="{{ edCol }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2) var(--space-4)">
+                          <sc-for list="{{ edCols }}" as="c" hint-placeholder-count="8">
+                            <label style="display:flex;align-items:center;gap:var(--space-2);font-size:14px;color:{{ c.fg }}"><input type="checkbox" checked="{{ c.on }}" disabled="{{ c.dis }}">{{ c.label }}</label>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ edLetra }}" hint-placeholder-val="{{ true }}">
+                        <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+                          <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:var(--space-3);align-items:end">
+                            <div class="field"><label>Fonte</label><select class="input"><option>Source Serif 4</option></select></div>
+                            <div class="field"><label>Cor</label><input type="color" value="{{ es.cor }}" onChange="{{ setCor }}" style="width:52px;height:38px;border:1px solid var(--color-divider);background:var(--color-surface);padding:2px"></div>
+                            <label style="display:flex;align-items:center;gap:6px;font-size:14px;height:38px"><input type="checkbox" checked="{{ es.negrito }}" onChange="{{ togNeg }}">Negrito</label>
+                          </div>
+                          <div class="field"><label>Alinhamento</label>
+                            <div class="seg" style="align-self:flex-start">
+                              <sc-for list="{{ alignOpts }}" as="a" hint-placeholder-count="3"><button onClick="{{ a.go }}" style="all:unset;cursor:pointer;padding:6px 14px;font-size:13px;background:{{ a.bg }};color:{{ a.fg }}">{{ a.label }}</button></sc-for>
+                            </div>
+                          </div>
+                          <div class="field"><label>Linhas máximas · textos (Bíblia e doutrina): {{ es.linhasTexto }} linhas · letra de {{ fsTexto }} px</label>
+                            <input type="range" min="6" max="20" value="{{ es.linhasTexto }}" onChange="{{ setLT }}" style="accent-color:var(--color-accent)">
+                          </div>
+                          <div class="field"><label>Linhas máximas · músicas: {{ es.linhasMusica }} linhas · letra de {{ fsMusica }} px</label>
+                            <input type="range" min="6" max="20" value="{{ es.linhasMusica }}" onChange="{{ setLM }}" style="accent-color:var(--color-accent)">
+                          </div>
+                          <p class="text-muted" style="margin:0;font-size:13px;max-width:52ch">Quantas linhas caberiam na altura da cena. Menos linhas, letra maior. A tela continua com no máximo 2 linhas; o cabeçalho tem metade do tamanho.</p>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ edFaixa }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+                          <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--space-3);align-items:end">
+                            <div class="field"><label>Fundo</label><input type="color" value="{{ es.fundo }}" onChange="{{ setFundo }}" style="width:52px;height:38px;border:1px solid var(--color-divider);background:var(--color-surface);padding:2px"></div>
+                            <div class="field"><label>Opacidade do fundo: {{ es.opac }}%</label><input type="range" min="0" max="100" value="{{ es.opac }}" onChange="{{ setOpac }}" style="accent-color:var(--color-accent)"></div>
+                          </div>
+                          <div class="field"><label>Largura</label>
+                            <div class="seg" style="align-self:flex-start"><sc-for list="{{ largOpts }}" as="a" hint-placeholder-count="2"><button onClick="{{ a.go }}" style="all:unset;cursor:pointer;padding:6px 14px;font-size:13px;background:{{ a.bg }};color:{{ a.fg }}">{{ a.label }}</button></sc-for></div>
+                          </div>
+                          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-3)">
+                            <div class="field"><label>Margem lateral: {{ es.mx }}%</label><input type="range" min="0" max="20" value="{{ es.mx }}" onChange="{{ setMx }}" style="accent-color:var(--color-accent)"></div>
+                            <div class="field"><label>Distância da base: {{ es.my }}%</label><input type="range" min="0" max="20" value="{{ es.my }}" onChange="{{ setMy }}" style="accent-color:var(--color-accent)"></div>
+                          </div>
+                          <div style="display:flex;gap:var(--space-6);align-items:end">
+                            <div class="field"><label>Contorno da letra</label>
+                              <div class="seg"><sc-for list="{{ contOpts }}" as="a" hint-placeholder-count="3"><button onClick="{{ a.go }}" style="all:unset;cursor:pointer;padding:6px 14px;font-size:13px;background:{{ a.bg }};color:{{ a.fg }}">{{ a.label }}</button></sc-for></div>
+                            </div>
+                            <label style="display:flex;align-items:center;gap:6px;font-size:14px;height:34px"><input type="checkbox" checked="{{ es.sombra }}" onChange="{{ togSombra }}">Sombra</label>
+                          </div>
+                        </div>
+                      </sc-if>
+                      <div style="margin-top:auto;display:flex;gap:var(--space-2)">
+                        <button class="btn btn-primary">Salvar saída</button>
+                        <button class="btn btn-secondary" onClick="{{ goSaidas }}">Cancelar</button>
+                      </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:var(--space-2);min-width:0">
+                      <div style="display:flex;align-items:center;gap:var(--space-3)">
+                        <span class="text-muted" style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;margin-right:auto">Prévia ao vivo · cena 1920×1080</span>
+                        <div class="seg"><sc-for list="{{ sampleOpts }}" as="a" hint-placeholder-count="2"><button onClick="{{ a.go }}" style="all:unset;cursor:pointer;padding:5px 12px;font-size:13px;background:{{ a.bg }};color:{{ a.fg }}">{{ a.label }}</button></sc-for></div>
+                      </div>
+                      <dc-import name="GutenbergOverlay" largura="{{ edPrevW }}" dados="{{ edSample }}" estilo="{{ es }}" hint-size="640px,360px"></dc-import>
+                      <span class="text-muted" style="font-size:13px">{{ edCaption }}</span>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ sCelular }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--space-8);max-width:1100px">
+                    <section style="display:flex;flex-direction:column;gap:var(--space-3)">
+                      <h4 style="margin:0">Parear um aparelho</h4>
+                      <p class="text-muted" style="margin:0;font-size:14px;max-width:40ch">Aponte a câmera do celular ou tablet para o código e digite o PIN para controlar a transmissão.</p>
+                      <div style="display:flex;gap:var(--space-6);align-items:center">
+                        <div style="width:{{ qrBig }}px;height:{{ qrBig }}px;padding:10px;background:#ffffff;display:grid;grid-template-columns:repeat(25,1fr);flex:none">
+                          <sc-for list="{{ qr }}" as="q" hint-placeholder-count="25"><span style="background:{{ q }}"></span></sc-for>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+                          <span class="text-muted" style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase">PIN</span>
+                          <span style="font-size:44px;font-weight:600;letter-spacing:0.08em;font-feature-settings:'tnum' 1">482 913</span>
+                          <span class="text-muted" style="font-size:13px">Vale por 5 minutos</span>
+                          <button class="btn btn-ghost" style="justify-content:flex-start;padding-left:0"><i class="ph-duotone ph-arrows-clockwise"></i>Gerar outro PIN</button>
+                        </div>
+                      </div>
+                      <span style="font-size:13px;font-family:ui-monospace,monospace">http://192.168.1.6:8484/control</span>
+                    </section>
+                    <section style="display:flex;flex-direction:column;gap:var(--space-2);max-width:560px">
+                      <h4 style="margin:0 0 var(--space-1)">Aparelhos pareados</h4>
+                      <sc-for list="{{ devices }}" as="d" hint-placeholder-count="2">
+                        <div style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:var(--space-3);align-items:center;padding:var(--space-2) 0">
+                          <i class="ph-duotone ph-device-mobile" style="font-size:22px;color:var(--color-neutral-700)"></i>
+                          <span style="display:flex;flex-direction:column"><span style="font-size:15px;font-weight:600">{{ d.name }}</span><span class="text-muted" style="font-size:12px">{{ d.meta }}</span></span>
+                          <button class="btn btn-ghost">Revogar</button>
+                        </div>
+                      </sc-for>
+                      <p class="text-muted" style="margin:var(--space-2) 0 0;font-size:13px">Revogar desconecta o aparelho na hora. Para voltar, ele precisa de um PIN novo.</p>
+                      <h4 style="margin:var(--space-6) 0 0">Fora da rede da igreja</h4>
+                      <div style="display:flex;align-items:center;gap:var(--space-3)">
+                        <div class="seg"><sc-for list="{{ remOpts }}" as="a" hint-placeholder-count="2"><button onClick="{{ a.go }}" style="all:unset;cursor:pointer;padding:7px 16px;font-size:14px;background:{{ a.bg }};color:{{ a.fg }}">{{ a.label }}</button></sc-for></div>
+                        <span style="font-size:15px;font-weight:600;color:{{ rem.fg }}">{{ rem.title }}</span>
+                      </div>
+                      <p style="margin:0;font-size:14px;max-width:52ch">{{ rem.note }}</p>
+                      <div style="display:flex;gap:var(--space-2);align-items:center;opacity:{{ rem.addrOp }}">
+                        <span style="font-size:13px;font-family:ui-monospace,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ rem.url }}</span>
+                        <button class="btn btn-secondary btn-icon" title="Copiar"><i class="ph-duotone ph-copy"></i></button>
+                      </div>
+                      <p class="text-muted" style="margin:0;font-size:13px;max-width:52ch">A rede da igreja continua sendo o caminho principal. Ligado, o QR ao lado passa a abrir o endereço público; o PIN continua obrigatório.</p>
+                    </section>
+                  </div>
+                </sc-if>
+
+                
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isMob }}" hint-placeholder-val="{{ false }}">
+        <div style="width:100%;height:100%;background:var(--color-neutral-900);color:var(--color-neutral-100);display:flex;flex-direction:column;box-sizing:border-box">
+          <sc-if value="{{ mPair }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;display:flex;flex-direction:column;padding:var(--space-8) var(--space-4) var(--space-4);gap:var(--space-4)">
+              <span style="font-size:20px;font-weight:600">Gutenberg</span>
+              <h2 style="margin:var(--space-6) 0 0;font-size:30px;color:var(--color-neutral-100)">Parear este celular</h2>
+              <p style="margin:0;font-size:16px;color:var(--color-neutral-400)">Digite o PIN que aparece no Gutenberg, em Conexão › Celular.</p>
+              <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:var(--space-2);margin-top:var(--space-2)">
+                <sc-for list="{{ pinBoxes }}" as="p" hint-placeholder-count="6">
+                  <span style="height:60px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:600;border-radius:var(--radius-lg);background:var(--color-neutral-800);border:2px solid {{ p.bd }}">{{ p.d }}</span>
+                </sc-for>
+              </div>
+              <div style="margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-2)">
+                <sc-for list="{{ keys }}" as="k" hint-placeholder-count="12">
+                  <span style="height:60px;display:flex;align-items:center;justify-content:center;font-size:24px;border-radius:var(--radius-lg);background:{{ k.bg }}">{{ k.k }}</span>
+                </sc-for>
+              </div>
+              <button class="btn btn-primary" style="min-height:56px;font-size:17px">Parear</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ mCtl }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;min-height:0;display:flex;flex-direction:column">
+              <div style="height:56px;flex:none;display:flex;align-items:center;gap:var(--space-2);padding:0 var(--space-4)">
+                <span style="font-size:18px;font-weight:600;margin-right:auto">Gutenberg</span>
+                <span style="width:9px;height:9px;border-radius:50%;background:var(--color-accent-400)"></span>
+                <span style="font-size:14px;color:var(--color-neutral-400)">OBS conectado</span>
+              </div>
+              <div style="flex:none;padding:var(--space-2) var(--space-4) var(--space-4);display:flex;flex-direction:column;gap:6px">
+                <span style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-2-300)">{{ mNow.kicker }}</span>
+                <span style="font-size:22px;font-weight:600">{{ mNow.title }}</span>
+                <sc-for list="{{ mNow.lines }}" as="l" hint-placeholder-count="2"><span style="font-size:17px;line-height:1.35;color:var(--color-neutral-300)">{{ l }}</span></sc-for>
+              </div>
+              <div style="flex:none;padding:0 var(--space-4)">
+                <div style="display:grid;grid-template-columns:1fr 1fr;background:var(--color-neutral-800);border-radius:var(--radius-lg);padding:3px">
+                  <sc-for list="{{ mTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.go }}" style="all:unset;cursor:pointer;height:44px;display:flex;align-items:center;justify-content:center;font-size:16px;border-radius:var(--radius-md);background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</button></sc-for>
+                </div>
+              </div>
+              <div style="flex:1;min-height:0;overflow:auto;padding:var(--space-2) var(--space-4)">
+                <sc-for list="{{ mList }}" as="r" hint-placeholder-count="6">
+                  <div style="min-height:60px;box-sizing:border-box;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2);border-radius:var(--radius-md);background:{{ r.bg }}">
+                    <span style="display:flex;flex-direction:column;flex:1;min-width:0">
+                      <span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400)">{{ r.kicker }}</span>
+                      <span style="font-size:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</span>
+                    </span>
+                    <span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-2-300)">{{ r.live }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="flex:none;padding:var(--space-3) var(--space-4) var(--space-6);display:grid;grid-template-columns:1fr 2fr;gap:var(--space-2);background:var(--color-neutral-900);box-shadow:0 -1px 0 var(--color-neutral-800)">
+                <sc-if value="{{ mIsItens }}" hint-placeholder-val="{{ true }}">
+                  <button class="btn btn-secondary" style="min-height:72px;font-size:17px;background:var(--color-neutral-800);color:var(--color-neutral-100);border-color:var(--color-neutral-700)"><i class="ph-duotone ph-arrow-left" style="font-size:22px"></i>Anterior</button>
+                </sc-if>
+                <sc-if value="{{ mIsItens }}" hint-placeholder-val="{{ true }}">
+                  <button class="btn btn-primary" style="min-height:72px;font-size:19px">Próximo<i class="ph-duotone ph-arrow-right" style="font-size:22px"></i></button>
+                </sc-if>
+                <button class="btn btn-secondary" style="grid-column:1 / -1;min-height:52px;font-size:16px;background:transparent;color:var(--color-neutral-100);border-color:var(--color-neutral-700)"><i class="ph-duotone ph-eye-slash"></i>{{ mClear }}</button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isOv }}" hint-placeholder-val="{{ false }}">
+        <dc-import name="GutenbergOverlay" largura="{{ 1920 }}" dados="{{ ovData }}" estilo="{{ ovStyle }}" hint-size="1920px,1080px"></dc-import>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;tela&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;liturgia&quot;,&quot;liturgia-pregacao&quot;,&quot;bib-livros&quot;,&quot;bib-cap&quot;,&quot;bib-busca&quot;,&quot;hinario&quot;,&quot;hino&quot;,&quot;cfw&quot;,&quot;catecismo&quot;,&quot;credos&quot;,&quot;faixas-lib&quot;,&quot;apresentar&quot;,&quot;apr-faixas&quot;,&quot;con-estado&quot;,&quot;con-saidas&quot;,&quot;con-editor&quot;,&quot;con-celular&quot;,&quot;m-parear&quot;,&quot;m-controle&quot;,&quot;m-faixas&quot;,&quot;o-biblia&quot;,&quot;o-doutrina&quot;,&quot;o-hino&quot;,&quot;o-culto&quot;,&quot;o-sacramento&quot;,&quot;o-pregacao&quot;],&quot;default&quot;:&quot;liturgia&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;res&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;1920x1200&quot;,&quot;1920x1080&quot;,&quot;1536x864&quot;,&quot;1280x720&quot;],&quot;default&quot;:&quot;1920x1080&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;remoto&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;desligado&quot;,&quot;conectando&quot;,&quot;no-ar&quot;,&quot;erro&quot;],&quot;default&quot;:&quot;no-ar&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;embed&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const RES = { '1920x1200': [1920, 1200], '1920x1080': [1920, 1080], '1536x864': [1536, 864], '1280x720': [1280, 720] };
+const SCREENS = [
+  ['liturgia', 'Liturgia', 'd'], ['liturgia-pregacao', 'Liturgia · pregação do culto', 'd'],
+  ['bib-livros', 'Biblioteca · Bíblia, livros', 'd'], ['bib-cap', 'Biblioteca · Hebreus 12', 'd'], ['bib-busca', 'Biblioteca · busca', 'd'],
+  ['hinario', 'Biblioteca · hinário', 'd'], ['hino', 'Biblioteca · hino aberto', 'd'], ['cfw', 'Biblioteca · Confissão de Westminster', 'd'],
+  ['catecismo', 'Biblioteca · Catecismo Maior', 'd'], ['credos', 'Biblioteca · Credos', 'd'], ['faixas-lib', 'Biblioteca · faixas de culto', 'd'],
+  ['apresentar', 'Apresentar · liturgia', 'd'], ['apr-faixas', 'Apresentar · faixas', 'd'],
+  ['con-estado', 'Conexão · Estado', 'd'], ['con-saidas', 'Conexão · Saídas', 'd'], ['con-editor', 'Conexão · editor de saída', 'd'],
+  ['con-celular', 'Conexão · Controle remoto', 'd'],
+  ['m-parear', 'Celular · parear', 'm'], ['m-controle', 'Celular · controle', 'm'], ['m-faixas', 'Celular · faixas', 'm'],
+  ['o-biblia', 'OBS · Bíblia', 'o'], ['o-doutrina', 'OBS · catecismo', 'o'], ['o-hino', 'OBS · hino', 'o'],
+  ['o-culto', 'OBS · faixa de culto', 'o'], ['o-sacramento', 'OBS · faixa de sacramento', 'o'], ['o-pregacao', 'OBS · faixa de pregação', 'o'],
+];
+const S2 = (a, b) => b === undefined ? [a] : [a, b];
+const LIT = [
+  { mom: 'Prelúdio', title: 'Salmo 100', col: 'Salmos genebrinos', h: 'Salmo 100', slides: [S2('[estrofe 1, versos 1 e 2]'), S2('[estrofe 1, versos 3 e 4]')] },
+  { mom: 'Leitura', title: 'Hebreus 12.1–3', col: 'Bíblia ARA', h: 'Hebreus 12', slides: [S2('[texto ARA de Hebreus 12.1]'), S2('[texto ARA de Hebreus 12.2]'), S2('[texto ARA de Hebreus 12.3]')] },
+  { mom: 'Cântico', title: 'Castelo forte', col: 'Hinário Novo Cântico', h: 'Castelo forte', slides: [S2('Castelo forte é nosso Deus,', 'espada e bom escudo;'), S2('com seu poder defende os seus', 'em todo transe agudo.')] },
+  { mom: 'Confissão de fé', title: 'Credo Apostólico', col: 'Credos', h: 'Credo Apostólico', slides: [
+    S2('Creio em Deus Pai, todo-poderoso,', 'Criador do céu e da terra.'), S2('Creio em Jesus Cristo, seu único Filho,', 'nosso Senhor,'),
+    S2('o qual foi concebido pelo Espírito Santo,', 'nasceu da virgem Maria,'), S2('padeceu sob Pôncio Pilatos,', 'foi crucificado, morto e sepultado;'),
+    S2('ressuscitou ao terceiro dia,', 'subiu ao céu,'), S2('está sentado à direita de Deus Pai,', 'donde há de vir para julgar os vivos e os mortos.'),
+    S2('Creio no Espírito Santo, na santa Igreja universal,', 'na comunhão dos santos,'), S2('na remissão dos pecados, na ressurreição do corpo', 'e na vida eterna. Amém.')] },
+  { mom: 'Catecismo', title: 'Breve Catecismo · P. 1', col: 'Breve Catecismo', h: 'Breve Catecismo · P. 1', slides: [S2('Qual é o fim principal do homem?'), S2('O fim principal do homem é glorificar a Deus,', 'e gozá-lo para sempre.')] },
+  { mom: 'Texto da pregação', title: 'Hebreus 12.14–15', col: 'Bíblia ARA', h: 'Hebreus 12', slides: [S2('Segui a paz com todos e a santificação,', 'sem a qual ninguém verá o Senhor,'), S2('atentando, diligentemente, por que ninguém', 'seja faltoso, separando-se da graça de Deus;'), S2('nem haja alguma raiz de amargura que,', 'brotando, vos perturbe,'), S2('e, por meio dela,', 'muitos sejam contaminados;')] },
+  { mom: 'Doutrina', title: 'CFW 1.1', col: 'Confissão de Westminster', h: 'CFW 1.1', slides: [S2('Ainda que a luz da natureza e as obras', 'da criação e da providência manifestem'), S2('de tal modo a bondade, a sabedoria', 'e o poder de Deus,'), S2('que os homens ficam inescusáveis,', 'contudo não são suficientes'), S2('para dar aquele conhecimento de Deus', 'e da sua vontade, necessário para a salvação.')] },
+  { mom: 'Cântico final', title: 'Salmo 133B', col: 'Salmos genebrinos', h: 'Salmo 133B', slides: [S2('Oh! Como é bom e agradável,', 'bem suave, sim,'), S2('[estrofe 1, versos 3 e 4]')] },
+];
+const FX = [
+  { kind: 'Culto', title: 'Culto Matutino', sub: 'Domingo, 12 de outubro' },
+  { kind: 'Culto', title: 'Culto Vespertino', sub: 'Domingo, 12 de outubro' },
+  { kind: 'Culto', title: 'Escola Bíblica Dominical', sub: 'Domingo, 12 de outubro' },
+  { kind: 'Culto', title: 'Reunião de Doutrina', sub: 'Quarta, 15 de outubro' },
+  { kind: 'Sacramento', title: 'Batismo', sub: 'Mateus 28.19' },
+  { kind: 'Sacramento', title: 'Santa Ceia do Senhor', sub: '1 Coríntios 11.23–26' },
+  { kind: 'Pregação', title: 'Rev. Ashbel Green Simonton', sub: '“A graça que educa” · Tito 2.11–14' },
+];
+const OV = {
+  'o-biblia': { tipo: 'texto', header: 'Hebreus 12.15 (2/3)', lines: ['nem haja alguma raiz de amargura que,', 'brotando, vos perturbe,'] },
+  'o-doutrina': { tipo: 'texto', header: 'Breve Catecismo · P. 1', lines: ['O fim principal do homem é glorificar a Deus,', 'e gozá-lo para sempre.'] },
+  'o-hino': { tipo: 'musica', header: 'Castelo forte', lines: ['Castelo forte é nosso Deus,', 'espada e bom escudo;'] },
+  'o-culto': { tipo: 'faixa', kicker: 'Culto', title: 'Culto Matutino', sub: 'Domingo, 12 de outubro' },
+  'o-sacramento': { tipo: 'faixa', kicker: 'Sacramento', title: 'Santa Ceia do Senhor', sub: '1 Coríntios 11.23–26' },
+  'o-pregacao': { tipo: 'faixa', kicker: 'Pregação', title: 'Rev. Ashbel Green Simonton', sub: '“A graça que educa” · Tito 2.11–14' },
+};
+const BOOKS = ['Gênesis','Êxodo','Levítico','Números','Deuteronômio','Josué','Juízes','Rute','1 Samuel','2 Samuel','1 Reis','2 Reis','1 Crônicas','2 Crônicas','Esdras','Neemias','Ester','Jó','Salmos','Provérbios','Eclesiastes','Cantares','Isaías','Jeremias','Lamentações','Ezequiel','Daniel','Oseias','Joel','Amós','Obadias','Jonas','Miqueias','Naum','Habacuque','Sofonias','Ageu','Zacarias','Malaquias','Mateus','Marcos','Lucas','João','Atos','Romanos','1 Coríntios','2 Coríntios','Gálatas','Efésios','Filipenses','Colossenses','1 Tessalonicenses','2 Tessalonicenses','1 Timóteo','2 Timóteo','Tito','Filemom','Hebreus','Tiago','1 Pedro','2 Pedro','1 João','2 João','3 João','Judas','Apocalipse'];
+const HB = { 14: 'Segui a paz com todos e a santificação, sem a qual ninguém verá o Senhor,', 15: 'atentando, diligentemente, por que ninguém seja faltoso, separando-se da graça de Deus; nem haja alguma raiz de amargura que, brotando, vos perturbe, e, por meio dela, muitos sejam contaminados;' };
+const CFW_T = ['Da Escritura Sagrada', 'De Deus e da Santíssima Trindade', 'Dos Eternos Decretos de Deus', 'Da Criação', 'Da Providência', 'Da Queda do Homem, do Pecado e do seu Castigo', 'Do Pacto de Deus com o Homem', 'De Cristo, o Mediador', 'Do Livre-Arbítrio', 'Da Vocação Eficaz', 'Da Justificação', 'Da Adoção', 'Da Santificação', 'Da Fé Salvadora', 'Do Arrependimento para a Vida', 'Das Boas Obras', 'Da Perseverança dos Santos', 'Da Certeza da Graça e da Salvação', 'Da Lei de Deus', 'Da Liberdade Cristã e da Liberdade de Consciência', 'Do Culto Religioso e do Domingo', 'Dos Juramentos Legais e dos Votos', 'Do Magistrado Civil', 'Do Matrimônio e do Divórcio', 'Da Igreja', 'Da Comunhão dos Santos', 'Dos Sacramentos', 'Do Batismo', 'Da Ceia do Senhor', 'Das Censuras Eclesiásticas', 'Dos Sínodos e Concílios', 'Do Estado do Homem depois da Morte e da Ressurreição dos Mortos', 'Do Juízo Final'];
+const CFW_S = [10, 3, 8, 2, 7, 6, 6, 8, 5, 4, 6, 1, 3, 3, 6, 7, 3, 4, 7, 4, 8, 7, 4, 6, 6, 3, 5, 7, 8, 4, 5, 3, 3];
+const QR = (() => { const n = 25, out = []; let x = 7; const fin = (r, c) => { const f = (r0, c0) => r >= r0 && r < r0 + 7 && c >= c0 && c < c0 + 7; return f(0, 0) || f(0, 18) || f(18, 0); };
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) { if (fin(r, c)) { const rr = r % 18 === r ? r : r - 18, cc = c >= 18 ? c - 18 : c; const ring = Math.max(Math.abs(rr - 3), Math.abs(cc - 3)); out.push(ring === 2 ? '#fff' : '#201e1d'); continue; } x = (x * 1103515245 + 12345) & 0x7fffffff; out.push((x >> 16) & 1 ? '#201e1d' : '#fff'); } return out; })();
+
+class Component extends DCLogic {
+  state = { tela: null, res: null, pg: {}, litTab: null, aprMode: null, edTab: 'letra', sample: 'biblia', vw: window.innerWidth, vh: window.innerHeight, rem: null,
+    es: { linhasTexto: 12, linhasMusica: 10, fundo: '#141212', opac: 78, mx: 6, my: 5, contorno: 'nenhum', sombra: true, largura: 'inteira', cor: '#ffffff', negrito: false, alinhamento: 'centro' } };
+  componentDidMount() { this.onR = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight }); window.addEventListener('resize', this.onR); }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); }
+  setPg(k, v) { this.setState(s => ({ pg: { ...s.pg, [k]: v } })); }
+  pager(k, total, per) {
+    per = Math.max(1, per); const pages = Math.max(1, Math.ceil(total / per)); const p = Math.min(this.state.pg[k] || 0, pages - 1);
+    return { p, start: p * per, end: Math.min(total, (p + 1) * per), show: pages > 1, label: `Página ${p + 1} de ${pages}`,
+      prev: () => this.setPg(k, Math.max(0, p - 1)), next: () => this.setPg(k, Math.min(pages - 1, p + 1)), prevOp: p > 0 ? 1 : 0.35, nextOp: p < pages - 1 ? 1 : 0.35 };
+  }
+  go(t) { this.setState({ tela: t }); }
+  seg(opts, cur, fn, dark) { return opts.map(([k, label, icon]) => ({ label, icon, go: () => fn(k), bg: cur === k ? (dark ? 'var(--color-neutral-700)' : 'var(--color-accent)') : 'transparent', fg: cur === k ? (dark ? 'var(--color-neutral-100)' : 'var(--color-bg)') : (dark ? 'var(--color-neutral-400)' : 'var(--color-text)') })); }
+
+  renderVals() {
+    const S = this.state, embed = !!this.props.embed;
+    const tela = S.tela ?? this.props.tela ?? 'liturgia', res = S.res ?? this.props.res ?? '1920x1080';
+    const kind = (SCREENS.find(x => x[0] === tela) || SCREENS[0])[2];
+    const [PW, PH] = kind === 'm' ? [390, 844] : kind === 'o' ? [1920, 1080] : RES[res];
+    const z = kind === 'd' ? Math.max(1, Math.min(4 / 3, PW / 1440, PH / 810)) : 1;
+    const W = PW / z, H = PH / z;
+    const sc = embed ? 1 : Math.min(1, (S.vw - 32) / PW, (S.vh - 90) / PH);
+    const tint = x => x ? 'color-mix(in srgb, var(--color-accent) 12%, transparent)' : 'transparent';
+    const solid = x => ({ bg: x ? 'var(--color-accent)' : 'transparent', fg: x ? 'var(--color-bg)' : 'var(--color-text)' });
+    const cH = H - 72 - 40, cW = W - 60;
+    const tab = tela.startsWith('liturgia') ? 'lit' : tela.startsWith('apr') || tela === 'apresentar' ? 'apr' : tela.startsWith('con') ? 'con' : 'lib';
+
+    // Liturgia
+    const litPer = Math.floor((cH - 90 - 15 - 40) / 60);
+    const litPg = this.pager('lit', LIT.length, litPer);
+    const litTab = S.litTab ?? (tela === 'liturgia-pregacao' ? 'preg' : 'add');
+    // Biblioteca
+    const libAvail = cH - 42 - 15 - 24 - 15 - 62 - 20;
+    const libW = cW - 210 - 40;
+    const LIBMAP = { 'bib-livros': 'biblia', 'bib-cap': 'biblia', 'bib-busca': 'salmos', hinario: 'hnc', hino: 'hnc', cfw: 'cfw', catecismo: 'maior', credos: 'credos', 'faixas-lib': 'fx-cultos' };
+    const curCol = LIBMAP[tela];
+    const G = [['Bíblia', [['biblia', 'Bíblia ARA', 66, 'bib-livros']]], ['Hinário e salmos', [['hnc', 'Hinário Novo Cântico', 2, 'hinario'], ['salmos', 'Salmos genebrinos', 5, 'bib-busca']]],
+      ['Doutrina', [['credos', 'Credos', 2, 'credos'], ['cfw', 'Confissão de Westminster', 2, 'cfw'], ['breve', 'Breve Catecismo', 3, 'catecismo'], ['maior', 'Catecismo Maior', 1, 'catecismo']]],
+      ['Faixas', [['fx-cultos', 'Cultos e reuniões', 5, 'faixas-lib'], ['fx-sac', 'Sacramentos', 2, 'faixas-lib'], ['fx-preg', 'Pregadores', 2, 'faixas-lib']]]];
+    const libGroups = G.map(([label, cols]) => ({ label, cols: cols.map(([k, l, n, t]) => ({ label: l, n, ...solid(k === curCol), go: () => this.go(t) })) }));
+    const LIBH = {
+      'bib-livros': { search: 'Livro ou referência, ex.: sl 119', crumbs: ['Bíblia ARA'], title: 'Bíblia ARA', hint: 'Escolha o livro' },
+      'bib-cap': { search: 'Livro ou referência, ex.: sl 119', crumbs: ['Bíblia ARA', 'Hebreus', 'Capítulo 12'], title: 'Hebreus 12', hint: 'Clique no primeiro versículo e depois no último, para um trecho' },
+      'bib-busca': { search: '133', active: true, crumbs: ['Salmos genebrinos', 'Busca'], title: 'Busca: 133', hint: '2 resultados em Salmos genebrinos' },
+      hinario: { search: 'Número ou título, ex.: 42B', crumbs: ['Hinário Novo Cântico'], title: 'Hinário Novo Cântico', hint: 'Hinos cadastrados', action: 'Novo hino' },
+      hino: { search: 'Número ou título, ex.: 42B', crumbs: ['Hinário Novo Cântico', 'Castelo forte'], title: 'Castelo forte', hint: 'Martinho Lutero' },
+      cfw: { search: 'Seção ou título, ex.: 1.2', crumbs: ['Confissão de Westminster'], title: 'Confissão de Westminster', hint: 'Escolha o capítulo' },
+      catecismo: { search: 'Número ou texto da pergunta', crumbs: ['Catecismo Maior'], title: 'Catecismo Maior', hint: 'Escolha a pergunta; as esmaecidas ainda não foram cadastradas' },
+      credos: { search: 'Título', crumbs: ['Credos'], title: 'Credos', hint: 'Credos cadastrados', action: 'Novo credo' },
+      'faixas-lib': { search: 'Nome', crumbs: ['Faixas', 'Cultos e reuniões'], title: 'Cultos e reuniões', hint: 'A lista que aparece em Apresentar › Faixas e no celular', action: 'Novo culto ou reunião' },
+    }[tela] || { crumbs: [] };
+    const lib = { search: LIBH.search, searchFg: LIBH.active ? 'var(--color-text)' : 'var(--color-neutral-600)', searchBorder: LIBH.active ? 'var(--color-accent)' : 'var(--color-divider)',
+      crumbs: LIBH.crumbs.map((c, i, a) => ({ label: c, sep: i ? '›' : '', fg: i < a.length - 1 ? 'var(--color-accent-700)' : 'var(--color-text)' })),
+      title: LIBH.title, hint: LIBH.hint, hasAction: !!LIBH.action, action: LIBH.action };
+    // capítulo
+    const leftW = libW - 340 - 40, cpl = Math.max(30, Math.floor((leftW - 52) / 8.4)), budget = libAvail - 42;
+    const allV = Array.from({ length: 29 }, (_, i) => { const n = i + 1, t = HB[n] || `[texto ARA de Hebreus 12.${n}]`; return { n, t, h: 12 + 24 * Math.ceil(t.length / cpl) }; });
+    const secs = []; let cur = [], used = 0;
+    allV.forEach(v => { if (used + v.h > budget && cur.length) { secs.push(cur); cur = []; used = 0; } cur.push(v); used += v.h; }); if (cur.length) secs.push(cur);
+    const selSec = Math.max(0, secs.findIndex(s => s.some(v => v.n === 14)));
+    const capSecs = secs.map((s, i) => ({ label: s[0].n === s[s.length - 1].n ? '' + s[0].n : s[0].n + '–' + s[s.length - 1].n, bg: i === selSec ? 'var(--color-accent-100)' : 'transparent', bd: i === selSec ? 'transparent' : 'var(--color-divider)' }));
+    const verses = (secs[selSec] || []).map(v => { const sel = v.n === 14 || v.n === 15; return { n: v.n, t: v.t, bg: sel ? 'var(--color-accent-200)' : 'transparent', fg: HB[v.n] || sel ? 'var(--color-text)' : 'var(--color-neutral-700)' }; });
+    const capAll = LIT[5].slides.map((l, i) => ({ h: ['Hebreus 12.14', 'Hebreus 12.15 (1/3)', 'Hebreus 12.15 (2/3)', 'Hebreus 12.15 (3/3)'][i], lines: l }));
+    const capPg = this.pager('cap', capAll.length, Math.floor((libAvail - 30 - 60 - 40) / 86));
+    // listas
+    const listPer = Math.floor((libAvail - 40) / 44);
+    let rows = [];
+    if (tela === 'cfw') rows = CFW_T.map((t, i) => ({ num: '' + (i + 1), title: t, meta: i === 0 ? '2 de 10 seções' : `0 de ${CFW_S[i]} seções`, fg: i === 0 ? 'var(--color-text)' : 'var(--color-neutral-700)', numFg: 'var(--color-text)' }));
+    if (tela === 'hinario') rows = [['s/nº', 'Castelo forte', 'Martinho Lutero'], ['s/nº', 'Santo! Santo! Santo!', 'Reginald Heber']].map(([num, title, meta]) => ({ num, title, meta, fg: 'var(--color-text)', numFg: 'var(--color-neutral-600)' }));
+    if (tela === 'credos') rows = [['', 'Credo Apostólico', '8 telas'], ['', 'Credo Niceno', '[texto a cadastrar]']].map(([num, title, meta]) => ({ num, title, meta, fg: 'var(--color-text)', numFg: 'var(--color-text)' }));
+    if (tela === 'bib-busca') rows = [['133A', 'Salmo 133A', 'Comissão Brasileira de Salmodia'], ['133B', 'Salmo 133B', 'Comissão Brasileira de Salmodia']].map(([num, title, meta]) => ({ num, title, meta, fg: 'var(--color-text)', numFg: 'var(--color-text)' }));
+    const listPg = this.pager('list-' + tela, rows.length, listPer);
+    // catecismo
+    const catCols = Math.min(20, Math.floor((libW + 4) / 58)), catRows = Math.floor((libAvail - 42 + 4) / 42), catPer = catCols * catRows;
+    const catSecN = Math.ceil(196 / catPer), catSel = Math.min(this.state.pg.cat || 0, catSecN - 1);
+    const catSecs = Array.from({ length: catSecN }, (_, i) => ({ label: `${i * catPer + 1}–${Math.min(196, (i + 1) * catPer)}`, go: () => this.setPg('cat', i), bg: i === catSel ? 'var(--color-accent-100)' : 'transparent', bd: i === catSel ? 'transparent' : 'var(--color-divider)' }));
+    const catNums = Array.from({ length: Math.min(catPer, 196 - catSel * catPer) }, (_, i) => { const n = catSel * catPer + i + 1; return { n, bg: n === 1 ? 'var(--color-surface)' : 'transparent', fg: n === 1 ? 'var(--color-text)' : 'var(--color-neutral-600)' }; });
+    const hinoPrev = LIT[2].slides.map(l => ({ h: 'Castelo forte', lines: l }));
+    const flPrevW = Math.min(520, Math.max(340, Math.round(libW * 0.4)));
+    // Apresentar
+    const aprMode = S.aprMode ?? (tela === 'apr-faixas' ? 'fx' : 'lit');
+    const aprW = cW - 250 - 40, aprCols = Math.max(2, Math.floor((aprW + 15) / 255));
+    const aprRowsN = Math.max(1, Math.floor((cH - 90 - 15 - 76 - 44 + 15) / 155));
+    const live = LIT[3];
+    const aprPg = this.pager('apr', live.slides.length, aprCols * aprRowsN);
+    const aprItPg = this.pager('aprIt', LIT.length, Math.floor((cH - 30 - 44) / 74));
+    // Conexão
+    const conSub = { 'con-estado': 'estado', 'con-saidas': 'saidas', 'con-editor': 'saidas', 'con-celular': 'celular' }[tela];
+    const SAIDAS = [
+      { name: 'Bíblia', slug: 'bible', cols: 'Todas as Bíblias', style: 'Faixa inferior · 12 linhas · fundo 78%' },
+      { name: 'Salmos e hinos', slug: 'songs', cols: 'Todos os hinários e saltérios', style: 'Centro · 10 linhas · fundo 78%' },
+      { name: 'Doutrina', slug: 'doctrine', cols: 'Credos · Confissão · Catecismos', style: 'Faixa inferior · 12 linhas · fundo 78%' },
+      { name: 'Faixas', slug: 'faixas', cols: 'Cultos e reuniões · Sacramentos · Pregação', style: 'Esquerda, na base · fundo 78%' }];
+    const saidaPg = this.pager('saidas', SAIDAS.length, 2 * Math.max(1, Math.floor((cH - 50 - 60 + 15) / 215)));
+    const es = S.es, setE = (k, num) => e => { const v = num ? +e.target.value : e.target.value; this.setState(s => ({ es: { ...s.es, [k]: v } })); };
+    const edPrevW = Math.min(960, cW - 500 - 40);
+    const remState = S.rem ?? this.props.remoto ?? 'no-ar';
+    const REM = {
+      desligado: { title: 'Desligado', fg: 'var(--color-text)', note: 'O Gutenberg só responde na rede da igreja.', url: 'aparece aqui quando ligar', addrOp: 0.45 },
+      conectando: { title: 'Conectando…', fg: 'var(--color-text)', note: 'Publicando o endereço. Leva alguns segundos.', url: 'aguardando o serviço', addrOp: 0.45 },
+      'no-ar': { title: 'No ar', fg: 'var(--color-accent-700)', note: 'Os aparelhos pareados também controlam de fora da rede da igreja.', url: 'https://gutenberg-igreja.exemplo.net/control', addrOp: 1 },
+      erro: { title: 'Não foi possível publicar', fg: 'var(--color-accent-2-700)', note: 'Sem resposta do serviço. Confira a internet e tente de novo; a rede da igreja continua funcionando.', url: 'sem endereço', addrOp: 0.45 },
+    }[remState];
+    // Mobile
+    const mTab = tela === 'm-faixas' ? 'fx' : 'itens';
+    const mList = mTab === 'itens' ? LIT.map((it, i) => ({ kicker: it.mom, title: it.title, live: i === 3 ? 'no ar' : '', bg: i === 3 ? 'var(--color-neutral-800)' : 'transparent' }))
+      : FX.map((f, i) => ({ kicker: f.kind, title: f.title, live: i === 6 ? 'no ar' : '', bg: i === 6 ? 'var(--color-neutral-800)' : 'transparent' }));
+    const ovData = OV[tela] || OV['o-biblia'];
+
+    return {
+      standalone: !embed, rootMinH: embed ? '0' : '100vh', rootBg: embed ? 'transparent' : 'var(--color-neutral-300)', rootPad: embed ? '0' : 'var(--space-3)',
+      frameShadow: embed ? 'none' : 'var(--shadow-lg)',
+      tela, telaLabel: (SCREENS.find(x => x[0] === tela) || SCREENS[0])[1],
+      telas: SCREENS.map(([id, label]) => ({ id, label })), pickTela: e => this.go(e.target.value),
+      resList: Object.keys(RES).map(r => ({ label: r.replace('x', '×'), ...solid(r === res), go: () => this.setState({ res: r }) })),
+      W, H, sc: sc * z, fw: Math.round(PW * sc), fh: Math.round(PH * sc),
+      isDesk: kind === 'd', isMob: kind === 'm', isOv: kind === 'o',
+      tabs: [['lit', 'Liturgia', 'ph-list-numbers', 'liturgia'], ['lib', 'Biblioteca', 'ph-books', 'bib-livros'], ['apr', 'Apresentar', 'ph-presentation', 'apresentar'], ['con', 'Conexão', 'ph-plugs-connected', 'con-estado']]
+        .map(([k, label, icon, t]) => ({ label, icon, go: () => this.go(t), bg: tint(tab === k), fg: tab === k ? 'var(--color-accent-700)' : 'var(--color-text)' })),
+      sLit: tab === 'lit', sLib: tab === 'lib', sApr: tab === 'apr', sCon: tab === 'con',
+      cultos: [['Culto matutino · 12/10', '8 itens', true], ['Culto vespertino · 05/10', '0 itens', false]].map(([name, count, on]) => ({ name, count, bg: tint(on) })),
+      goApr: () => this.go('apresentar'),
+      litRows: LIT.slice(litPg.start, litPg.end).map((it, i) => ({ n: String(litPg.start + i + 1).padStart(2, '0'), mom: it.mom, title: it.title, col: it.col, count: it.slides.length + (it.slides.length === 1 ? ' tela' : ' telas') })), litPg,
+      litTabs: this.seg([['add', 'Adicionar item'], ['preg', 'Pregação']], litTab, k => this.setState({ litTab: k })),
+      litAdd: litTab === 'add', litPreg: litTab === 'preg',
+      pickGroups: [['Bíblia', [['Bíblia ARA', true]]], ['Hinário e salmos', [['Hinário Novo Cântico'], ['Salmos genebrinos']]], ['Doutrina', [['Credos'], ['Confissão de Westminster'], ['Breve Catecismo'], ['Catecismo Maior']]]]
+        .map(([label, cols]) => ({ label, cols: cols.map(([l, on]) => ({ label: l, ...solid(on) })) })),
+      pickList: ['Adicionar Salmos 23', 'Salmos 23.1', 'Salmos 23.1–6'],
+      ovPreg: OV['o-pregacao'], ovCulto: OV['o-culto'], ovStyle: { ...es, opac: 78 }, ovData,
+      libGroups, lib, sLivros: tela === 'bib-livros', sCap: tela === 'bib-cap', sList: ['cfw', 'hinario', 'credos', 'bib-busca'].includes(tela), sCat: tela === 'catecismo', sHino: tela === 'hino', sFaixasLib: tela === 'faixas-lib',
+      books: [{ title: 'Antigo Testamento', items: BOOKS.slice(0, 39) }, { title: 'Novo Testamento', items: BOOKS.slice(39) }],
+      capSecs, verses, capPrev: capAll.slice(capPg.start, capPg.end), capPg, capPrevCount: capAll.length + ' telas',
+      listRows: rows.slice(listPg.start, listPg.end), listPg,
+      catCols, catSecs, catNums, hinoPrev, flPrevW,
+      flRows: FX.filter(f => f.kind === 'Culto').concat([{ title: 'Reunião de Oração', sub: '' }]).map((f, i) => ({ name: f.title, sub: i < 2 ? '' : '', bg: i === 0 ? 'var(--color-accent-100)' : 'transparent' })),
+      aprKicker: aprMode === 'fx' ? 'Faixas · saída /faixas' : 'Confissão de fé · Credos', aprTitle: aprMode === 'fx' ? 'Faixas' : 'Credo Apostólico',
+      aprModes: this.seg([['lit', 'Liturgia', 'ph-list-numbers'], ['fx', 'Faixas', 'ph-identification-card']], aprMode, k => this.setState({ aprMode: k })),
+      aprLit: aprMode === 'lit', aprFx: aprMode === 'fx', aprCols,
+      aprItems: LIT.slice(aprItPg.start, aprItPg.end).map((it, i) => ({ mom: it.mom, title: it.title, col: it.col, live: aprItPg.start + i === 3 ? 'no ar' : '', bg: tint(aprItPg.start + i === 3) })), aprItPg,
+      aprSlides: live.slides.slice(aprPg.start, aprPg.end).map((l, j) => { const i = aprPg.start + j; return { lines: l, h: `Credo Apostólico · ${i + 1}/${live.slides.length}`, st: i === 0 ? 'no ar' : i === 1 ? 'a seguir' : '', stFg: i === 0 ? 'var(--color-accent-2-700)' : 'var(--color-accent-700)', bg: i === 0 ? 'var(--color-accent-200)' : 'var(--color-surface)' }; }), aprPg,
+      fxCards: FX.map((f, i) => ({ ...f, st: i === 6 ? 'no ar' : 'enviar', stFg: i === 6 ? 'var(--color-accent-2-700)' : 'var(--color-accent-700)', bg: i === 6 ? 'var(--color-accent-200)' : 'var(--color-surface)' })),
+      conTabs: [['estado', 'Estado', '', 'con-estado'], ['saidas', 'Saídas', '4', 'con-saidas'], ['celular', 'Controle remoto', '2', 'con-celular']]
+        .map(([k, label, n, t]) => ({ label, n, go: () => this.go(t), bg: conSub === k ? 'var(--color-accent-100)' : 'transparent', bd: conSub === k ? 'transparent' : 'var(--color-divider)' })),
+      sEstado: tela === 'con-estado', sSaidas: tela === 'con-saidas', sEditor: tela === 'con-editor', sCelular: tela === 'con-celular',
+      logRows: [{ t: '13:14', m: 'Conectado a 127.0.0.1' }, { t: '13:15', m: 'Celular de Marcos pareado' }],
+      saidas: SAIDAS.slice(saidaPg.start, saidaPg.end).map(o => ({ ...o, state: 'OBS conectado' })), saidaPg,
+      goEditor: () => this.go('con-editor'), goSaidas: () => this.go('con-saidas'),
+      edTabs: this.seg([['col', 'Coleções'], ['letra', 'Letra'], ['faixa', 'Faixa']], S.edTab, k => this.setState({ edTab: k })),
+      edCol: S.edTab === 'col', edLetra: S.edTab === 'letra', edFaixa: S.edTab === 'faixa',
+      edCols: [['Todas as Bíblias', true], ['Bíblia ARA', true, true], ['Todos os hinários e saltérios'], ['Hinário Novo Cântico'], ['Salmos genebrinos'], ['Credos'], ['Confissão de Westminster'], ['Breve Catecismo'], ['Catecismo Maior'], ['Faixas de culto']]
+        .map(([label, on, dis]) => ({ label, on: !!on, dis: !!dis, fg: dis ? 'var(--color-neutral-600)' : 'var(--color-text)' })),
+      es, fsTexto: Math.round(1080 / (es.linhasTexto * 1.3)), fsMusica: Math.round(1080 / (es.linhasMusica * 1.3)),
+      setCor: setE('cor'), setFundo: setE('fundo'), setOpac: setE('opac', 1), setLT: setE('linhasTexto', 1), setLM: setE('linhasMusica', 1), setMx: setE('mx', 1), setMy: setE('my', 1),
+      togNeg: () => this.setState(s => ({ es: { ...s.es, negrito: !s.es.negrito } })), togSombra: () => this.setState(s => ({ es: { ...s.es, sombra: !s.es.sombra } })),
+      alignOpts: this.seg([['esquerda', 'Esquerda'], ['centro', 'Centro'], ['direita', 'Direita']], es.alinhamento, k => this.setState(s => ({ es: { ...s.es, alinhamento: k } }))),
+      largOpts: this.seg([['inteira', 'Faixa inteira'], ['texto', 'Ajustada ao texto']], es.largura, k => this.setState(s => ({ es: { ...s.es, largura: k } }))),
+      contOpts: this.seg([['nenhum', 'Nenhum'], ['fino', 'Fino'], ['grosso', 'Grosso']], es.contorno, k => this.setState(s => ({ es: { ...s.es, contorno: k } }))),
+      sampleOpts: this.seg([['biblia', 'Bíblia'], ['hino', 'Hino']], S.sample, k => this.setState({ sample: k })),
+      edPrevW, edSample: S.sample === 'hino' ? OV['o-hino'] : OV['o-biblia'],
+      edCaption: S.sample === 'hino' ? `Músicas: ${es.linhasMusica} linhas máximas, letra de ${Math.round(1080 / (es.linhasMusica * 1.3))} px na cena.` : `Textos: ${es.linhasTexto} linhas máximas, letra de ${Math.round(1080 / (es.linhasTexto * 1.3))} px e cabeçalho de ${Math.round(540 / (es.linhasTexto * 1.3))} px na cena.`,
+      qr: QR, qrBig: Math.min(220, cH - 200), qrSmall: Math.min(150, cH - 330),
+      devices: [{ name: 'Celular de Marcos', meta: 'Android · visto agora' }, { name: 'iPhone da mesa de som', meta: 'iOS · visto há 3 dias' }],
+      rem: REM, remOpts: this.seg([['desligado', 'Desligado'], ['no-ar', 'Ligado']], remState === 'desligado' ? 'desligado' : 'no-ar', k => this.setState({ rem: k })),
+      mPair: tela === 'm-parear', mCtl: tela === 'm-controle' || tela === 'm-faixas', mIsItens: mTab === 'itens',
+      pinBoxes: ['4', '8', '2', '9', '', ''].map((d, i) => ({ d, bd: i === 4 ? 'var(--color-accent-400)' : 'transparent' })),
+      keys: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'].map(k => ({ k, bg: k ? 'var(--color-neutral-800)' : 'transparent' })),
+      mNow: mTab === 'itens' ? { kicker: 'No ar · Confissão de fé · tela 1 de 8', title: 'Credo Apostólico', lines: LIT[3].slides[0] } : { kicker: 'Faixa no ar', title: 'Rev. Ashbel Green Simonton', lines: ['“A graça que educa” · Tito 2.11–14'] },
+      mTabs: this.seg([['itens', 'Itens'], ['fx', 'Faixas']], mTab, k => this.go(k === 'fx' ? 'm-faixas' : 'm-controle'), true),
+      mList, mClear: mTab === 'itens' ? 'Limpar tela' : 'Tirar faixa',
+    };
+  }
+}
+</script>
+</body>
+</html>

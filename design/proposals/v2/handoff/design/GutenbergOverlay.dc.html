@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-ad3333d4-6458-49dd-850f-83cc08eb6c11/styles.css">
+<script src="_ds/broadsheet-ad3333d4-6458-49dd-850f-83cc08eb6c11/_ds_bundle.js"></script>
+</helmet>
+<div style="width:{{ w }}px;height:{{ h }}px;overflow:hidden;position:relative;background:#4a4747">
+  <div style="position:absolute;left:0;top:0;width:1920px;height:1080px;transform:scale({{ s }});transform-origin:0 0;font-family:var(--font-body)">
+    <span style="position:absolute;top:36px;left:44px;font-size:22px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.32)">Câmera</span>
+    <sc-if value="{{ isText }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;left:{{ mx }}px;right:{{ mx }}px;bottom:{{ my }}px;display:flex;justify-content:center">
+        <div style="width:{{ bandW }};box-sizing:border-box;padding:{{ pad }};background:{{ bandBg }};color:{{ cor }};text-align:{{ align }};text-shadow:{{ shadow }};-webkit-text-stroke:{{ stroke }};display:flex;flex-direction:column;gap:{{ gapPx }}px">
+          <span style="font-size:{{ hfs }}px;line-height:1.1;opacity:0.8;font-weight:400">{{ header }}</span>
+          <sc-for list="{{ lines }}" as="l" hint-placeholder-count="2">
+            <span style="font-size:{{ fs }}px;line-height:1.2;font-weight:{{ weight }};white-space:nowrap">{{ l }}</span>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isHymn }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;left:{{ mx }}px;right:{{ mx }}px;top:50%;transform:translateY(-50%);display:flex;justify-content:center">
+        <div style="width:{{ bandW }};box-sizing:border-box;padding:{{ pad }};background:{{ bandBg }};color:{{ cor }};text-align:center;text-shadow:{{ shadow }};-webkit-text-stroke:{{ stroke }};display:flex;flex-direction:column;gap:{{ gapPx }}px">
+          <span style="font-size:{{ hfs }}px;line-height:1.1;opacity:0.8">{{ header }}</span>
+          <sc-for list="{{ lines }}" as="l" hint-placeholder-count="2">
+            <span style="font-size:{{ fs }}px;line-height:1.2;font-weight:{{ weight }};white-space:nowrap">{{ l }}</span>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isFaixa }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;left:{{ mx }}px;bottom:{{ my }}px;padding:28px 44px 32px;background:{{ bandBg }};color:{{ cor }};text-shadow:{{ shadow }};display:flex;flex-direction:column;gap:8px;max-width:1300px">
+        <span style="font-size:{{ kfs }}px;letter-spacing:0.14em;text-transform:uppercase;color:#8fd8f0">{{ kicker }}</span>
+        <span style="font-size:{{ tfs }}px;line-height:1.1;font-weight:600">{{ title }}</span>
+        <span style="font-size:{{ sfs }}px;line-height:1.2;font-style:italic;opacity:0.88">{{ sub }}</span>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:960,&quot;height&quot;:540},&quot;largura&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:960,&quot;tsType&quot;:&quot;number&quot;},&quot;dados&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object&quot;},&quot;estilo&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const w = this.props.largura ?? 960, s = w / 1920;
+    const d = this.props.dados || { tipo: 'texto', header: 'Hebreus 12.15 (2/3)', lines: ['nem haja alguma raiz de amargura que,', 'brotando, vos perturbe,'] };
+    const e = Object.assign({ linhasTexto: 12, linhasMusica: 10, fundo: '#141212', opac: 78, mx: 6, my: 5, contorno: 'nenhum', sombra: true, largura: 'inteira', cor: '#ffffff', negrito: false, alinhamento: 'centro' }, this.props.estilo || {});
+    const musica = d.tipo === 'musica';
+    const fs = Math.round(1080 / ((musica ? e.linhasMusica : e.linhasTexto) * 1.3));
+    const hex = e.fundo.replace('#', ''), r = parseInt(hex.slice(0, 2), 16), g = parseInt(hex.slice(2, 4), 16), b = parseInt(hex.slice(4, 6), 16);
+    return {
+      w, h: Math.round(w * 9 / 16), s,
+      isText: d.tipo === 'texto', isHymn: musica, isFaixa: d.tipo === 'faixa',
+      mx: Math.round(1920 * e.mx / 100), my: Math.round(1080 * e.my / 100),
+      bandW: e.largura === 'inteira' ? '100%' : 'auto',
+      pad: Math.round(fs * 0.35) + 'px ' + Math.round(fs * 0.7) + 'px',
+      bandBg: e.opac > 0 ? `rgba(${r},${g},${b},${e.opac / 100})` : 'transparent',
+      cor: e.cor, align: { esquerda: 'left', centro: 'center', direita: 'right' }[e.alinhamento] || 'center',
+      shadow: e.sombra ? '0 3px 14px rgba(0,0,0,0.65)' : 'none',
+      stroke: { nenhum: '0', fino: '1.5px rgba(0,0,0,0.7)', grosso: '3px rgba(0,0,0,0.8)' }[e.contorno] || '0',
+      weight: e.negrito ? 600 : 400, gapPx: Math.round(fs * 0.12),
+      fs, hfs: Math.round(fs / 2), kfs: 26, tfs: 64, sfs: 36,
+      header: d.header || '', lines: d.lines || [], kicker: d.kicker || '', title: d.title || '', sub: d.sub || '',
+    };
+  }
+}
+</script>
+</body>
+</html>
