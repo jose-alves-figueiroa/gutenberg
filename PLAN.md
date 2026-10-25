@@ -356,9 +356,9 @@ cabe vira página ou seção. Especificação: `handoff/README.md` → "Regras g
 "Telas" e "O que muda em relação ao app atual"; medidas atuais em `design/implemented/0.2.3/NOTES.md`.
 
 **US16.1** Escala e regras comuns
-- [ ] Zoom da interface: `limitar(min(largura/1440, altura/810), 1, 1,333)` com `webContents.setZoomFactor`, recalculado no `resize`
+- [x] Zoom da interface: `limitar(min(largura/1440, altura/810), 1, 1,333)`, aplicado no preload (`webFrame.setZoomFactor`) e recalculado no `resize`
 - [ ] Altura fixa (área = altura lógica − 72), nenhum `overflow: auto`; alturas fixas de linha (44/60/70/140/112/200/38 px) para a paginação exata
-- [ ] Paginador e faixa de seções no formato da v2 (`Pager`/`usePaging`)
+- [x] Paginador e faixa de seções no formato da v2 (`Pager`/`usePaging`)
 
 **US16.2** Telas existentes conforme a v2
 - [ ] Liturgia: três colunas, itens paginados, coluna de ação com segmentado Adicionar item | Pregação (a Pregação é da E18)

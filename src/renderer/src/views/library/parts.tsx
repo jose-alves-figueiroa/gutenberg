@@ -109,16 +109,14 @@ export function usePaging(count: number, size: number, pageKey?: string) {
   return { page, pages, goPage }
 }
 
-/** « ‹ Página k de n › » — nothing when there is a single page; `compact` (narrow sidebars): ‹ k de n ›. */
+/** Design v2: « ‹ Página k de n › », nothing when there is a single page; `compact` (narrow sidebars): ‹ k de n ›. */
 export function Pager({ page, pages, goPage, compact = false }: ReturnType<typeof usePaging> & { compact?: boolean }) {
   if (pages < 2) return null
   return (
     <nav className="pager" aria-label={t('pager.label')}>
-      {!compact && <button type="button" className="btn btn-ghost" disabled={page === 0} onClick={() => goPage(0)} aria-label={t('pager.first')}>«</button>}
-      <button type="button" className="btn btn-ghost" disabled={page === 0} onClick={() => goPage(page - 1)} aria-label={t('pager.previous')}>‹</button>
+      <button type="button" className="btn btn-ghost btn-icon pager-arrow" disabled={page === 0} onClick={() => goPage(page - 1)} aria-label={t('pager.previous')}>‹</button>
       <span className="pager-status text-muted" aria-live="polite">{t(compact ? 'pager.short' : 'pager.status', { k: page + 1, n: pages })}</span>
-      <button type="button" className="btn btn-ghost" disabled={page === pages - 1} onClick={() => goPage(page + 1)} aria-label={t('pager.next')}>›</button>
-      {!compact && <button type="button" className="btn btn-ghost" disabled={page === pages - 1} onClick={() => goPage(pages - 1)} aria-label={t('pager.last')}>»</button>}
+      <button type="button" className="btn btn-ghost btn-icon pager-arrow" disabled={page === pages - 1} onClick={() => goPage(page + 1)} aria-label={t('pager.next')}>›</button>
     </nav>
   )
 }

@@ -18,7 +18,9 @@ const RESOLUTIONS = [
 ]
 
 const { version } = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
-const out = join(root, 'design', 'implemented', version)
+// `--out <dir>` writes elsewhere (checking the screens while working, without touching the snapshot).
+const outArg = process.argv.indexOf('--out')
+const out = outArg > 0 ? join(root, process.argv[outArg + 1]) : join(root, 'design', 'implemented', version)
 const assets = join(out, 'assets')
 rmSync(out, { recursive: true, force: true })
 mkdirSync(assets, { recursive: true })
@@ -149,9 +151,14 @@ try {
     for (const [name, open] of SCREENS) {
       await open()
       await page.waitForTimeout(400)
-      const viewport = await page.evaluate(() => [window.innerWidth, window.innerHeight])
-      if (viewport[0] !== width || viewport[1] !== height) throw new Error(`${size}: the window is ${viewport.join('x')} (screen too small?)`)
-      await page.screenshot({ path: join(dir, `${name}.png`), scale: 'css' })
+      // The interface zoom (design v2) shrinks the CSS viewport by the same factor on both axes.
+      const [cssW, cssH] = await page.evaluate(() => [window.innerWidth, window.innerHeight])
+      const zoom = width / cssW
+      if (zoom < 0.999 || Math.abs(zoom - height / cssH) > 0.01) throw new Error(`${size}: the window is ${cssW}x${cssH} CSS px (screen too small?)`)
+      // Captured in CSS px (the logical area), then scaled to the resolution the operator sees.
+      const shot = (await page.screenshot({ scale: 'css' })).toString('base64')
+      const png = await app.evaluate(({ nativeImage }, [b64, w, h]) => nativeImage.createFromBuffer(Buffer.from(b64, 'base64')).resize({ width: w, height: h, quality: 'best' }).toPNG().toString('base64'), [shot, width, height])
+      writeFileSync(join(dir, `${name}.png`), Buffer.from(png, 'base64'))
       writeFileSync(join(dir, `${name}.html`), localizeFonts(await page.evaluate(snapshotHtml, `${version} ${size} ${name}`)))
       report[size][name] = await page.evaluate(measureScroll)
       console.log(`design:implemented: ${size}/${name}`)
@@ -160,7 +167,7 @@ try {
   writeFileSync(join(out, 'obs.png'), await captureObs(app, 1920, 1080))
   for (const file of fonts) copyFileSync(file, join(assets, basename(file)))
   writeFileSync(join(out, 'scroll.json'), `${JSON.stringify(report, null, 2)}\n`)
-  console.log(`design:implemented: design/implemented/${version}`)
+  console.log(`design:implemented: ${out}`)
 } finally {
   await app.close()
 }

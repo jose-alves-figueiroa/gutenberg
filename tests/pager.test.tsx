@@ -12,17 +12,18 @@ const labels = () => [...document.querySelectorAll('.lib-row-label')].map((e) =>
 const status = () => screen.getByText(/^Página \d+ de \d+$/).textContent
 
 describe('paged list (US9.1)', () => {
-  it('shows one page at a time with first/previous/next/last', async () => {
+  it('shows one page at a time with previous/next', async () => {
     render(<List rows={rows(30)} />)
     expect(labels()).toHaveLength(FALLBACK_PAGE_SIZE)
     expect(status()).toBe('Página 1 de 3')
     expect(screen.getByRole('button', { name: 'Página anterior' })).toBeDisabled()
     await userEvent.click(screen.getByRole('button', { name: 'Próxima página' }))
     expect(labels()[0]).toBe('13')
-    await userEvent.click(screen.getByRole('button', { name: 'Última página' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Próxima página' }))
     expect(labels()).toEqual(['25', '26', '27', '28', '29', '30'])
     expect(screen.getByRole('button', { name: 'Próxima página' })).toBeDisabled()
-    await userEvent.click(screen.getByRole('button', { name: 'Primeira página' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Página anterior' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Página anterior' }))
     expect(status()).toBe('Página 1 de 3')
   })
 
