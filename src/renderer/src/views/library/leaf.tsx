@@ -9,6 +9,7 @@ import { t } from '@shared/i18n'
 import { fitSections, type SectionUnit } from '@shared/sections'
 import type { Slide } from '@shared/slides'
 import { SectionStrip, useCapacity } from '../../components/Sections'
+import { Pager, usePaging } from './parts'
 import { json, useApi } from '../../api'
 import { usePresentAndOpen } from '../../present'
 import { useServices } from '../../service'
@@ -53,23 +54,33 @@ interface LeafProps {
   onDiscard?: () => void
   /** The item as a liturgy reference; absent while it is not saved (cannot be added yet). */
   item?: { collection: string; itemRef: string }
+  /**
+   * Design v2: a column beside the content (Bible chapter, hymn) with one card per screen, the
+   * two real OBS lines each, paged to the column's height instead of cut into sections.
+   */
+  aside?: boolean
 }
 
 /** Space for the sticky action bar and the strip, so one section fits the window. */
 const LEAF_RESERVE = 180
+/** Below the aside's cards: its pager and action bar, and the view's bottom padding. */
+const ASIDE_RESERVE = 150
 
-export function Leaf({ slides, units, song, max, editable, dirty = false, status = 'idle', onSave, onDiscard, item }: LeafProps) {
+export function Leaf({ slides, units, song, max, editable, dirty = false, status = 'idle', onSave, onDiscard, item, aside = false }: LeafProps) {
   const api = useApi()
   const qc = useQueryClient()
   const { current } = useServices()
   const present = usePresentAndOpen()
   const [added, setAdded] = useState<string | null>(null)
   const cards = useRef<HTMLDivElement>(null)
-  const capacity = useCapacity(cards, { reserve: LEAF_RESERVE, viewport: true })
-  const sections = units ? fitSections(units, capacity) : []
+  const capacity = useCapacity(cards, aside ? { reserve: ASIDE_RESERVE, key: slides.length } : { reserve: LEAF_RESERVE, viewport: true })
+  const sections = units && !aside ? fitSections(units, capacity) : []
+  const paging = usePaging(slides.length, aside ? capacity : slides.length)
   const [picked, setPicked] = useState(0)
   const shown = picked < sections.length ? picked : 0
-  const section = sections[shown] ?? { start: 0, end: slides.length }
+  const section = aside
+    ? { start: paging.page * capacity, end: (paging.page + 1) * capacity }
+    : (sections[shown] ?? { start: 0, end: slides.length })
   const add = useMutation({
     mutationFn: () =>
       json(api.api.v1.liturgy.services[':id'].items.$post({ param: { id: String(current!.id) }, json: { ...item!, moment: '' } })),
@@ -88,6 +99,43 @@ export function Leaf({ slides, units, song, max, editable, dirty = false, status
         : added
           ? t('liturgy.added', { name: added })
           : ''
+  const label = t(slides.length === 1 ? 'leaf.preview.one' : 'leaf.preview.other', { n: slides.length })
+  if (aside)
+    return (
+      <section className="leaf leaf--aside" aria-label={label}>
+        <span className="leaf-label text-muted">{label}</span>
+        <div className="slide-cards slide-cards--aside" ref={cards}>
+          {slides.slice(section.start, section.end).map((s, i) => (
+            <div key={section.start + i} className="slide-card slide-card--aside">
+              <span className="slide-card-head text-muted">{s.header}</span>
+              {s.lines.map((line, j) => (
+                <span key={j} className="slide-card-line">
+                  {line}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+        <Pager {...paging} compact />
+        <div className="leaf-bar leaf-bar--aside">
+          <button type="button" className="btn btn-primary" disabled={!item || dirty || present.pending} onClick={() => item && void present.run({ type: 'adhoc', ...item })}>
+            {t('leaf.present')}
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            disabled={!item || !current || dirty || add.isPending}
+            title={current ? undefined : t('liturgy.chooseService')}
+            onClick={() => add.mutate()}
+          >
+            {t('leaf.addToLiturgy')}
+          </button>
+          <span className="leaf-status text-muted" role="status">
+            {note}
+          </span>
+        </div>
+      </section>
+    )
   return (
     <section className="leaf" aria-label={t(slides.length === 1 ? 'leaf.preview.one' : 'leaf.preview.other', { n: slides.length })}>
       <div className="leaf-head">

@@ -155,8 +155,9 @@ try {
       const [cssW, cssH] = await page.evaluate(() => [window.innerWidth, window.innerHeight])
       const zoom = width / cssW
       if (zoom < 0.999 || Math.abs(zoom - height / cssH) > 0.01) throw new Error(`${size}: the window is ${cssW}x${cssH} CSS px (screen too small?)`)
-      // Captured in CSS px (the logical area), then scaled to the resolution the operator sees.
-      const shot = (await page.screenshot({ scale: 'css' })).toString('base64')
+      // Captured through CDP (Playwright's screenshot ignores the emulated viewport), then scaled to
+      // the resolution the operator sees (this Mac may capture at 2×).
+      const { data: shot } = await cdp.send('Page.captureScreenshot', { format: 'png' })
       const png = await app.evaluate(({ nativeImage }, [b64, w, h]) => nativeImage.createFromBuffer(Buffer.from(b64, 'base64')).resize({ width: w, height: h, quality: 'best' }).toPNG().toString('base64'), [shot, width, height])
       writeFileSync(join(dir, `${name}.png`), Buffer.from(png, 'base64'))
       writeFileSync(join(dir, `${name}.html`), localizeFonts(await page.evaluate(snapshotHtml, `${version} ${size} ${name}`)))

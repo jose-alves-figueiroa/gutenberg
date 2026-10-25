@@ -40,7 +40,7 @@ describe('long chapters in the Library (US11.2, US11.3)', () => {
     expect(preview.querySelectorAll('.slide-card')).toHaveLength(8)
   })
 
-  it('a long passage preview is cut at the suggested parts, one letter each', async () => {
+  it('a long passage preview pages in the transmission column (design v2)', async () => {
     renderPsalm119()
     await userEvent.click(await screen.findByRole('button', { name: 'Salmos' }))
     await userEvent.click(screen.getByRole('button', { name: '119' }))
@@ -48,12 +48,11 @@ describe('long chapters in the Library (US11.2, US11.3)', () => {
     await userEvent.click(within(strips()[0]).getByRole('button', { name: /Guímel/ }))
     await userEvent.click(screen.getByRole('button', { name: /^20\s*Versículo 20/ }))
     const preview = screen.getByRole('region', { name: /Como fica na transmissão · 16 telas/ })
-    // Each letter stays its own section, even when two would fit.
-    const previewStrip = within(preview).getByRole('navigation', { name: 'Seções' })
-    expect(within(previewStrip).getAllByRole('button').map((b) => b.textContent)).toEqual(['Álefe5–8', 'Bete9–16', 'Guímel17–20'])
+    expect(within(preview).queryByRole('navigation', { name: 'Seções' })).toBeNull()
+    expect(preview.querySelectorAll('.slide-card')).toHaveLength(12)
+    expect(within(preview).getByText('1 de 2')).toBeInTheDocument()
+    await userEvent.click(within(preview).getByRole('button', { name: 'Próxima página' }))
     expect(preview.querySelectorAll('.slide-card')).toHaveLength(4)
-    await userEvent.click(within(previewStrip).getByRole('button', { name: /Bete/ }))
-    expect(preview.querySelectorAll('.slide-card')).toHaveLength(8)
   })
 })
 

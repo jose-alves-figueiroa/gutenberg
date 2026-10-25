@@ -21,6 +21,8 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 - A interface se amplia para preencher telas maiores (até 1,33× em 1920×1080 e 1920×1200),
   sem diminuir em 1280×720 (E16)
 - Paginação no formato novo, "‹ Página x de y ›", e faixa de seções com botões maiores (E16)
+- Capítulo da Bíblia sem rolagem: os versículos se dividem em seções pela altura da tela, a seção
+  da seleção abre primeiro e a prévia da transmissão fica numa coluna à direita, paginada (E16)
 - Letra maior no OBS: o tamanho vem de "Linhas máximas" da saída (padrão 12 linhas para textos e
   10 para músicas), em Source Serif 4, numa faixa escura na base da cena; saídas que ainda usavam
   os padrões do Holyrics passam para os novos (E15)

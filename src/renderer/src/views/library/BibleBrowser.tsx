@@ -1,17 +1,45 @@
 /** Bible (read only): books (OT/NT) → chapters → verses, with passage selection. */
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import { t } from '@shared/i18n'
-import { bibleUnits, fitSections, sectionUnits } from '@shared/sections'
+import { bibleUnits, fitSections } from '@shared/sections'
 import { slidesOf, type BiblePassage } from '@shared/slides'
-import { SectionStrip, useCapacity } from '../../components/Sections'
+import { SectionStrip } from '../../components/Sections'
 import { bibleItemRef } from '@shared/bible-ref'
 import { json, useApi } from '../../api'
 import { Leaf, useScreenLimit } from './leaf'
 import { Grid, LevelHeader, Loading, type Crumb } from './parts'
 
-/** Verses shown at once before the list can be measured (most chapters fit). */
-const VERSES_FALLBACK = 40
+/** Column size before it can be measured (tests, first paint): most chapters fit in one section. */
+const COLUMN_FALLBACK = { width: 600, height: 4000 }
+/** Below the verses: the view's bottom padding. */
+const VERSES_RESERVE = 24
+/** The strip of sections above the verses (32 px buttons and 15 px below), when there is one. */
+const STRIP_HEIGHT = 47
+
+/**
+ * Design v2 → Bíblia › capítulo: a verse takes `12 + 24 × lines` px, with
+ * `(column width − 52) / 8.4` characters per line (16/24 px text beside the number).
+ */
+export const verseHeight = (text: string, columnWidth: number): number =>
+  12 + 24 * Math.max(1, Math.ceil(text.length / Math.max(10, (columnWidth - 52) / 8.4)))
+
+/** Width of a column and the height left for it down to the bottom of the window. */
+function useColumn(ref: RefObject<HTMLElement | null>, key: string) {
+  const [box, setBox] = useState(COLUMN_FALLBACK)
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = ref.current
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      if (r.width > 0) setBox({ width: r.width, height: window.innerHeight - r.top - VERSES_RESERVE })
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [ref, key])
+  return box
+}
 
 export interface Passage {
   book: string
@@ -45,9 +73,10 @@ export function BibleBrowser({ version, label, path, go, onSelect }: Props) {
   })
   const [sel, setSel] = useState<{ a: number; b: number } | null>(null)
   const max = useScreenLimit()
-  // Long chapters one section at a time (E11): as many verses as fit, cut at the suggested parts.
+  // Chapters one section at a time (E11, design v2): as many verses as fit the column's height.
   const list = useRef<HTMLDivElement>(null)
-  const capacity = useCapacity(list, { reserve: 40, key: `${book}:${chapter}`, fallback: VERSES_FALLBACK })
+  // Measured again once the verses arrive (the list mounts with them).
+  const column = useColumn(list, `${book}:${chapter}:${verses.data ? 'ready' : 'loading'}`)
   const [shown, setShown] = useState({ key: '', section: 0 })
   // Report the passage after each change (functional updates keep rapid clicks consistent).
   useEffect(() => {
@@ -57,11 +86,15 @@ export function BibleBrowser({ version, label, path, go, onSelect }: Props) {
     setSel(null)
     go(p)
   }
-  const sections = verses.data ? fitSections(bibleUnits(book, chapter, verses.data.map((v) => ({ number: v.number, weight: 1 }))), capacity) : []
-  const current = shown.key === `${book}:${chapter}` && shown.section < sections.length ? shown.section : 0
+  const units = verses.data ? bibleUnits(book, chapter, verses.data.map((v) => ({ number: v.number, weight: verseHeight(v.text, column.width) }))) : []
+  const whole = fitSections(units, column.height)
+  const sections = whole.length > 1 ? fitSections(units, column.height - STRIP_HEIGHT) : whole
+  const holds = (n: number) => (x: (typeof sections)[number]) => x.from === undefined || (n >= x.from && n <= x.to!)
+  // The section of the selection opens first.
+  const own = shown.key === `${book}:${chapter}` && shown.section < sections.length ? shown.section : -1
+  const current = own >= 0 ? own : sel ? Math.max(0, sections.findIndex(holds(sel.a))) : 0
   const section = sections[current]
-  const inSection = (n: number) => !section || section.from === undefined || (n >= section.from && n <= section.to!)
-
+  const inSection = (n: number) => !section || holds(n)(section)
   if (!books.data) return <Loading error={books.error} />
   const info = books.data.find((b) => b.book === book)
   const crumbs: Crumb[] = [{ label, go: () => goPath([]) }]
@@ -113,33 +146,39 @@ export function BibleBrowser({ version, label, path, go, onSelect }: Props) {
   return (
     <>
       <LevelHeader crumbs={crumbs} title={`${info.name} ${chapter}`} hint={hint} />
-      {!verses.data ? (
-        <Loading error={verses.error} />
-      ) : (
-        <>
-          <SectionStrip sections={sections} current={current} onPick={(i) => setShown({ key: `${book}:${chapter}`, section: i })} />
-          <div className="verses" ref={list}>
-            {verses.data.filter((v) => inSection(v.number)).map((v) => {
-              const inSel = sel !== null && v.number >= sel.a && v.number <= sel.b
-              return (
-                <button key={v.number} type="button" className="verse" aria-pressed={inSel} onClick={() => click(v.number)}>
-                  <span className="verse-n">{v.number}</span>
-                  <span className="verse-t">{v.text}</span>
-                </button>
-              )
-            })}
-          </div>
-        </>
-      )}
-      {sel && verses.data && (
-        <Leaf
-          slides={slidesOf({ kind: 'bible', item: passage(info.book, chapter, verses.data, sel) }, max)}
-          units={sectionUnits({ kind: 'bible', item: passage(info.book, chapter, verses.data, sel) }, max)}
-          max={max}
-          editable={false}
-          item={{ collection: `bible:${version}`, itemRef: bibleItemRef({ book: info.book, chapter, from: sel.a, to: sel.b }) }}
-        />
-      )}
+      <div className="bib-chapter">
+        <div className="bib-verses" ref={list}>
+          {!verses.data ? (
+            <Loading error={verses.error} />
+          ) : (
+            <>
+              <SectionStrip sections={sections} current={current} onPick={(i) => setShown({ key: `${book}:${chapter}`, section: i })} />
+              <div className="verses">
+                {verses.data.filter((v) => inSection(v.number)).map((v) => {
+                  const inSel = sel !== null && v.number >= sel.a && v.number <= sel.b
+                  return (
+                    <button key={v.number} type="button" className="verse" aria-pressed={inSel} onClick={() => click(v.number)}>
+                      <span className="verse-n">{v.number}</span>
+                      <span className="verse-t">{v.text}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </>
+          )}
+        </div>
+        <div className="bib-aside">
+          {sel && verses.data && (
+            <Leaf
+              aside
+              slides={slidesOf({ kind: 'bible', item: passage(info.book, chapter, verses.data, sel) }, max)}
+              max={max}
+              editable={false}
+              item={{ collection: `bible:${version}`, itemRef: bibleItemRef({ book: info.book, chapter, from: sel.a, to: sel.b }) }}
+            />
+          )}
+        </div>
+      </div>
     </>
   )
 }
