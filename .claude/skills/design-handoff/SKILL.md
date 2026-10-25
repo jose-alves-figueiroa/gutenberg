@@ -42,7 +42,7 @@ Os pedidos de design **não** iniciam trabalho no `PLAN.md`: épicos citados no 
 
 ## B. Receber a proposta
 
-1. Copie o retorno para `design/proposals/vN/handoff/` **sem editar nada**.
+1. Peça o retorno como pacote (zip no formato da v1: `README.md` + `design/`). Extraia para `design/proposals/vN/handoff/` **sem editar nada** e apague o zip (não fica no repositório). Um link de artefato sozinho vem empacotado e sem README: peça o zip.
 2. Compare com o brief: cada item pedido tem resposta? As restrições foram respeitadas (tokens,
    sem rolagem nas resoluções, 2 linhas no OBS, pt-BR sem travessão)? Liste as lacunas para o
    operador antes de aceitar.
