@@ -240,7 +240,7 @@ function OutputsSection({ outputs, base, onSaved }: { outputs: OutputState[]; ba
       <div className="con-outputs-head">
         <div>
           <h6 className="text-muted">{t('outputs.title')}</h6>
-          <p className="text-muted con-foot">{t('outputs.hint')}</p>
+          {!editor && <p className="text-muted con-foot">{t('outputs.hint')}</p>}
         </div>
         {!editor && (
           <div className="con-actions">

@@ -6,11 +6,23 @@ import { ArrowLeftIcon, ArrowRightIcon, EyeSlashIcon, XIcon } from '@phosphor-ic
 import { useEffect, useRef, useState } from 'react'
 import { t } from '@shared/i18n'
 import { fitSections, sectionOfSlide } from '@shared/sections'
-import { SectionStrip, useCapacity } from '../../components/Sections'
+import { SectionStrip } from '../../components/Sections'
+import { Pager, useBox } from '../library/parts'
 import { usePresent } from '../../present'
 
 /** Space kept below the screens for the Anterior / Próximo bar. */
-const BAR_RESERVE = 120
+const BAR_RESERVE = 130
+/** Design v2 → Apresentar: 140 px cards at least 240 px wide, 15 px apart. */
+const CARD = { width: 240, height: 140, gap: 15 }
+/** The pager below the grid, when a section has more screens than fit. */
+const PAGER_HEIGHT = 40
+
+/** Columns and screens per section of the grid in a box (design v2 formulas). */
+export function slideGrid(box: { width: number; height: number }) {
+  const columns = Math.max(2, Math.floor((box.width + CARD.gap) / (CARD.width + CARD.gap)))
+  const rows = Math.max(1, Math.floor((box.height + CARD.gap) / (CARD.height + CARD.gap)))
+  return { columns, capacity: columns * rows }
+}
 
 export function PresentView() {
   const { view, command } = usePresent()
@@ -24,7 +36,10 @@ export function PresentView() {
 
   // Long items one section at a time (E11): as many screens as fit; the section follows the air.
   const grid = useRef<HTMLDivElement>(null)
-  const capacity = useCapacity(grid, { reserve: BAR_RESERVE, key: `${viewed}:${item?.itemRef}` })
+  // Measured again when the strip of sections (above the grid) or the pager (below it) appears.
+  const [crowded, setCrowded] = useState(false)
+  const box = useBox(grid, BAR_RESERVE + (crowded ? PAGER_HEIGHT : 0), `${viewed}:${item?.itemRef}:${crowded}`)
+  const { columns, capacity } = slideGrid(box)
   const sections = item ? fitSections(item.units, capacity) : []
   const liveSections = items[live] ? fitSections(items[live].units, capacity) : []
   const liveSection = sectionOfSlide(liveSections, state?.slide ?? 0)
@@ -32,15 +47,27 @@ export function PresentView() {
   const [peek, setPeek] = useState<{ item: number; section: number } | null>(null)
   const shown = peek && peek.item === viewed && peek.section < sections.length ? peek.section : viewed === live ? liveSection : 0
   const section = sections[shown] ?? { start: 0, end: item?.slides.length ?? 0 }
+  // Design v2: a section (an item that can't be cut) bigger than the grid pages; the page follows the air.
+  const pages = Math.max(1, Math.ceil((section.end - section.start) / capacity))
+  const [pagePeek, setPagePeek] = useState<{ key: string; page: number } | null>(null)
+  const pageKey = `${viewed}:${shown}`
+  const slide = state?.slide ?? 0
+  const followed = viewed === live && slide >= section.start && slide < section.end ? Math.floor((slide - section.start) / capacity) : 0
+  const page = Math.min(pages - 1, pagePeek?.key === pageKey ? pagePeek.page : followed)
+  const from = section.start + page * capacity
+  const to = Math.min(section.end, from + capacity)
+  if ((sections.length > 1 || pages > 1) !== crowded) setCrowded(sections.length > 1 || pages > 1)
 
   const go = (index: number, slide: number) => {
     setPicked(null)
     setPeek(null)
+    setPagePeek(null)
     command({ type: 'go', index, slide })
   }
   const step = (delta: -1 | 1) => {
     setPicked(null)
     setPeek(null)
+    setPagePeek(null)
     command({ type: 'step', delta })
   }
   /** Shift+← / Shift+→: first screen of the previous / next section of the item on the air. */
@@ -136,9 +163,9 @@ export function PresentView() {
             live={viewed === live && !state?.blank ? liveSection : undefined}
             onPick={(i) => setPeek({ item: viewed, section: i })}
           />
-          <div className="pres-slides" ref={grid}>
-            {item?.slides.slice(section.start, section.end).map((s, k) => {
-              const i = section.start + k
+          <div className="pres-slides" ref={grid} style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
+            {item?.slides.slice(from, to).map((s, k) => {
+              const i = from + k
               const onAir = viewed === live && i === state?.slide && !state.blank
               const upNext = viewed === live && i === (state?.slide ?? 0) + 1
               return (
@@ -153,6 +180,7 @@ export function PresentView() {
               )
             })}
           </div>
+          <Pager page={page} pages={pages} goPage={(p) => setPagePeek({ key: pageKey, page: Math.max(0, Math.min(pages - 1, p)) })} />
           <div className="pres-bar">
             <button type="button" className="btn btn-secondary pres-prev" disabled={items.length === 0} onClick={() => step(-1)}>
               <ArrowLeftIcon size={20} weight="duotone" aria-hidden />

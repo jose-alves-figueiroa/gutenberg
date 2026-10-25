@@ -8,6 +8,7 @@ import { RESERVED_SLUGS, type Output } from '@shared/outputs'
 import { DEFAULT_STYLE, toPayload, type PayloadStyle } from '@shared/payload'
 import { sceneFontPx } from '@shared/overlay-view'
 import { useApi } from '../../api'
+import { useFillHeight } from '../library/parts'
 
 interface CollectionInfo {
   kind: string
@@ -31,6 +32,8 @@ const HALIGN = ['left', 'center', 'right'] as const
 const WIDTHS = ['full', 'fit'] as const
 const STROKES = ['none', 'thin', 'thick'] as const
 const SAMPLES = ['text', 'music'] as const
+/** Above and below the 16:9 frame: its title row and the caption. */
+const PREVIEW_CHROME = 110
 
 /** "Every document of a kind" (`songbook:*`). */
 export const kindLabel = (kind: string): string =>
@@ -106,6 +109,9 @@ export function OutputEditor({ initial, others, collections, saving, onSave, onC
   const rows = (k: 'text' | 'music') => Number(style[k].fontMaxRows) || Number(DEFAULT_STYLE[k].fontMaxRows)
   const setRows = (k: 'text' | 'music', n: number) => setStyle({ [k]: { ...style[k], fontMaxRows: String(n) } })
   const fonts = [...new Set([DEFAULT_STYLE.font, style.font])]
+  // The 16:9 preview is as wide as the height below it allows (no scrolling).
+  const previewCol = useRef<HTMLDivElement>(null)
+  const previewHeight = useFillHeight(previewCol, 24)
 
   return (
     <form
@@ -230,7 +236,7 @@ export function OutputEditor({ initial, others, collections, saving, onSave, onC
         </div>
       </div>
 
-      <div className="out-preview-col">
+      <div className="out-preview-col" ref={previewCol} style={previewHeight ? { maxWidth: Math.round(((previewHeight - PREVIEW_CHROME) * 16) / 9) } : undefined}>
         <div className="out-preview-head">
           <span className="text-muted out-kicker">{t('outputs.preview')}</span>
           <Seg name="out-sample" label={t('outputs.sample')} value={sample} options={SAMPLES} text={(v) => t(`outputs.sample.${v}`)} onChange={setSample} />

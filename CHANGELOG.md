@@ -29,6 +29,9 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
   resultados da busca limitados à altura da tela (E16)
 - Catecismos sem rolagem: a grade de perguntas se ajusta ao espaço e o que não cabe vira seções
   (ex.: 1–112 · 113–196 em 1280×720) (E16)
+- Apresentar sem rolagem: cartões de tela com altura fixa, e um item que não cabe na tela pagina
+  (ex.: o Credo em 6 + 1 em 1280×720), com a página seguindo a tela no ar (E16)
+- Editor de saída sem rolagem: a prévia se ajusta à altura disponível (E16)
 - Letra maior no OBS: o tamanho vem de "Linhas máximas" da saída (padrão 12 linhas para textos e
   10 para músicas), em Source Serif 4, numa faixa escura na base da cena; saídas que ainda usavam
   os padrões do Holyrics passam para os novos (E15)

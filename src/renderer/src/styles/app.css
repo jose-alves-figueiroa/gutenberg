@@ -288,6 +288,7 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .pres-item-col { font-size: 12px; }
 .pres-drop { width: 30px; height: 30px; margin-top: 6px; color: var(--color-neutral-700); }
 .pres-main { display: flex; flex-direction: column; min-width: 0; }
+.pres-main > .pager { margin-top: 0; }
 .pres-head { display: flex; align-items: flex-end; gap: var(--space-4); flex-wrap: wrap; padding-bottom: var(--space-4); }
 .pres-head-text { margin-right: auto; min-width: 0; }
 .view .pres-title { margin: 4px 0 0; font-size: 34px; }
@@ -296,9 +297,10 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
   align-content: start; padding-bottom: var(--space-4);
 }
 .pres-slide {
-  all: unset; cursor: pointer; box-sizing: border-box;
-  display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-3);
-  border-radius: var(--radius-md); background: var(--color-surface); min-height: 96px;
+  /* Design v2: fixed 140 px cards, so the grid pages exactly. */
+  all: unset; cursor: pointer; box-sizing: border-box; overflow: hidden;
+  display: flex; flex-direction: column; gap: 8px; padding: 12px var(--space-3);
+  border-radius: var(--radius-md); background: var(--color-surface); height: 140px;
 }
 .pres-slide:hover { background: var(--color-accent-100); }
 .pres-slide--live, .pres-slide--live:hover { background: var(--color-accent-200); }
@@ -306,10 +308,10 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
   display: flex; justify-content: space-between; gap: var(--space-2);
   font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
 }
-.pres-slide-text { font-size: 18px; line-height: 1.4; white-space: pre-line; }
+.pres-slide-text { font-size: 17px; line-height: 1.3; white-space: pre-line; }
 .pres-bar {
   position: sticky; bottom: 0; background: var(--color-bg); display: flex; gap: var(--space-2);
-  padding: var(--space-3) 0 var(--space-6); margin-top: auto; flex-wrap: wrap;
+  padding: var(--space-3) 0 var(--space-2); margin-top: auto; flex-wrap: wrap;
 }
 .pres-prev { min-height: 56px; padding-inline: var(--space-6); }
 .pres-next-btn { min-height: 56px; flex: 1; font-size: 16px; flex-direction: column; gap: 2px; min-width: 0; }
