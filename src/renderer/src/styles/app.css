@@ -164,12 +164,12 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .lib-head-text { margin-right: auto; min-width: 0; }
 .view .lib-head h2 { margin: 0; font-size: 32px; }
 .lib-hint { font-size: 14px; margin-top: 4px; }
-.lib-grids { display: flex; flex-direction: column; gap: var(--space-6); }
-.lib-grid-group { display: flex; flex-direction: column; gap: var(--space-2); }
+.lib-grids { display: flex; flex-direction: column; gap: var(--space-3); }
+.lib-grid-group { display: flex; flex-direction: column; gap: var(--space-1); }
 .lib-grid-title { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
 .lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--cell-min), 1fr)); gap: var(--space-1); }
 .lib-grid--num { --cell-min: 52px; }
-.lib-grid--name { --cell-min: 150px; }
+.lib-grid--name { --cell-min: 124px; }
 .lib-grid--fixed { gap: 4px; }
 .lib-grid--fixed .cell { height: 38px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 0; }
 .cell {
@@ -177,7 +177,7 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
   background: var(--color-surface); color: var(--color-text);
 }
 .lib-grid--num .cell { padding: 8px 0; text-align: center; }
-.lib-grid--name .cell { padding: 7px 10px; text-align: left; }
+.lib-grid--name .cell { height: 32px; box-sizing: border-box; padding: 0 10px; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cell--empty { background: transparent; color: var(--color-neutral-600); }
 .cell:hover { background: var(--color-accent-100); color: var(--color-accent-800); }
 /* Design v2 → Bíblia › capítulo: verses (1fr) | transmission (340 px). */

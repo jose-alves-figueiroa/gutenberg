@@ -350,7 +350,7 @@ Especificação: `design/proposals/v2/handoff/README.md` → "Overlay no OBS", "
 **US15.3** Documentação
 - [x] `docs/OBS.md`: Browser Source do tamanho da cena, sem redimensionar no canvas; a letra vem de "Linhas máximas"; a saída Faixas; linha "Texto pequeno" na tabela de problemas
 
-### E16 — Telas sem rolagem e ajustes da v2
+### E16 — Telas sem rolagem e ajustes da v2 ✓
 O app roda em notebooks de 14 a 16" (1920×1200 a 1280×720 úteis). Nenhuma página rola: o que não
 cabe vira página ou seção. Especificação: `handoff/README.md` → "Regras gerais", cada tela em
 "Telas" e "O que muda em relação ao app atual"; medidas atuais em `design/implemented/0.2.3/NOTES.md`.
@@ -371,8 +371,8 @@ cabe vira página ou seção. Especificação: `handoff/README.md` → "Regras g
 - [x] Teclado: **Esc limpa a tela**; ←/→, PageUp/PageDown e Shift+←/→ continuam
 
 **US16.3** Verificação
-- [ ] Teste que falha se `document.scrollingElement` rolar em qualquer tela nas 4 resoluções (base: `npm run design:implemented` e o `scroll.json`)
-- [ ] Gerar `design/implemented/<versão>/` ao final e comparar com o protótipo da v2
+- [x] `npm run design:check`: gera as telas nas 4 resoluções e falha se `document.scrollingElement` (ou uma caixa) rolar; precisa do app em Electron, por isso fica fora do Vitest
+- [x] Conferido contra o protótipo da v2 tela a tela; a foto `design/implemented/<versão>/` sai com a próxima versão (a `0.2.3` é a do pedido v2)
 
 ### E17 — Controle remoto pelo celular
 Um aparelho controla a transmissão de fora do desktop. Especificação: `handoff/README.md` →

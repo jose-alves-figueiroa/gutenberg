@@ -35,7 +35,7 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 - Apresentar sem rolagem: cartões de tela com altura fixa, e um item que não cabe na tela pagina
   (ex.: o Credo em 6 + 1 em 1280×720), com a página seguindo a tela no ar (E16)
 - Editor de saída sem rolagem: a prévia se ajusta à altura disponível (E16)
-- A Bíblia mostra os 66 livros; os que não têm texto ficam esmaecidos (E16)
+- A Bíblia mostra os 66 livros, sem rolar; os que não têm texto ficam esmaecidos (E16)
 - Busca na coleção com título "Busca: …", contagem de resultados e caminho de volta (E16)
 - Hinos sem número aparecem como "s/nº" (E16)
 - Letra maior no OBS: o tamanho vem de "Linhas máximas" da saída (padrão 12 linhas para textos e

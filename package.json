@@ -34,7 +34,8 @@
     "translate:hymnal": "tsx scripts/translate-hymnal.ts",
     "release:notes": "tsx scripts/release-notes.ts",
     "screenshots": "node scripts/screenshots.mjs",
-    "design:implemented": "node scripts/design-implemented.mjs"
+    "design:implemented": "node scripts/design-implemented.mjs",
+    "design:check": "node scripts/design-implemented.mjs --out tmp/design-check --check"
   },
   "dependencies": {
     "@fontsource/source-serif-4": "^5.3.1",

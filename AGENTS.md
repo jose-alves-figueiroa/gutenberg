@@ -34,6 +34,7 @@ design/            propostas do Claude Design (proposals/vN) e telas reais (impl
 - `npm run typecheck` — TypeScript sem emitir
 - `npm run lint` — ESLint
 - `npm run design:implemented` — telas reais do app em `design/implemented/<versão>/` para o Claude Design (fluxo na skill `.claude/skills/design-handoff`)
+- `npm run design:check` — gera as telas em `tmp/` e falha se alguma rolar nas 4 resoluções (E16); rode antes de fechar mudanças de layout
 - `npm run golden` — regenera `tests/fixtures/autobreak.golden.json` a partir do protótipo
 - `npm run hymnal:fetch` / `holyrics:dump` / `translate:<source>` / `data:build` / `data:check` / `data:seed` / `data:unlock` / `data:key` — dados (E3, ver `docs/DATA.md`)
 

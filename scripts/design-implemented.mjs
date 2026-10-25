@@ -1,4 +1,4 @@
-// npm run design:implemented
+// npm run design:implemented (and design:check, see the end)
 // The app as built, for the Claude Design brief (design/README.md): captures every screen at the
 // notebook resolutions of PLAN.md → E16 into design/implemented/<version>/<width>x<height>/, each as a
 // PNG and a self-contained HTML (rendered DOM, inlined CSS, no scripts, fonts in ../assets), plus
@@ -169,6 +169,18 @@ try {
   for (const file of fonts) copyFileSync(file, join(assets, basename(file)))
   writeFileSync(join(out, 'scroll.json'), `${JSON.stringify(report, null, 2)}\n`)
   console.log(`design:implemented: ${out}`)
+  // `--check` (npm run design:check): fails when any screen scrolls (PLAN.md → E16).
+  if (process.argv.includes('--check')) {
+    const scrolls = Object.entries(report).flatMap(([size, screens]) =>
+      Object.entries(screens)
+        .filter(([, m]) => m.page > 0 || m.pageX > 0 || m.boxes.length > 0)
+        .map(([name, m]) => `${size}/${name}: page ${m.page}px, x ${m.pageX}px, boxes ${JSON.stringify(m.boxes)}`)
+    )
+    if (scrolls.length) {
+      console.error(`design:check: ${scrolls.length} screen(s) scroll:\n${scrolls.join('\n')}`)
+      process.exitCode = 1
+    } else console.log('design:check: no screen scrolls')
+  }
 } finally {
   await app.close()
 }
