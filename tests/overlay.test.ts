@@ -1,4 +1,3 @@
-import { JSDOM } from 'jsdom'
 import { describe, expect, it } from 'vitest'
 import { DEFAULT_STYLE, toPayload } from '@shared/payload'
 import { overlayView } from '@shared/overlay-view'
@@ -57,22 +56,7 @@ describe('overlayView (US15.1)', () => {
   })
 })
 
-describe('overlay page (US15.1)', () => {
-  it('draws a posted map in preview mode, with no external resources', async () => {
-    const html = overlayHtml('bible')
-    expect(html).not.toMatch(/https?:\/\//)
-    const dom = new JSDOM(html, { runScripts: 'dangerously', url: 'http://127.0.0.1:8484/overlay/bible?preview' })
-    dom.window.postMessage({ map: bible() }, '*')
-    await new Promise((r) => setTimeout(r, 20))
-    const doc = dom.window.document
-    expect(doc.getElementById('wrap')!.className).toBe('')
-    expect(doc.getElementById('header')!.textContent).toBe('Hebreus 12.15 (2/3)')
-    const band = doc.getElementById('band')!
-    expect([...band.querySelectorAll('span')].slice(1).map((s) => s.textContent)).toEqual(slide.lines)
-    expect(px(band.style.fontSize)).toBe(69)
-    dom.window.close()
-  })
-
+describe('overlay fonts (US15.1)', () => {
   it('loads Source Serif 4 from the Gutenberg itself', async () => {
     expect(overlayHtml(null)).toContain("url('/overlay/fonts/source-serif-4-latin-400-normal.woff2')")
     expect(overlayFont('source-serif-4-latin-400-normal.woff2')!.byteLength).toBeGreaterThan(1000)

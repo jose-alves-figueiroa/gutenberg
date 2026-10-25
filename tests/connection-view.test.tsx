@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { App } from '@renderer/App'
 import { LOG_FALLBACK } from '@renderer/views/connection/ConnectionView'
@@ -130,14 +130,24 @@ describe('Connection tab (US7.2)', () => {
     const { db } = await renderConnection()
     await openOutputs()
     const songs = within(outputs()).getByRole('article', { name: 'Salmos e hinos' })
+    expect(songs).toHaveTextContent('Faixa inferior · 12 linhas · fundo 78%')
     await userEvent.click(within(songs).getByRole('button', { name: 'Editar' }))
     const form = within(outputs()).getByRole('form')
-    await userEvent.selectOptions(within(form).getByRole('combobox', { name: 'Posição vertical: Músicas' }), 'bottom')
-    const font = within(form).getByRole('textbox', { name: 'Fonte' })
-    await userEvent.clear(font)
-    await userEvent.type(font, 'Source Serif 4')
+    expect(within(form).getByTitle('Prévia da saída no OBS')).toHaveAttribute('src', expect.stringMatching(/\/overlay\?preview$/))
+    await userEvent.click(within(form).getByRole('radio', { name: 'Letra' }))
+    const music = within(form).getByRole('slider', { name: /Linhas máximas · músicas: 10 linhas · letra de 83 px/ })
+    fireEvent.change(music, { target: { value: '8' } })
+    expect(within(form).getByRole('slider', { name: /músicas: 8 linhas · letra de 104 px/ })).toBeInTheDocument()
+    await userEvent.click(within(form).getByRole('radio', { name: 'Direita' }))
+    await userEvent.click(within(form).getByRole('radio', { name: 'Faixa' }))
+    fireEvent.change(within(form).getByRole('slider', { name: /Opacidade do fundo/ }), { target: { value: '50' } })
+    await userEvent.click(within(form).getByRole('radio', { name: 'Ajustada ao texto' }))
+    await userEvent.click(within(form).getByRole('radio', { name: 'Grosso' }))
+    await userEvent.click(within(form).getByRole('checkbox', { name: 'Sombra' }))
     await userEvent.click(within(form).getByRole('button', { name: 'Salvar saída' }))
-    await waitFor(() => expect(stored(db)[1].style).toMatchObject({ font: 'Source Serif 4', music: { valign: 'bottom' } }))
+    await waitFor(() =>
+      expect(stored(db)[1].style).toMatchObject({ halign: 'right', music: { fontMaxRows: '8' }, band: { opacity: 50, width: 'fit' }, stroke: 'thick', shadow: false })
+    )
     await userEvent.click(within(await within(outputs()).findByRole('article', { name: 'Doutrina' })).getByRole('button', { name: 'Remover' }))
     await waitFor(() => expect(stored(db).map((o: { slug: string }) => o.slug)).toEqual(['bible', 'songs']))
   })

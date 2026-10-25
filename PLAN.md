@@ -343,9 +343,9 @@ Especificação: `design/proposals/v2/handoff/README.md` → "Overlay no OBS", "
 - [x] Testes do overlay (jsdom) e do payload
 
 **US15.2** Como operador, quero configurar o visual de cada saída vendo o resultado.
-- [ ] Editor em duas colunas (formulário 500 px | prévia), segmentado Coleções | Letra | Faixa, com os campos da especificação ("12 linhas · letra de 69 px", controles deslizantes)
-- [ ] Prévia ao vivo 16:9 ("Prévia ao vivo · cena 1920×1080", exemplo Bíblia | Hino), usando o mesmo componente do overlay, com a legenda da conta
-- [ ] Cartões de Saídas com o resumo do estilo; saídas padrão Bíblia, Salmos e hinos, Doutrina e **Faixas** (`/faixas`); "Restaurar saídas padrão"
+- [x] Editor em duas colunas (formulário 500 px | prévia), segmentado Coleções | Letra | Faixa, com os campos da especificação ("12 linhas · letra de 69 px", controles deslizantes)
+- [x] Prévia ao vivo 16:9 ("Prévia ao vivo · cena 1920×1080", exemplo Bíblia | Hino), usando o mesmo componente do overlay, com a legenda da conta
+- [x] Cartões de Saídas com o resumo do estilo e "Restaurar saídas padrão" (a saída padrão **Faixas** entra com as faixas, na E18)
 
 **US15.3** Documentação
 - [ ] `docs/OBS.md`: Browser Source do tamanho da cena, sem redimensionar no canvas; a letra vem de "Linhas máximas"; a saída Faixas; linha "Texto pequeno" na tabela de problemas
@@ -402,6 +402,7 @@ Especificação: `handoff/README.md` → "Liturgia" (Pregação), "Biblioteca �
 - [ ] Apresentar › segmentado Liturgia | Faixas: cartões de 112 px com tipo, título e linha de apoio; clicar envia; "Tirar faixa"
 - [ ] Faixa e texto **nunca juntos**: enviar uma faixa limpa a tela de texto no ar, e uma tela de texto tira a faixa
 - [ ] A faixa só sai por outra faixa, uma tela de texto ou "Tirar faixa" (sem tempo)
+- [ ] Saída padrão **Faixas** (`/faixas`), ligada às faixas; "Faixas de culto" entre as coleções do editor de saída
 - [ ] Payload com `kind` (`culto`, `sacramento`, `pregacao`), `kicker`, `title`, `subtitle`; overlay da faixa (bloco à esquerda, tipo 26 px, título 64 px, apoio 36 px itálico)
 
 ### E19 — Acesso fora da rede local sem IP fixo

@@ -15,7 +15,7 @@ import { useConnection } from '../../connection'
 import { CONN_VIEW } from '../../tabs'
 import { useCapacity } from '../../components/Sections'
 import { Pager, usePaging } from '../library/parts'
-import { OutputEditor, kindLabel } from './OutputEditor'
+import { OutputEditor, kindLabel, styleSummary } from './OutputEditor'
 import { UpdateSection } from './UpdateSection'
 
 /** Space kept below the log for its pager and the view's bottom padding. */
@@ -281,6 +281,7 @@ function OutputsSection({ outputs, base, onSaved }: { outputs: OutputState[]; ba
                     </div>
                   ))}
                   <div className="text-muted con-output-cols">{o.collections.map(label).join(' · ') || t('outputs.noCollections')}</div>
+                  <div className="text-muted con-output-cols">{styleSummary(o.style)}</div>
                   <div className="con-actions con-output-actions">
                     <button type="button" className="btn btn-secondary" onClick={() => setEditing(i)}>
                       {t('outputs.edit')}

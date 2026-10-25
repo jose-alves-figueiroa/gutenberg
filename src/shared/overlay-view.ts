@@ -69,3 +69,6 @@ export function overlayView(m: OverlayMap): OverlayView {
     line: { lineHeight: '1.2', whiteSpace: 'nowrap', fontWeight: m.bold === true ? '600' : '400' }
   }
 }
+
+/** Text size in px in a 1080 px scene for a number of maximum rows (the editor's labels). */
+export const sceneFontPx = (rows: number): number => Math.round(1080 / (rows * 1.3))

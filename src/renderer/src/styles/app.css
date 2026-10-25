@@ -323,6 +323,7 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .con-log h6 { margin: var(--space-2) 0 var(--space-1); }
 .con-log-row { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: var(--space-3); font-size: 14px; font-feature-settings: 'tnum' 1; }
 .con-outputs { display: flex; flex-direction: column; gap: var(--space-3); max-width: 1100px; }
+.con-outputs:has(.out-editor) { max-width: none; }
 .con-outputs h6 { margin: 0 0 var(--space-1); }
 .con-outputs-head { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); align-items: flex-end; justify-content: space-between; }
 .con-output-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: var(--space-3); }
@@ -348,6 +349,33 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .con-inline { display: inline-flex; align-items: center; gap: var(--space-2); font-size: 14px; }
 .con-inline .input { min-height: 32px; }
 .con-rows { width: 56px; }
+
+/* Output editor (design v2): form | live preview of the overlay. */
+.out-editor { display: grid; grid-template-columns: 500px minmax(0, 960px); gap: var(--space-8); align-items: start; }
+.out-form { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.out-form > .seg { align-self: flex-start; }
+.out-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-3); }
+.out-part { display: flex; flex-direction: column; gap: var(--space-3); }
+.out-row { display: flex; gap: var(--space-3); align-items: flex-end; }
+.out-grow { flex: 1; min-width: 0; }
+.out-checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2) var(--space-4); }
+/* Label text and its "in <output>" note flow as one line that may wrap, beside the box. */
+.out-checks .con-check { display: block; padding-left: 22px; text-indent: -22px; }
+.out-checks .con-check input { width: 16px; margin: 0 6px 0 0; vertical-align: -2px; }
+.out-check { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; min-height: 38px; }
+.out-color {
+  width: 52px; height: 38px; padding: 2px;
+  border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: var(--color-surface);
+}
+.out-range { accent-color: var(--color-accent); width: 100%; }
+.out-label { font-size: 13px; }
+.out-note { margin: 0; font-size: 13px; max-width: 52ch; }
+.out-actions { margin-top: var(--space-2); }
+.out-preview-col { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+.out-preview-head { display: flex; align-items: center; gap: var(--space-3); }
+.out-kicker { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; margin-right: auto; }
+/* The camera stand-in of the design (#4a4747): the overlay page is transparent on top of it. */
+.out-preview { width: 100%; aspect-ratio: 16 / 9; border: 0; background: #4a4747; box-shadow: var(--shadow-md); }
 
 /* Desktop window: below 1100px the columns stack. */
 @media (max-width: 1099px) {
