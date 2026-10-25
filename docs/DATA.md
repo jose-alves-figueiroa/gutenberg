@@ -237,7 +237,7 @@ quiser, as músicas cadastradas fora desses dois hinários.
 - Remove `<ctt>`, `<desc>`, `<span …>`, `text-force-update`, `&nbsp;`, `(RA)` final e espaços duplicados.
 - Normaliza `\r\n`.
 - Em texto corrido, troca quebra simples por espaço.
-- Fixture: `design_handoff_gutenberg/reference/holyrics-payload-exemplo.json.txt`.
+- Fixture: `design/proposals/v1/reference/holyrics-payload-exemplo.json.txt`.
 
 ## git-crypt
 

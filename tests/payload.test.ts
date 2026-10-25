@@ -8,7 +8,7 @@ import { createServerApp } from '../src/main/server/app'
 import { createTestApi } from './helpers/test-api'
 
 /** The two `{ "map" }` objects of the Holyrics example (Bible and music). */
-const holyrics = readFileSync(join(__dirname, '../design_handoff_gutenberg/reference/holyrics-payload-exemplo.json.txt'), 'utf8')
+const holyrics = readFileSync(join(__dirname, '../design/proposals/v1/reference/holyrics-payload-exemplo.json.txt'), 'utf8')
   .split(/\n\s*\n(?=\{)/)
   .map((block) => JSON.parse(block) as { map: Record<string, unknown> })
 const [bibleExample, musicExample] = holyrics

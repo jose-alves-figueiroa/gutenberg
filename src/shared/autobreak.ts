@@ -1,6 +1,6 @@
 /**
  * Automatic screen breaking — faithful port of the prototype's `autobreak()`
- * (design_handoff_gutenberg/design/Gutenberg.dc.html). Parity is enforced by
+ * (design/proposals/v1/design/Gutenberg.dc.html). Parity is enforced by
  * tests/fixtures/autobreak.golden.json; do not change the algorithm without regenerating
  * the golden file (`npm run golden`) and explaining why.
  *

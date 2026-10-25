@@ -47,7 +47,7 @@ export const PayloadStyle = z.object({
 })
 export type PayloadStyle = z.infer<typeof PayloadStyle>
 
-/** The values in the Holyrics example (design_handoff_gutenberg/reference). */
+/** The values in the Holyrics example (design/proposals/v1/reference). */
 export const DEFAULT_STYLE: PayloadStyle = {
   color: '#FAFAFA',
   background: '#FFFFFF',

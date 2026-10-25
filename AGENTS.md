@@ -5,8 +5,10 @@ cadastra a liturgia, mantém a biblioteca (Bíblia ARA, salmos, HNC, credos, CFW
 e envia telas limpas para o OBS via obs-websocket.
 
 ## Fontes de verdade
-- **Especificação:** `design_handoff_gutenberg/README.md`. O protótipo `design/Gutenberg.dc.html`
-  (classe `Component`) é a referência de comportamento — **não é código de produção**.
+- **Especificação:** a proposta em vigor, indicada em `design/README.md` (propostas do Claude Design
+  em `design/proposals/`, telas reais do app em `design/actual/`). O protótipo da v1
+  `design/proposals/v1/design/Gutenberg.dc.html` (classe `Component`) é a referência de
+  comportamento — **não é código de produção**. Propostas entregues não são editadas.
 - **Histórico de versões:** `CHANGELOG.md` (formato descrito no topo do arquivo).
 - **Plano e progresso:** `PLAN.md` (épicos) e `docs/DATA.md` → Progresso (tasks da E3). Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito.
   - Marque `[~]` ao começar uma task e `[x]` só quando ela estiver pronta **e** com testes passando.
@@ -22,6 +24,7 @@ src/renderer/src/  React: components/, views/, styles/
 src/shared/        lógica pura, sem Electron/DOM (autobreak, slides, collections, data-model, i18n) — usada por main e renderer
 tests/             Vitest (+ Testing Library); fixtures em tests/fixtures/
 scripts/           scripts de apoio (ex.: gerar fixtures golden)
+design/            propostas do Claude Design (proposals/vN) e telas reais (actual/<versão>), ver design/README.md
 ```
 
 ## Comandos

@@ -34,7 +34,7 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
-# Original handoff package (its content is in design_handoff_gutenberg/)
+# Original handoff package (its content is in design/proposals/v1/)
 *.zip
 
 # Local copies of third-party apps/data (Holyrics, ARA) — never commit

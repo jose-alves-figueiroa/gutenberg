@@ -1,4 +1,4 @@
-/* Broadsheet tokens, ported from design_handoff_gutenberg/design/_ds/.../styles.css.
+/* Broadsheet tokens, ported from design/proposals/v1/design/_ds/.../styles.css.
    The font is bundled locally (@fontsource) instead of loaded from Google Fonts. */
 :root {
   --color-bg: #f3f2f2;

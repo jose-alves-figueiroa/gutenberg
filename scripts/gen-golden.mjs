@@ -32,7 +32,7 @@ export const TEXTS = {
 
 export const LIMITS = [60, 72, 96, 128, 160]
 
-const golden = { source: 'design_handoff_gutenberg/design/Gutenberg.dc.html#autobreak', texts: TEXTS, cases: {} }
+const golden = { source: 'design/proposals/v1/design/Gutenberg.dc.html#autobreak', texts: TEXTS, cases: {} }
 for (const [name, text] of Object.entries(TEXTS)) {
   golden.cases[name] = Object.fromEntries(LIMITS.map((max) => [max, autobreak(text, max)]))
 }

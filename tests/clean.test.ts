@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { decodeEntities, normalizeSpacing, stripMarkup, toLine, toProse, toStanzas } from '@shared/clean'
 
 // The real Holyrics → OBS payload from the handoff: two JSON objects separated by a blank line.
-const raw = readFileSync(join(__dirname, '../design_handoff_gutenberg/reference/holyrics-payload-exemplo.json.txt'), 'utf8')
+const raw = readFileSync(join(__dirname, '../design/proposals/v1/reference/holyrics-payload-exemplo.json.txt'), 'utf8')
 const [bible, music] = raw.split(/\n\s*\n(?=\{)/).map((chunk) => JSON.parse(chunk).map as Record<string, string>)
 
 describe('clean — real Holyrics payload', () => {
