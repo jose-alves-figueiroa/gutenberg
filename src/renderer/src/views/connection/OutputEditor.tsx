@@ -2,12 +2,12 @@
  * Form for one output (design v2 → Conexão › editor de saída): name and URL slug, then three
  * parts (collections, text, band) beside a live 16:9 preview drawn by the overlay page itself.
  */
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { t } from '@shared/i18n'
 import { RESERVED_SLUGS, type Output } from '@shared/outputs'
 import { DEFAULT_STYLE, toPayload, type PayloadStyle } from '@shared/payload'
 import { sceneFontPx } from '@shared/overlay-view'
-import { useApi } from '../../api'
+import { OverlayPreview } from '../../components/OverlayPreview'
 import { useFillHeight } from '../library/parts'
 
 interface CollectionInfo {
@@ -81,18 +81,6 @@ function Range({ id, label, value, min, max, onChange }: { id: string; label: Re
 const SAMPLE_SLIDES = {
   text: { collection: 'bible:ara', slide: { header: 'Hebreus 12.15 (2/3)', lines: ['nem haja alguma raiz de amargura que,', 'brotando, vos perturbe,'] } },
   music: { collection: 'songbook:hnc', slide: { header: 'Castelo forte', lines: ['Castelo forte é nosso Deus,', 'espada e bom escudo;'] } }
-}
-
-/** The overlay page in preview mode (`/overlay?preview`), fed the sample screen with this style. */
-function OverlayPreview({ style, sample }: { style: PayloadStyle; sample: (typeof SAMPLES)[number] }) {
-  const api = useApi()
-  const frame = useRef<HTMLIFrameElement>(null)
-  const [ready, setReady] = useState(false)
-  const src = `${new URL(api.overlay.$url().toString()).origin}/overlay?preview`
-  useEffect(() => {
-    if (ready) frame.current?.contentWindow?.postMessage(toPayload(SAMPLE_SLIDES[sample], style, 1), '*')
-  }, [ready, style, sample])
-  return <iframe ref={frame} className="out-preview" title={t('outputs.previewFrame')} src={src} onLoad={() => setReady(true)} />
 }
 
 export function OutputEditor({ initial, others, collections, saving, onSave, onCancel }: Props) {
@@ -242,7 +230,7 @@ export function OutputEditor({ initial, others, collections, saving, onSave, onC
           <span className="text-muted out-kicker">{t('outputs.preview')}</span>
           <Seg name="out-sample" label={t('outputs.sample')} value={sample} options={SAMPLES} text={(v) => t(`outputs.sample.${v}`)} onChange={setSample} />
         </div>
-        <OverlayPreview style={style} sample={sample} />
+        <OverlayPreview payload={toPayload(SAMPLE_SLIDES[sample], style, 1)} />
         <span className="text-muted out-note">
           {t(`outputs.caption.${sample}`, { n: rows(sample), px: sceneFontPx(rows(sample)), header: Math.round(sceneFontPx(rows(sample)) / 2) })}
         </span>

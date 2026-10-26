@@ -23,6 +23,8 @@ import type { SqlDatabase } from '../db/schema'
 import { resolveItem, searchCollection } from '../library/items'
 import * as repo from '../library/repository'
 import * as liturgy from '../liturgy/repository'
+import * as bandRepo from '../library/bands'
+import { BandLibrary, Sermon } from '../../shared/bands'
 import { createPresenter, type Presenter } from '../present/presenter'
 import { connectionRoutes, type NetworkControl } from './connection'
 import { localOnly, remoteIp } from './guards'
@@ -92,6 +94,10 @@ function liturgyRoutes(db: SqlDatabase) {
     .get('/services', (c) => c.json(liturgy.services(db)))
     .post('/services', zValidator('json', L.serviceBody), (c) => c.json(liturgy.createService(db, c.req.valid('json').name), 201))
     .get('/services/:id', zValidator('param', L.serviceParam), (c) => c.json(liturgy.service(db, c.req.valid('param').id, max())))
+    .get('/services/:id/sermon', zValidator('param', L.serviceParam), (c) => c.json(bandRepo.sermon(db, c.req.valid('param').id)))
+    .put('/services/:id/sermon', zValidator('param', L.serviceParam), zValidator('json', Sermon), (c) =>
+      c.json(bandRepo.saveSermon(db, c.req.valid('param').id, c.req.valid('json')))
+    )
     .patch('/services/:id', zValidator('param', L.serviceParam), zValidator('json', L.serviceBody), (c) => {
       liturgy.renameService(db, c.req.valid('param').id, c.req.valid('json').name)
       return c.json({ ok: true })
@@ -125,6 +131,14 @@ const HealthQuery = z.object({
   output: z.string().regex(/^[a-z0-9-]{0,32}$/).default(''),
   rtt: z.coerce.number().int().min(0).max(600_000).optional()
 })
+
+/** Band lists (E18): local only, edited in the Library. */
+function bandRoutes(db: SqlDatabase) {
+  return new Hono()
+    .use(localOnly)
+    .get('/', (c) => c.json(bandRepo.bands(db)))
+    .put('/', zValidator('json', BandLibrary), (c) => c.json(bandRepo.saveBands(db, c.req.valid('json'))))
+}
 
 /** Heartbeat on the SSE stream, so proxies and OBS keep the connection open. */
 export const SSE_HEARTBEAT_MS = 15_000
@@ -247,6 +261,7 @@ export function createServerApp(db: SqlDatabase, options: ServerOptions = {}) {
     .route('/api/v1/connection', connectionRoutes(db, presenter, monitor, network))
     .route('/api/v1/update', updateRoutes(updates))
     .route('/api/v1/remote', remoteRoutes(remote, network))
+    .route('/api/v1/bands', bandRoutes(db))
     .route('/', publicRoutes(presenter, monitor))
     .route('/', controlRoutes(remote, presenter))
 }

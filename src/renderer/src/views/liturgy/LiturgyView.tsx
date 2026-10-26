@@ -8,6 +8,7 @@ import { usePresentAndOpen } from '../../present'
 import { useServices } from '../../service'
 import { Pager, useFitRows, usePaging } from '../library/parts'
 import { Picker } from './Picker'
+import { SermonForm } from './SermonForm'
 
 /** Space below the services: pager and "Novo culto". */
 const ASIDE_RESERVE = 120
@@ -71,9 +72,27 @@ export function LiturgyView() {
             </>
           )}
         </section>
-        <aside className="lit-action">{current && <Picker serviceId={current.id} onAdded={refresh} />}</aside>
+        <aside className="lit-action">{current && <ActionColumn key={current.id} serviceId={current.id} onAdded={refresh} />}</aside>
       </div>
     </main>
+  )
+}
+
+/** Design v2: "Adicionar item | Pregação" in the right column. */
+function ActionColumn({ serviceId, onAdded }: { serviceId: number; onAdded: () => void }) {
+  const [tab, setTab] = useState<'add' | 'sermon'>('add')
+  return (
+    <div className="lit-action-col">
+      <div className="seg" role="radiogroup" aria-label={t('liturgy.actions')}>
+        {(['add', 'sermon'] as const).map((k) => (
+          <label key={k} className="seg-opt">
+            <input type="radio" name="lit-action" checked={tab === k} onChange={() => setTab(k)} />
+            {t(`liturgy.tab.${k}`)}
+          </label>
+        ))}
+      </div>
+      {tab === 'add' ? <Picker serviceId={serviceId} onAdded={onAdded} /> : <SermonForm serviceId={serviceId} />}
+    </div>
   )
 }
 

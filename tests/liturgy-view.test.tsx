@@ -106,3 +106,25 @@ describe('Library → "Adicionar à liturgia" (US5.3)', () => {
     expect(screen.getByRole('button', { name: 'Adicionar à liturgia' })).toBeDisabled()
   })
 })
+
+describe('Liturgia › Pregação (US18.1)', () => {
+  it('chooses the preacher from the Library list, saves title and text for this service', async () => {
+    const { db } = renderApp('liturgy', (db) => {
+      db.prepare("INSERT INTO services (name) VALUES ('Domingo')").run()
+      db.prepare("INSERT INTO settings (key, value) VALUES ('bands', ?)").run(
+        JSON.stringify({ services: [], sacraments: [], preachers: [{ id: 'simonton', name: 'Rev. Ashbel Green Simonton' }] })
+      )
+    })
+    await userEvent.click(await screen.findByRole('radio', { name: 'Pregação' }))
+    const form = screen.getByRole('region', { name: 'Pregação' })
+    await userEvent.selectOptions(within(form).getByRole('combobox', { name: 'Pregador' }), 'Rev. Ashbel Green Simonton')
+    await userEvent.type(within(form).getByRole('textbox', { name: 'Título da pregação' }), 'A graça que educa')
+    await userEvent.type(within(form).getByRole('textbox', { name: 'Texto pregado' }), 'Tito 2.11–14')
+    await userEvent.tab()
+    expect(within(form).getByTitle('Prévia da saída no OBS')).toBeInTheDocument()
+    await waitFor(() => {
+      const row = db.prepare("SELECT value FROM settings WHERE key = 'sermons'").get() as { value: string } | undefined
+      expect(row && Object.values(JSON.parse(row.value))).toEqual([{ preacher: 'Rev. Ashbel Green Simonton', title: 'A graça que educa', text: 'Tito 2.11–14' }])
+    })
+  })
+})

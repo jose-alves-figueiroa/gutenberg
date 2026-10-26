@@ -395,8 +395,8 @@ Especificação: `handoff/README.md` → "Liturgia" (Pregação), "Biblioteca �
 (modo Faixas) e "Overlay no OBS" (`o-culto`, `o-sacramento`, `o-pregacao`); decisões 1 e 2.
 
 **US18.1** Como operador, quero cadastrar as faixas.
-- [ ] Biblioteca › Faixas: Cultos e reuniões (nome e linha de apoio; vazia = data do culto), Sacramentos (Batismo, Santa Ceia do Senhor, linha de apoio editável) e Pregadores — como dado, não código
-- [ ] Liturgia › Pregação: pregador (da lista), título e texto pregado, por culto, com prévia
+- [x] Biblioteca › Faixas: Cultos e reuniões (nome e linha de apoio; vazia = data do culto), Sacramentos (Batismo, Santa Ceia do Senhor, linha de apoio editável) e Pregadores — como dado, não código
+- [x] Liturgia › Pregação: pregador (da lista), título e texto pregado, por culto, com prévia
 
 **US18.2** Como operador, quero enviar e tirar uma faixa.
 - [ ] Apresentar › segmentado Liturgia | Faixas: cartões de 112 px com tipo, título e linha de apoio; clicar envia; "Tirar faixa"

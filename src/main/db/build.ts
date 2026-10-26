@@ -20,6 +20,10 @@ export const SETTINGS = {
   presentationState: 'presentation_state',
   /** Outputs for OBS: slug, name, collections and style of each (JSON, src/shared/outputs.ts). */
   outputs: 'outputs',
+  /** Band lists: services, sacraments and preachers (JSON, src/shared/bands.ts). */
+  bands: 'bands',
+  /** Sermon of each service, by service id (JSON). */
+  sermons: 'sermons',
   /** Paired phone for the remote control (JSON, hashed token; src/main/server/remote.ts). */
   remoteDevices: 'remote_devices',
   /** Hash of the content the database was built from (`data:build`); see db/content.ts. */

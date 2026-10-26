@@ -12,6 +12,7 @@ import { CreedsBrowser } from './CreedsBrowser'
 import { SearchField, SearchResults, useSearchRows } from './LibrarySearch'
 import { SongbookBrowser } from './SongbookBrowser'
 import { Loading } from './parts'
+import { BAND_LISTS, BandsEditor, type BandList } from './BandsEditor'
 
 interface Selected {
   kind: CollectionKind
@@ -29,7 +30,10 @@ export function LibraryView() {
   const [selected, setSelected] = useState<Selected>({ kind: 'bible', id: 'ara' })
   const [path, setPath] = useState<string[]>([])
   const [query, setQuery] = useState('')
+  // Biblioteca › Faixas (E18): one of the band lists instead of a collection.
+  const [bandList, setBandList] = useState<BandList | null>(null)
   const open = (s: Selected) => {
+    setBandList(null)
     setSelected(s)
     setPath([])
     setQuery('')
@@ -53,7 +57,7 @@ export function LibraryView() {
                       key={`${c.kind}:${c.id}`}
                       type="button"
                       className="lib-col"
-                      aria-current={c.kind === selected.kind && c.id === selected.id}
+                      aria-current={!bandList && c.kind === selected.kind && c.id === selected.id}
                       onClick={() => open({ kind: c.kind, id: c.id })}
                     >
                       <span>{collectionLabel(c)}</span>
@@ -63,9 +67,19 @@ export function LibraryView() {
               </div>
             ))
           )}
+          {collections.data && (
+            <div className="lib-group">
+              <h6 className="text-muted">{t('library.bandsGroup')}</h6>
+              {BAND_LISTS.map((l) => (
+                <button key={l} type="button" className="lib-col" aria-current={bandList === l} onClick={() => setBandList(l)}>
+                  <span>{t(`bands.list.${l}`)}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </aside>
         <section className="lib-main">
-          {current && <Collection key={`${current.kind}:${current.id}`} c={current} path={path} go={setPath} query={query} setQuery={setQuery} />}
+          {bandList ? <BandsEditor key={bandList} list={bandList} /> : current && <Collection key={`${current.kind}:${current.id}`} c={current} path={path} go={setPath} query={query} setQuery={setQuery} />}
         </section>
       </div>
     </main>

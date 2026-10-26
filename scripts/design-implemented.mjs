@@ -76,6 +76,15 @@ const SCREENS = [
     await tab('Biblioteca')
     await collection(/Credos/)
   }],
+  ['library-bands', async () => {
+    await tab('Biblioteca')
+    await collection('Cultos e reuniões')
+    await page.getByRole('textbox', { name: 'Nome na faixa' }).first().waitFor()
+  }],
+  ['liturgy-sermon', async () => {
+    await tab('Liturgia')
+    await page.locator('.lit-action-col .seg-opt', { hasText: 'Pregação' }).click()
+  }],
   ['present', async () => {
     await tab('Liturgia')
     await page.getByRole('button', { name: /Apresentar este culto/ }).click()

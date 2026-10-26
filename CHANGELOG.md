@@ -18,6 +18,9 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 ## [Não lançado]
 
 ### Adicionado
+- Biblioteca › Faixas: cultos e reuniões, sacramentos e pregadores editáveis, com a prévia da faixa
+  como sai no OBS; uma faixa de culto sem linha de apoio usa a data do dia (E18)
+- Liturgia › Pregação: pregador, título e texto pregado de cada culto, com a prévia da faixa (E18)
 - Saída padrão "Faixas" (`/faixas`) e "Faixas de culto" entre as coleções do editor de saída: as
   faixas de culto, sacramento e pregação saem numa Browser Source própria, em bloco à esquerda;
   enviar uma faixa limpa o texto e pôr uma tela de texto no ar tira a faixa (E18)

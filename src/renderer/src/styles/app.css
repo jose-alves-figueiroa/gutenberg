@@ -95,6 +95,9 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .lit-new { justify-content: flex-start; margin-top: var(--space-2); }
 .lit-main { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
 .lit-action { min-width: 0; }
+.lit-action-col { display: flex; flex-direction: column; gap: var(--space-3); }
+.lit-action-col > .seg { align-self: flex-start; }
+.sermon { display: flex; flex-direction: column; gap: var(--space-3); }
 .lit-head { display: flex; align-items: flex-end; gap: var(--space-4); flex-wrap: wrap; }
 .lit-head-text { margin-right: auto; min-width: 0; flex: 1 1 320px; }
 .lit-kicker { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
@@ -379,6 +382,16 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .con-inline { display: inline-flex; align-items: center; gap: var(--space-2); font-size: 14px; }
 .con-inline .input { min-height: 32px; }
 .con-rows { width: 56px; }
+
+/* Biblioteca › Faixas (design v2): list (1fr) | preview (340–520 px). */
+.bands { display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, 520px); gap: var(--space-6); align-items: start; }
+.bands-list { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+.bands-rows { display: flex; flex-direction: column; }
+.bands-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: var(--space-2); align-items: center; height: 52px; padding: 0 var(--space-2); border-radius: var(--radius-md); }
+.bands-row:has(> :nth-child(2):last-child) { grid-template-columns: minmax(0, 1fr) auto; }
+.bands-row[aria-current='true'] { background: var(--color-accent-100); }
+.bands-actions { display: flex; gap: var(--space-2); justify-content: flex-end; }
+.bands-preview { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
 
 /* Conexão › Controle remoto (design v2). */
 .remote-hint { max-width: 52ch; }
