@@ -4,10 +4,11 @@
  * `text-force-update`, at most 2 lines — plus `seq` and `lines`.
  */
 import { z } from 'zod'
+import type { Band as BandOnAir } from './bands'
 import { toLine } from './clean'
 import type { Slide } from './slides'
 
-export type PayloadType = 'BIBLE' | 'MUSIC' | 'CREED' | 'CONFESSION' | 'CATECHISM' | 'CLEAR'
+export type PayloadType = 'BIBLE' | 'MUSIC' | 'CREED' | 'CONFESSION' | 'CATECHISM' | 'BAND' | 'CLEAR'
 
 const KIND_TYPE: Record<string, PayloadType> = {
   bible: 'BIBLE',
@@ -113,6 +114,8 @@ export interface PayloadSource {
   collection: string | null
   slide: Slide | null
   credits?: SongCredits
+  /** A band on the air (E18); it replaces the text screen. */
+  band?: BandOnAir | null
 }
 
 export interface Payload {
@@ -122,6 +125,7 @@ export interface Payload {
 const MAX_LINES = 2
 
 export function toPayload(source: PayloadSource, style: PayloadStyle, seq: number): Payload {
+  if (source.band) return bandPayload(source.band, style, seq)
   const type = source.slide && source.collection ? payloadType(source.collection) : 'CLEAR'
   const lines = type === 'CLEAR' ? [] : source.slide!.lines.map(toLine).filter(Boolean).slice(0, MAX_LINES)
   const layout = type === 'MUSIC' ? style.music : style.text
@@ -165,4 +169,27 @@ export function toPayload(source: PayloadSource, style: PayloadStyle, seq: numbe
     map.$system_var_music_copyright = toLine(c?.copyright ?? '')
   }
   return { map }
+}
+
+/**
+ * A band (E18) in the same map: `text`/`lines` carry title and supporting line for an overlay that
+ * only knows Holyrics; `kind`, `kicker`, `title` and `subtitle` are the extras the Gutenberg
+ * overlay draws the band with (design v2 → Overlay).
+ */
+function bandPayload(band: BandOnAir, style: PayloadStyle, seq: number): Payload {
+  const base = toPayload({ collection: null, slide: null }, style, seq).map
+  const lines = [band.title, band.subtitle].map(toLine).filter(Boolean)
+  return {
+    map: {
+      ...base,
+      type: 'BAND',
+      header: toLine(band.kicker),
+      text: lines.join('\n'),
+      lines,
+      kind: band.kind,
+      kicker: toLine(band.kicker),
+      title: toLine(band.title),
+      subtitle: toLine(band.subtitle)
+    }
+  }
 }

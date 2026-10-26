@@ -211,6 +211,7 @@ function OutputsSection({ outputs, base, onSaved }: { outputs: OutputState[]; ba
   }
   const copy = (text: string) => void navigator.clipboard?.writeText(text)
   const label = (binding: string) => {
+    if (binding === 'bands') return t('outputs.bands')
     if (binding.endsWith(':*')) return kindLabel(binding.slice(0, -2))
     const [kind, id = 'creeds'] = binding.split(':')
     return collections.data?.find((x) => x.kind === kind && x.id === id)?.title ?? binding

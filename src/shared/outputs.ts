@@ -9,8 +9,8 @@ import { DEFAULT_STYLE, PayloadStyle, toPayload, type Payload, type PayloadSourc
 /** Path words used by the routes themselves. */
 export const RESERVED_SLUGS: readonly string[] = ['resources', 'events', 'health', 'fonts']
 
-/** `songbook:hnc` (exact), `songbook:*` (every document of a kind) or `creeds`. */
-export const CollectionBinding = z.string().regex(/^(?:(?:bible|songbook|confession|catechism):(?:[a-z0-9-]{1,40}|\*)|creeds)$/)
+/** `songbook:hnc` (exact), `songbook:*` (every document of a kind), `creeds` or `bands` (E18). */
+export const CollectionBinding = z.string().regex(/^(?:(?:bible|songbook|confession|catechism):(?:[a-z0-9-]{1,40}|\*)|creeds|bands)$/)
 
 export const Output = z.object({
   slug: z
@@ -47,7 +47,9 @@ export const Outputs = z
 export const DEFAULT_OUTPUTS: readonly Output[] = [
   { slug: 'bible', name: 'Bíblia', collections: ['bible:*'], style: DEFAULT_STYLE },
   { slug: 'songs', name: 'Salmos e hinos', collections: ['songbook:*'], style: DEFAULT_STYLE },
-  { slug: 'doctrine', name: 'Doutrina', collections: ['creeds', 'confession:*', 'catechism:*'], style: DEFAULT_STYLE }
+  { slug: 'doctrine', name: 'Doutrina', collections: ['creeds', 'confession:*', 'catechism:*'], style: DEFAULT_STYLE },
+  // Design v2: its own Browser Source, so a band can sit where the text band does not.
+  { slug: 'faixas', name: 'Faixas', collections: ['bands'], style: DEFAULT_STYLE }
 ]
 
 /** The output a collection belongs to: an exact binding wins over a kind binding. */
@@ -64,6 +66,8 @@ export function outputFor(collection: string, outputs: readonly Output[]): Outpu
  */
 export function outputPayload(source: PayloadSource, output: Output | null, outputs: readonly Output[], seq: number): Payload {
   if (!output) return toPayload(source, DEFAULT_STYLE, seq)
+  // A band goes only to the outputs bound to `bands`; the others are clear while it is on the air.
+  if (source.band) return toPayload(output.collections.includes('bands') ? source : { collection: null, slide: null }, output.style, seq)
   const mine = source.collection !== null && outputFor(source.collection, outputs)?.slug === output.slug
   return toPayload(mine ? source : { collection: null, slide: null }, output.style, seq)
 }

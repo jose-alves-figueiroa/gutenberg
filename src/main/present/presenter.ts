@@ -126,7 +126,7 @@ export function createPresenter(db: SqlDatabase): Presenter {
       if (output === undefined) return null
       const v = view()
       const item = v.onAir ? v.items[v.onAir.item] : undefined
-      return outputPayload({ collection: item?.collection ?? null, slide: v.onAir, credits: item?.credits }, output, all, v.state.seq)
+      return outputPayload({ collection: item?.collection ?? null, slide: v.onAir, credits: item?.credits, band: v.state.band }, output, all, v.state.seq)
     },
     command(cmd) {
       const counts = sequence(state).items.map((i) => i.slides.length)

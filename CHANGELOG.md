@@ -18,6 +18,9 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 ## [Não lançado]
 
 ### Adicionado
+- Saída padrão "Faixas" (`/faixas`) e "Faixas de culto" entre as coleções do editor de saída: as
+  faixas de culto, sacramento e pregação saem numa Browser Source própria, em bloco à esquerda;
+  enviar uma faixa limpa o texto e pôr uma tela de texto no ar tira a faixa (E18)
 - Controle remoto pelo celular: em Conexão › Controle remoto, aponte a câmera para o código e
   digite o PIN; o celular mostra a tela no ar e a seguinte, os itens da liturgia e Anterior,
   Próximo e Limpar tela. Um aparelho por vez, revogável na hora (E17)

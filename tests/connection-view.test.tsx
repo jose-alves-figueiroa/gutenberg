@@ -105,8 +105,8 @@ describe('Connection tab (US7.2)', () => {
     expect(within(form).getByRole('checkbox', { name: /Todos os hinários e saltérios\s*· em Salmos e hinos/ })).toBeDisabled()
     await userEvent.click(within(form).getByRole('checkbox', { name: 'Salmos genebrinos' }))
     await userEvent.click(within(form).getByRole('button', { name: 'Salvar saída' }))
-    await waitFor(() => expect(stored(db).map((o: { slug: string }) => o.slug)).toEqual(['bible', 'songs', 'doctrine', 'salmos']))
-    expect(stored(db)[3].collections).toEqual(['songbook:psalter'])
+    await waitFor(() => expect(stored(db).map((o: { slug: string }) => o.slug)).toEqual(['bible', 'songs', 'doctrine', 'faixas', 'salmos']))
+    expect(stored(db)[4].collections).toEqual(['songbook:psalter'])
     expect(await within(outputs()).findByRole('article', { name: 'Salmos' })).toHaveTextContent('/overlay/salmos')
   })
 
@@ -149,7 +149,7 @@ describe('Connection tab (US7.2)', () => {
       expect(stored(db)[1].style).toMatchObject({ halign: 'right', music: { fontMaxRows: '8' }, band: { opacity: 50, width: 'fit' }, stroke: 'thick', shadow: false })
     )
     await userEvent.click(within(await within(outputs()).findByRole('article', { name: 'Doutrina' })).getByRole('button', { name: 'Remover' }))
-    await waitFor(() => expect(stored(db).map((o: { slug: string }) => o.slug)).toEqual(['bible', 'songs']))
+    await waitFor(() => expect(stored(db).map((o: { slug: string }) => o.slug)).toEqual(['bible', 'songs', 'faixas']))
   })
 })
 

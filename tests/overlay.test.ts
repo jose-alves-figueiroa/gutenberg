@@ -18,12 +18,11 @@ describe('overlayView (US15.1)', () => {
     expect(overlayView({ ...bible(), font_max_rows: '6' }).band.fontSize).toBe(overlayView({ font_max_rows: 6, lines: ['a'] }).band.fontSize)
   })
 
-  it('the header is half the text size; at most the lines of the payload', () => {
+  it('the header is half the text size; then the lines of the payload', () => {
     const v = overlayView(bible())
-    expect(v.header_.fontSize).toBe('0.5em')
-    expect(v.header).toBe('Hebreus 12.15 (2/3)')
-    expect(v.lines).toEqual(slide.lines)
-    expect(v.line.whiteSpace).toBe('nowrap')
+    expect(v.blocks.map((b) => b.text)).toEqual(['Hebreus 12.15 (2/3)', ...slide.lines])
+    expect(v.blocks[0].style.fontSize).toBe('0.5em')
+    expect(v.blocks[1].style.whiteSpace).toBe('nowrap')
   })
 
   it('the default band: dark at 78 %, 6 % side margin, 5 % from the bottom, full width, shadow', () => {
@@ -40,7 +39,7 @@ describe('overlayView (US15.1)', () => {
     const v = overlayView(bible(style))
     expect(v.band).toMatchObject({ background: 'transparent', width: 'auto', textAlign: 'left', textShadow: 'none' })
     expect(v.band.webkitTextStroke).toMatch(/^0\.278vh/)
-    expect(v.line.fontWeight).toBe('600')
+    expect(v.blocks[1].style.fontWeight).toBe('600')
     expect(v.wrap).toMatchObject({ left: '10vw', bottom: '8vh' })
   })
 
@@ -48,6 +47,17 @@ describe('overlayView (US15.1)', () => {
     const v = overlayView(toPayload({ collection: 'songbook:hnc', slide }, DEFAULT_STYLE, 1).map)
     expect(v.wrap).toMatchObject({ top: '50%', transform: 'translateY(-50%)' })
     expect(v.wrap.bottom).toBeUndefined()
+  })
+
+  it('a band (E18): kicker, title and supporting line in a block at the bottom left', () => {
+    const band = { kind: 'service' as const, kicker: 'Culto', title: 'Culto Matutino', subtitle: 'Domingo, 12 de outubro' }
+    const v = overlayView(toPayload({ collection: null, slide: null, band }, DEFAULT_STYLE, 1).map)
+    expect(v.visible).toBe(true)
+    expect(v.blocks.map((b) => b.text)).toEqual(['Culto', 'Culto Matutino', 'Domingo, 12 de outubro'])
+    expect(px(v.blocks[1].style.fontSize)).toBe(64)
+    expect(v.blocks[2].style.fontStyle).toBe('italic')
+    expect(v.wrap).toMatchObject({ left: '6vw', bottom: '5vh' })
+    expect(v.wrap.right).toBeUndefined()
   })
 
   it('hidden on CLEAR', () => {

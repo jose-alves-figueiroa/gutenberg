@@ -21,9 +21,8 @@ describe('overlay page (US15.1)', () => {
     window.postMessage(toPayload({ collection: 'bible:ara', slide }, DEFAULT_STYLE, 1), '*')
     await new Promise((r) => setTimeout(r, 20))
     expect(document.getElementById('wrap')!.className).toBe('')
-    expect(document.getElementById('header')!.textContent).toBe('Hebreus 12.15 (2/3)')
     const band = document.getElementById('band')!
-    expect([...band.querySelectorAll('span')].slice(1).map((s) => s.textContent)).toEqual(slide.lines)
+    expect([...band.querySelectorAll('span')].map((s) => s.textContent)).toEqual(['Hebreus 12.15 (2/3)', ...slide.lines])
     expect(Math.round((parseFloat(band.style.fontSize) * 1080) / 100)).toBe(69)
   })
 })

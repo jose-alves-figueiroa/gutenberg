@@ -10,9 +10,9 @@ const slide = { header: 'Hebreus 12.14', lines: ['Segui a paz com todos'] }
 const slugOf = (collection: string, outputs: readonly Output[] = DEFAULT_OUTPUTS) => outputFor(collection, outputs)?.slug ?? null
 
 describe('outputs (pure)', () => {
-  it('defaults: bible, songs, doctrine', () => {
-    expect(DEFAULT_OUTPUTS.map((o) => o.slug)).toEqual(['bible', 'songs', 'doctrine'])
-    expect(Outputs.parse(DEFAULT_OUTPUTS)).toHaveLength(3)
+  it('defaults: bible, songs, doctrine, faixas', () => {
+    expect(DEFAULT_OUTPUTS.map((o) => o.slug)).toEqual(['bible', 'songs', 'doctrine', 'faixas'])
+    expect(Outputs.parse(DEFAULT_OUTPUTS)).toHaveLength(4)
   })
 
   it.each([

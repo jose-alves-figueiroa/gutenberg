@@ -400,10 +400,10 @@ Especificação: `handoff/README.md` → "Liturgia" (Pregação), "Biblioteca �
 
 **US18.2** Como operador, quero enviar e tirar uma faixa.
 - [ ] Apresentar › segmentado Liturgia | Faixas: cartões de 112 px com tipo, título e linha de apoio; clicar envia; "Tirar faixa"
-- [ ] Faixa e texto **nunca juntos**: enviar uma faixa limpa a tela de texto no ar, e uma tela de texto tira a faixa
-- [ ] A faixa só sai por outra faixa, uma tela de texto ou "Tirar faixa" (sem tempo)
-- [ ] Saída padrão **Faixas** (`/faixas`), ligada às faixas; "Faixas de culto" entre as coleções do editor de saída
-- [ ] Payload com `kind` (`culto`, `sacramento`, `pregacao`), `kicker`, `title`, `subtitle`; overlay da faixa (bloco à esquerda, tipo 26 px, título 64 px, apoio 36 px itálico)
+- [x] Faixa e texto **nunca juntos**: enviar uma faixa limpa a tela de texto no ar, e uma tela de texto tira a faixa
+- [x] A faixa só sai por outra faixa, uma tela de texto ou "Tirar faixa" (sem tempo)
+- [x] Saída padrão **Faixas** (`/faixas`), ligada às faixas; "Faixas de culto" entre as coleções do editor de saída
+- [x] Payload com `kind` (`service`, `sacrament`, `sermon`; em inglês, como as chaves), `kicker`, `title`, `subtitle`; overlay da faixa (bloco à esquerda, tipo 26 px, título 64 px, apoio 36 px itálico)
 
 ### E19 — Acesso fora da rede local sem IP fixo
 Hoje o celular e o OBS precisam estar na mesma rede do operador. O app deve publicar o servidor

@@ -76,7 +76,8 @@ describe('connection routes (US7.2)', () => {
     expect(body.outputs.map((o: { slug: string; status: string }) => [o.slug, o.status])).toEqual([
       ['bible', 'online'],
       ['songs', 'offline'],
-      ['doctrine', 'offline']
+      ['doctrine', 'offline'],
+      ['faixas', 'offline']
     ])
     expect(body.outputs[0].clients).toEqual([{ ip: '10.0.0.5', rtt: 18, streams: 0, status: 'online' }])
     expect(body.all.clients).toHaveLength(1)

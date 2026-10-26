@@ -51,6 +51,7 @@ function bindings(collections: CollectionInfo[]): { value: string; label: string
     for (const c of collections.filter((x) => x.kind === kind)) out.push({ value: `${kind}:${c.id}`, label: c.title })
   }
   out.push({ value: 'creeds', label: collections.find((x) => x.kind === 'creeds')?.title ?? 'creeds' })
+  out.push({ value: 'bands', label: t('outputs.bands') })
   return out
 }
 

@@ -55,30 +55,25 @@ export function overlayHtml(slug: string | null): string {
 </style>
 </head>
 <body>
-<div id="wrap" class="hidden"><div id="band"><span id="header"></span></div></div>
+<div id="wrap" class="hidden"><div id="band"></div></div>
 <script>
 (function () {
   var last = -1, poll = null;
   var overlayView = ${overlayView.toString()};
   var wrap = document.getElementById('wrap');
   var band = document.getElementById('band');
-  var header = document.getElementById('header');
 
   function draw(m) {
     var v = overlayView(m);
     wrap.removeAttribute('style');
     band.removeAttribute('style');
-    header.removeAttribute('style');
     Object.assign(wrap.style, v.wrap);
     Object.assign(band.style, v.band);
-    Object.assign(header.style, v.header_);
-    header.textContent = v.header;
-    header.style.display = v.header ? '' : 'none';
-    while (band.lastChild !== header) band.removeChild(band.lastChild);
-    v.lines.forEach(function (l) {
+    band.textContent = '';
+    v.blocks.forEach(function (b) {
       var span = document.createElement('span');
-      Object.assign(span.style, v.line);
-      span.textContent = l;
+      Object.assign(span.style, b.style);
+      span.textContent = b.text;
       band.appendChild(span);
     });
     wrap.className = v.visible ? '' : 'hidden';
