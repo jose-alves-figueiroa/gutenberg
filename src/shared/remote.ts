@@ -4,6 +4,7 @@
  * compact view of the presentation it shows (on the air and up next, decision 3).
  */
 import { z } from 'zod'
+import type { Band } from './bands'
 import type { Slide } from './slides'
 
 /** A PIN lasts this long; a new one is drawn after it expires or after a pairing. */
@@ -18,11 +19,14 @@ export const PairBody = z.object({
 })
 export type PairBody = z.infer<typeof PairBody>
 
-/** What a phone may do: the screens of the liturgy and "Limpar tela" (never change the service). */
+/** What a phone may do: the screens of the liturgy, "Limpar tela" and the bands (never change the service). */
 export const RemoteCommand = z.discriminatedUnion('type', [
   z.object({ type: z.literal('go'), index: z.number().int().min(0), slide: z.number().int().min(0) }),
   z.object({ type: z.literal('step'), delta: z.union([z.literal(-1), z.literal(1)]) }),
-  z.object({ type: z.literal('blank'), blank: z.boolean() })
+  z.object({ type: z.literal('blank'), blank: z.boolean() }),
+  /** A band of the list the phone was given (by position: the phone never sends band text). */
+  z.object({ type: z.literal('band'), index: z.number().int().min(0) }),
+  z.object({ type: z.literal('clearBand') })
 ])
 export type RemoteCommand = z.infer<typeof RemoteCommand>
 
@@ -53,6 +57,9 @@ export interface RemoteView {
   blank: boolean
   onAir: RemoteScreen | null
   upNext: RemoteScreen | null
+  /** Bands to send (E18) and the one on the air. */
+  bands: Band[]
+  band: Band | null
 }
 
 interface ViewItem {
@@ -65,8 +72,8 @@ interface ViewItem {
 export function remoteView(view: {
   service: { name: string } | null
   items: ViewItem[]
-  state: { live: number; slide: number; blank: boolean }
-}): RemoteView {
+  state: { live: number; slide: number; blank: boolean; band?: Band | null }
+}, bands: Band[] = []): RemoteView {
   const { live, slide, blank } = view.state
   const screen = (index: number, at: number): RemoteScreen | null => {
     const item = view.items[index]
@@ -81,6 +88,8 @@ export function remoteView(view: {
     live,
     blank,
     onAir: blank ? null : screen(live, slide),
-    upNext: next
+    upNext: next,
+    bands,
+    band: view.state.band ?? null
   }
 }

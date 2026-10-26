@@ -230,3 +230,23 @@ describe('long items in sections (E11)', () => {
     expect(screen.queryByRole('navigation', { name: 'Seções' })).toBeNull()
   })
 })
+
+describe('Apresentar › Faixas (US18.2)', () => {
+  it('sends a band (clearing the text), takes it off, and the next text screen ends it', async () => {
+    const { db } = renderApp()
+    await within(aside()).findByText('Credo Apostólico')
+    await userEvent.click(screen.getByRole('radio', { name: 'Faixas' }))
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Faixas de culto')
+    const card = await screen.findByRole('button', { name: /Culto Matutino/ })
+    expect(card).toHaveTextContent('Enviar')
+    await userEvent.click(card)
+    await waitFor(() => expect(stored(db)).toMatchObject({ blank: true, band: { kind: 'service', title: 'Culto Matutino' } }))
+    expect(await screen.findByRole('button', { name: /Culto Matutino/ })).toHaveTextContent('no ar')
+    await userEvent.click(screen.getByRole('button', { name: 'Tirar faixa' }))
+    await waitFor(() => expect(stored(db).band).toBeNull())
+    await userEvent.click(screen.getByRole('button', { name: /Santa Ceia do Senhor/ }))
+    await waitFor(() => expect(stored(db).band).toMatchObject({ title: 'Santa Ceia do Senhor', subtitle: '1 Coríntios 11.23–26' }))
+    await userEvent.keyboard('{ArrowRight}')
+    await waitFor(() => expect(stored(db)).toMatchObject({ band: null, blank: false }))
+  })
+})

@@ -111,6 +111,10 @@ describe('routes (US17.1, US17.2)', () => {
     const after = await (await post('/control/api/command', { type: 'step', delta: 1 }, token)).json()
     expect(after.onAir.slide).toBe(1)
     expect(presenter.view().state.slide).toBe(1)
+    const bands = await (await post('/control/api/command', { type: 'band', index: 1 }, token)).json()
+    expect(bands.band).toMatchObject({ kind: 'service', title: 'Culto Vespertino' })
+    expect(bands.onAir).toBeNull()
+    expect((await post('/control/api/command', { type: 'band', index: 99 }, token)).status).toBe(404)
     // A phone may not change the service or present an ad hoc item.
     expect((await post('/control/api/command', { type: 'service', serviceId: 1 }, token)).status).toBe(400)
   })

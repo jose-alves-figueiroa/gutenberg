@@ -18,6 +18,8 @@ Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com vers
 ## [Não lançado]
 
 ### Adicionado
+- Apresentar › Faixas: as faixas de culto, sacramento e a pregação do culto em cartões; clicar
+  envia ao OBS e "Tirar faixa" tira. O celular ganha a aba Faixas, com o mesmo envio (E18)
 - Biblioteca › Faixas: cultos e reuniões, sacramentos e pregadores editáveis, com a prévia da faixa
   como sai no OBS; uma faixa de culto sem linha de apoio usa a data do dia (E18)
 - Liturgia › Pregação: pregador, título e texto pregado de cada culto, com a prévia da faixa (E18)

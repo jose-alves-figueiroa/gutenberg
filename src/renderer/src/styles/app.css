@@ -293,6 +293,18 @@ button:disabled, input:disabled { opacity: 0.45; cursor: not-allowed; }
 .pres-drop { width: 30px; height: 30px; margin-top: 6px; color: var(--color-neutral-700); }
 .pres-main { display: flex; flex-direction: column; min-width: 0; }
 .pres-main > .pager { margin-top: 0; }
+/* Apresentar › Faixas (design v2): 112 px cards. */
+.pres-bands { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--space-3); align-content: start; padding: var(--space-3) 0; }
+.pres-band {
+  all: unset; cursor: pointer; box-sizing: border-box; overflow: hidden; height: 112px;
+  display: flex; flex-direction: column; gap: 6px; padding: 12px var(--space-3);
+  border-radius: var(--radius-md); background: var(--color-surface);
+}
+.pres-band:hover { background: var(--color-accent-100); }
+.pres-band--live, .pres-band--live:hover { background: var(--color-accent-200); }
+.pres-band-title { font-size: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pres-band-sub { font-size: 14px; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pres-band:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 .pres-head { display: flex; align-items: flex-end; gap: var(--space-4); flex-wrap: wrap; padding-bottom: var(--space-4); }
 .pres-head-text { margin-right: auto; min-width: 0; }
 .view .pres-title { margin: 4px 0 0; font-size: 34px; }

@@ -2,7 +2,7 @@
 
 Legenda: `[ ]` a fazer · `[~]` em execução · `[x]` feito · ⛔ bloqueado
 Fonte: a proposta em vigor (`design/README.md`); hoje a v2, `design/proposals/v2/handoff/README.md` + `decisions.md`. A v1 (`design/proposals/v1/`) segue como referência do que a v2 não redefine (autobreak, busca rápida).
-Concluídos: E0–E14. Pendente: **US8.4**, **US10.4** e **US14.1** (validação em campo). Planejados: **E15–E19**, pela proposta de design v2 (`design/proposals/v2/`); E19 aguarda a escolha do serviço.
+Concluídos: E0–E18. Pendente: **US8.4**, **US10.4** e **US14.1** (validação em campo). Planejado: **E19**, que aguarda a escolha do serviço.
 
 ## Stack e protocolo (decisão)
 O OBS roda em outro computador da LAN e consome os dados do Gutenberg por **HTTP** — o protocolo já em uso (substitui o JSON do Holyrics). Isso substitui o obs-websocket sugerido no README do handoff.
@@ -389,7 +389,7 @@ Um aparelho controla a transmissão de fora do desktop. Especificação: `handof
 - [x] Controle: tela **no ar** e **a seguir**, abas Itens | Faixas (só a lista rola), rodapé Anterior/Próximo/Limpar tela; nas Faixas, Tirar faixa
 - [x] Estado ao vivo por SSE; um aparelho por vez, vale o último comando (celular ou desktop)
 
-### E18 — Faixas de culto, sacramentos e pregação
+### E18 — Faixas de culto, sacramentos e pregação ✓
 Faixas que não são texto de apoio, enviadas a qualquer momento pela saída **Faixas**.
 Especificação: `handoff/README.md` → "Liturgia" (Pregação), "Biblioteca › Faixas", "Apresentar"
 (modo Faixas) e "Overlay no OBS" (`o-culto`, `o-sacramento`, `o-pregacao`); decisões 1 e 2.
@@ -399,7 +399,7 @@ Especificação: `handoff/README.md` → "Liturgia" (Pregação), "Biblioteca �
 - [x] Liturgia › Pregação: pregador (da lista), título e texto pregado, por culto, com prévia
 
 **US18.2** Como operador, quero enviar e tirar uma faixa.
-- [ ] Apresentar › segmentado Liturgia | Faixas: cartões de 112 px com tipo, título e linha de apoio; clicar envia; "Tirar faixa"
+- [x] Apresentar › segmentado Liturgia | Faixas: cartões de 112 px com tipo, título e linha de apoio; clicar envia; "Tirar faixa"
 - [x] Faixa e texto **nunca juntos**: enviar uma faixa limpa a tela de texto no ar, e uma tela de texto tira a faixa
 - [x] A faixa só sai por outra faixa, uma tela de texto ou "Tirar faixa" (sem tempo)
 - [x] Saída padrão **Faixas** (`/faixas`), ligada às faixas; "Faixas de culto" entre as coleções do editor de saída

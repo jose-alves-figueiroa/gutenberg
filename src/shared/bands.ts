@@ -70,3 +70,23 @@ export function sermonBand(kicker: string, sermon: Sermon): Band | null {
   const parts = [sermon.title && `“${sermon.title}”`, sermon.text].filter(Boolean)
   return { kind: 'sermon', kicker, title: sermon.preacher, subtitle: parts.join(' · ') }
 }
+
+/** The kicker of each kind of band, in the operator's language (from i18n). */
+export type Kickers = Record<BandKind, string>
+
+/**
+ * The bands the operator can send (Apresentar › Faixas and the phone), in order: services and
+ * meetings, sacraments, then the sermon of the service being presented when it has a preacher.
+ */
+export function bandChoices(library: BandLibrary, sermon: Sermon | null, kickers: Kickers, today: Date): Band[] {
+  const preaching = sermon ? sermonBand(kickers.sermon, sermon) : null
+  return [
+    ...library.services.map((e) => entryBand('service', kickers.service, e, today)),
+    ...library.sacraments.map((e) => entryBand('sacrament', kickers.sacrament, e, today)),
+    ...(preaching ? [preaching] : [])
+  ]
+}
+
+/** Same band (the one on the air is marked in the lists). */
+export const sameBand = (a: Band | null | undefined, b: Band | null | undefined): boolean =>
+  Boolean(a && b && a.kind === b.kind && a.title === b.title && a.subtitle === b.subtitle)

@@ -54,6 +54,23 @@ describe('phone page (US17.2)', () => {
     expect($('blank').textContent).toBe('Mostrar texto')
   })
 
+  it('the Faixas tab sends a band and takes it off (US18.2)', async () => {
+    const { remote, presenter } = openPage()
+    for (const d of remote.info().pin) key(d).click()
+    $('pair-go').click()
+    await settle()
+    $('tab-bands').click()
+    const culto = [...document.querySelectorAll<HTMLButtonElement>('#list .item')].find((b) => b.textContent?.includes('Culto Matutino'))!
+    culto.click()
+    await settle()
+    expect(presenter.view().state.band).toMatchObject({ title: 'Culto Matutino' })
+    expect($('air-kicker').textContent).toBe('Faixa no ar · Culto')
+    $('clear-band').click()
+    await settle()
+    expect(presenter.view().state.band).toBeNull()
+    expect($('air-kicker').textContent).toBe('Nenhuma faixa no ar')
+  })
+
   it('a wrong PIN says so and keeps pairing', async () => {
     const { remote } = openPage()
     const wrong = remote.info().pin === '000000' ? '111111' : '000000'

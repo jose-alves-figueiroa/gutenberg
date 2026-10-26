@@ -24,7 +24,8 @@ import { resolveItem, searchCollection } from '../library/items'
 import * as repo from '../library/repository'
 import * as liturgy from '../liturgy/repository'
 import * as bandRepo from '../library/bands'
-import { BandLibrary, Sermon } from '../../shared/bands'
+import { BandLibrary, Sermon, bandChoices } from '../../shared/bands'
+import { t } from '../../shared/i18n'
 import { createPresenter, type Presenter } from '../present/presenter'
 import { connectionRoutes, type NetworkControl } from './connection'
 import { localOnly, remoteIp } from './guards'
@@ -263,7 +264,11 @@ export function createServerApp(db: SqlDatabase, options: ServerOptions = {}) {
     .route('/api/v1/remote', remoteRoutes(remote, network))
     .route('/api/v1/bands', bandRoutes(db))
     .route('/', publicRoutes(presenter, monitor))
-    .route('/', controlRoutes(remote, presenter))
+    .route('/', controlRoutes(remote, presenter, () => {
+      const serviceId = presenter.view().service?.id
+      const kickers = { service: t('bands.kind.service'), sacrament: t('bands.kind.sacrament'), sermon: t('bands.kind.sermon') }
+      return bandChoices(bandRepo.bands(db), serviceId ? bandRepo.sermon(db, serviceId) : null, kickers, new Date())
+    }))
 }
 
 /** Route types for the renderer's typed client (`hono/client`). */

@@ -22,6 +22,11 @@ const TEXT = {
   nothing: t('control.nothing'),
   end: t('control.end'),
   items: t('control.items'),
+  bands: t('control.bands'),
+  bandOnAir: t('control.bandOnAir'),
+  noBand: t('control.noBand'),
+  clearBand: t('control.clearBand'),
+  tabs: t('control.tabs'),
   prev: t('control.prev'),
   next: t('control.next'),
   blank: t('control.blank'),
@@ -74,6 +79,9 @@ export function controlHtml(): string {
   #air-title { font-size: 22px; font-weight: 600; }
   .lines { font-size: 17px; line-height: 1.35; }
   #next .lines { color: var(--muted); font-size: 15px; }
+  .tabs { flex: none; display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--surface); }
+  .tab { height: 44px; background: transparent; border-radius: 0; font-size: 16px; color: var(--muted); }
+  .tab[aria-selected='true'] { color: var(--text); box-shadow: inset 0 -2px 0 var(--accent-400); }
   #list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .item { display: flex; flex-direction: column; justify-content: center; gap: 2px; width: 100%; min-height: 60px; padding: 8px 16px; text-align: left; background: transparent; border-bottom: 1px solid var(--surface); border-radius: 0; }
   .item.live { background: var(--surface); }
@@ -81,7 +89,10 @@ export function controlHtml(): string {
   footer { flex: none; display: grid; grid-template-columns: 1fr 2fr; gap: 8px; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--surface); }
   #prev { height: 72px; background: var(--surface); font-size: 18px; }
   #next-btn { height: 72px; font-size: 20px; }
-  #blank { grid-column: 1 / -1; height: 52px; background: transparent; border: 1px solid var(--surface); font-size: 17px; }
+  #blank, #clear-band { grid-column: 1 / -1; height: 52px; background: transparent; border: 1px solid var(--surface); font-size: 17px; }
+  #clear-band:disabled { opacity: 0.45; }
+  footer.bands-mode #prev, footer.bands-mode #next-btn, footer.bands-mode #blank { display: none; }
+  footer:not(.bands-mode) #clear-band { display: none; }
 </style>
 </head>
 <body>
@@ -98,11 +109,13 @@ export function controlHtml(): string {
   <header><span class="brand">Gutenberg</span><span id="status" class="status"><span class="dot"></span><span id="status-text">${TEXT.connected}</span></span></header>
   <section id="air" class="screen" aria-live="polite"><span id="air-kicker" class="kicker"></span><span id="air-title"></span><span id="air-lines" class="lines"></span></section>
   <section id="next" class="screen"><span id="next-kicker" class="kicker">${TEXT.upNext}</span><span id="next-lines" class="lines"></span></section>
+  <div class="tabs" role="tablist" aria-label="${TEXT.tabs}"><button id="tab-items" class="tab" role="tab" aria-selected="true">${TEXT.items}</button><button id="tab-bands" class="tab" role="tab" aria-selected="false">${TEXT.bands}</button></div>
   <nav id="list" aria-label="${TEXT.items}"></nav>
   <footer>
     <button id="prev">${TEXT.prev}</button>
     <button id="next-btn" class="primary">${TEXT.next}</button>
     <button id="blank">${TEXT.blank}</button>
+    <button id="clear-band">${TEXT.clearBand}</button>
   </footer>
 </main>
 <script>
@@ -111,7 +124,7 @@ export function controlHtml(): string {
   var KEY = 'gutenberg.control.token';
   var token = null;
   try { token = localStorage.getItem(KEY); } catch (e) {}
-  var view = null, events = null;
+  var view = null, events = null, mode = 'items';
   var $ = function (id) { return document.getElementById(id); };
   function fill(text, vars) { return text.replace('{k}', vars.k).replace('{n}', vars.n); }
 
@@ -173,22 +186,38 @@ export function controlHtml(): string {
   function screenText(s) { return s ? s.lines.join('\\n') : ''; }
   function draw(v) {
     view = v;
+    var bands = mode === 'bands';
+    $('tab-items').setAttribute('aria-selected', String(!bands));
+    $('tab-bands').setAttribute('aria-selected', String(bands));
+    document.querySelector('footer').className = bands ? 'bands-mode' : '';
+    $('next').classList.toggle('hidden', bands);
     var air = v.onAir;
-    $('air-kicker').textContent = air ? [T.onAir, air.moment, fill(T.screen, { k: air.slide + 1, n: air.slides })].filter(Boolean).join(' · ') : (v.blank ? T.blankNote : T.nothing);
-    $('air-title').textContent = air ? air.title : '';
-    $('air-lines').textContent = screenText(air);
+    if (bands) {
+      $('air-kicker').textContent = v.band ? T.bandOnAir + ' · ' + v.band.kicker : T.noBand;
+      $('air-title').textContent = v.band ? v.band.title : '';
+      $('air-lines').textContent = v.band ? v.band.subtitle : '';
+    } else {
+      $('air-kicker').textContent = air ? [T.onAir, air.moment, fill(T.screen, { k: air.slide + 1, n: air.slides })].filter(Boolean).join(' · ') : (v.blank ? T.blankNote : T.nothing);
+      $('air-title').textContent = air ? air.title : '';
+      $('air-lines').textContent = screenText(air);
+    }
     $('air-lines').style.whiteSpace = 'pre-line';
     $('next-lines').textContent = v.upNext ? (v.upNext.slide === 0 ? v.upNext.title + ': ' : '') + v.upNext.lines.join(' ') : T.end;
     $('blank').textContent = v.blank ? T.show : T.blank;
+    $('clear-band').disabled = !v.band;
     var list = $('list');
+    list.setAttribute('aria-label', bands ? T.bands : T.items);
     list.innerHTML = '';
-    v.items.forEach(function (it, i) {
+    var rows = bands
+      ? v.bands.map(function (b, i) { return { top: b.kicker, title: b.title, live: !!v.band && v.band.kind === b.kind && v.band.title === b.title && v.band.subtitle === b.subtitle, go: { type: 'band', index: i } }; })
+      : v.items.map(function (it, i) { return { top: it.moment, title: it.title, live: i === v.live, go: { type: 'go', index: i, slide: 0 } }; });
+    rows.forEach(function (r) {
       var b = document.createElement('button');
-      b.className = 'item' + (i === v.live ? ' live' : '');
-      var m = document.createElement('span'); m.className = 'kicker'; m.textContent = it.moment;
-      var title = document.createElement('span'); title.className = 'item-title'; title.textContent = it.title;
+      b.className = 'item' + (r.live ? ' live' : '');
+      var m = document.createElement('span'); m.className = 'kicker'; m.textContent = r.top;
+      var title = document.createElement('span'); title.className = 'item-title'; title.textContent = r.title;
       b.appendChild(m); b.appendChild(title);
-      b.onclick = function () { command({ type: 'go', index: i, slide: 0 }); };
+      b.onclick = function () { command(r.go); };
       list.appendChild(b);
     });
   }
@@ -196,6 +225,9 @@ export function controlHtml(): string {
   $('prev').onclick = function () { command({ type: 'step', delta: -1 }); };
   $('next-btn').onclick = function () { command({ type: 'step', delta: 1 }); };
   $('blank').onclick = function () { command({ type: 'blank', blank: !(view && view.blank) }); };
+  $('clear-band').onclick = function () { command({ type: 'clearBand' }); };
+  $('tab-items').onclick = function () { mode = 'items'; if (view) draw(view); };
+  $('tab-bands').onclick = function () { mode = 'bands'; if (view) draw(view); };
   function online(on) {
     $('status').className = 'status' + (on ? '' : ' off');
     $('status-text').textContent = on ? T.connected : T.offline;

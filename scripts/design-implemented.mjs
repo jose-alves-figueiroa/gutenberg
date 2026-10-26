@@ -2,7 +2,7 @@
 // The app as built, for the Claude Design brief (design/README.md): captures every screen at the
 // notebook resolutions of PLAN.md → E16 into design/implemented/<version>/<width>x<height>/, each as a
 // PNG and a self-contained HTML (rendered DOM, inlined CSS, no scripts, fonts in ../assets), plus
-// scroll.json with what scrolls (page and inner boxes) and the overlay at 1920×1080 (obs.png).
+// scroll.json with what scrolls (page and inner boxes) and the overlay at 1920×1080 (obs.png, and a band in obs-band.png).
 // measureScroll, snapshotHtml and the viewport check run in the renderer (page.evaluate).
 /* global document, window, location, getComputedStyle */
 import { copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -92,6 +92,12 @@ const SCREENS = [
     await page.getByRole('button', { name: /Credo Apostólico/ }).click()
     await page.locator('.pres-slide').first().click()
   }],
+  ['present-bands', async () => {
+    await tab('Liturgia')
+    await page.getByRole('button', { name: /Apresentar este culto/ }).click()
+    await page.locator('.pres-head .seg-opt', { hasText: 'Faixas' }).click()
+    await page.locator('.pres-band').first().waitFor()
+  }],
   ['connection', async () => {
     await tab('Conexão')
     await page.getByRole('button', { name: /^Estado/ }).click()
@@ -180,6 +186,12 @@ try {
     }
   }
   writeFileSync(join(out, 'obs.png'), await captureObs(app, 1920, 1080))
+  // A band on the air (E18): the stand-in OBS shows everything, so it draws the band.
+  await page.evaluate(async () => {
+    const band = { kind: 'service', kicker: 'Culto', title: 'Culto Matutino', subtitle: 'Domingo, 12 de outubro' }
+    await fetch(`${window.gutenberg.serverUrl}/api/v1/present/command`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ type: 'band', band }) })
+  })
+  writeFileSync(join(out, 'obs-band.png'), await captureObs(app, 1920, 1080))
   for (const file of fonts) copyFileSync(file, join(assets, basename(file)))
   writeFileSync(join(out, 'scroll.json'), `${JSON.stringify(report, null, 2)}\n`)
   console.log(`design:implemented: ${out}`)

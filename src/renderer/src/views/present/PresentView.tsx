@@ -8,6 +8,7 @@ import { t } from '@shared/i18n'
 import { fitSections, sectionOfSlide } from '@shared/sections'
 import { SectionStrip } from '../../components/Sections'
 import { Pager, useBox } from '../library/parts'
+import { BandsPanel } from './BandsPanel'
 import { usePresent } from '../../present'
 
 /** Space kept below the screens for the Anterior / Próximo bar. */
@@ -28,6 +29,8 @@ export function PresentView() {
   const { view, command } = usePresent()
   // Item being looked at; null follows the item on the air.
   const [picked, setPicked] = useState<number | null>(null)
+  // Design v2: "Liturgia | Faixas" (E18).
+  const [mode, setMode] = useState<'liturgy' | 'bands'>('liturgy')
   const items = view?.items ?? []
   const state = view?.state
   const live = state?.live ?? 0
@@ -154,14 +157,35 @@ export function PresentView() {
         <section className="pres-main">
           <div className="pres-head">
             <div className="pres-head-text">
-              <div className="lit-kicker">{item ? `${item.adhoc ? t('present.adhoc') : item.moment || t('common.empty')} · ${item.collectionLabel}` : ''}</div>
-              <h2 className="pres-title">{item ? item.title : t('present.emptyLiturgy')}</h2>
+              {mode === 'bands' ? (
+                <>
+                  <div className="lit-kicker">{t('present.bandsKicker')}</div>
+                  <h2 className="pres-title">{t('present.bandsTitle')}</h2>
+                </>
+              ) : (
+                <>
+                  <div className="lit-kicker">{item ? `${item.adhoc ? t('present.adhoc') : item.moment || t('common.empty')} · ${item.collectionLabel}` : ''}</div>
+                  <h2 className="pres-title">{item ? item.title : t('present.emptyLiturgy')}</h2>
+                </>
+              )}
+            </div>
+            <div className="seg" role="radiogroup" aria-label={t('present.mode')}>
+              {(['liturgy', 'bands'] as const).map((m) => (
+                <label key={m} className="seg-opt">
+                  <input type="radio" name="pres-mode" checked={mode === m} onChange={() => setMode(m)} />
+                  {t(`present.mode.${m}`)}
+                </label>
+              ))}
             </div>
             <button type="button" className="btn btn-secondary" disabled={!state} onClick={() => state && command({ type: 'blank', blank: !state.blank })}>
               <EyeSlashIcon size={17} weight="duotone" aria-hidden />
               {state?.blank ? t('present.show') : t('present.blank')}
             </button>
           </div>
+          {mode === 'bands' ? (
+            <BandsPanel serviceId={view?.service?.id ?? null} onAir={state?.band ?? null} command={command} />
+          ) : (
+            <>
           <SectionStrip
             sections={sections}
             current={shown}
@@ -199,6 +223,8 @@ export function PresentView() {
               <span className="pres-next-hint">{nextHint}</span>
             </button>
           </div>
+            </>
+          )}
         </section>
       </div>
     </main>

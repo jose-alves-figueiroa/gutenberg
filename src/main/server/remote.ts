@@ -11,6 +11,7 @@ import { Hono, type Context, type MiddlewareHandler } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import { streamSSE } from 'hono/streaming'
 import QRCode from 'qrcode'
+import type { Band } from '../../shared/bands'
 import { PIN_ATTEMPTS, PIN_TTL_MS, PairBody, RemoteCommand, remoteView, type RemoteDevice } from '../../shared/remote'
 import { SETTINGS } from '../db/build'
 import type { SqlDatabase } from '../db/schema'
@@ -133,12 +134,12 @@ const tokenOf = (c: Context) => c.req.header('authorization')?.replace(/^Bearer\
  * Public on the LAN, for the phone: the page (`/control`), pairing and, with the device's token,
  * the presentation (state, live events, commands).
  */
-export function controlRoutes(remote: RemoteService, presenter: Presenter) {
+export function controlRoutes(remote: RemoteService, presenter: Presenter, bands: () => Band[] = () => []) {
   const paired: MiddlewareHandler = async (c, next) => {
     if (!remote.authenticate(tokenOf(c))) throw new HTTPException(401, { message: 'not paired' })
     await next()
   }
-  const view = () => remoteView(presenter.view())
+  const view = () => remoteView(presenter.view(), bands())
   return new Hono()
     .get('/control', (c) => c.html(controlHtml()))
     .post('/control/api/pair', zValidator('json', PairBody), (c) => {
@@ -148,7 +149,12 @@ export function controlRoutes(remote: RemoteService, presenter: Presenter) {
     })
     .get('/control/api/state', paired, (c) => c.json(view()))
     .post('/control/api/command', paired, zValidator('json', RemoteCommand), (c) => {
-      presenter.command(c.req.valid('json'))
+      const cmd = c.req.valid('json')
+      if (cmd.type === 'band') {
+        const band = bands()[cmd.index]
+        if (!band) throw new HTTPException(404, { message: 'no such band' })
+        presenter.command({ type: 'band', band })
+      } else presenter.command(cmd)
       return c.json(view())
     })
     .get('/control/api/events', paired, (c) => {
